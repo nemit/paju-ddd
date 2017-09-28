@@ -1,0 +1,48 @@
+#include("header.html")
+<form method="post" action="reservationquery">
+    <label for="start">Aloituspvm</label>
+    <input id="start" type="date" name="startDate" value="$startDate">
+    <label for="end">Lopetuspvm</label>
+    <input id="end" type="date" name="endDate" value="$endDate"></br>
+
+    #foreach($p in $products)
+        #if($p.selected)
+            #set($checked="checked")
+        #else
+            #set($checked="")
+        #end
+        <label for="$p.name">$p.name</label>
+        <input type="checkbox" id="$p.name" name="product[$p.name]" $checked></br>
+    #end
+
+    <input type="submit" value="Näytä kapasiteetti"/>
+    <table>
+        <tr>
+            <th>Tuote</th>
+            #foreach($date in $dates)
+                <th>$date</th>
+            #end
+        </tr>
+    #foreach($product in $productAvailability)
+        #set($queryDone = true)
+        <tr>
+            <td>$product.name</td>
+            #foreach($date in $dates)
+                #if($product.available)
+                    <td class="bg-success"></td>
+                #else
+                    <td class="bg-danger"></td>
+                #end
+            #end
+        </tr>
+    #end
+    </table>
+</form>
+    #if($queryDone)
+        <form action="draftreservation" method="post">
+            <input type="submit" value="Luo alustava varaus">
+        </form>
+
+    #end
+
+#include("footer.html")
