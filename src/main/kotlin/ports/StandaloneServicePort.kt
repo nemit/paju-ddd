@@ -1,6 +1,7 @@
 package ports
 
 import adapters.*
+import common.DateFormat
 import model.*
 import services.ReservationService
 import services.listProducts
@@ -82,7 +83,7 @@ fun main(args: Array<String>) {
         val startDate = queryCache.get("startDate") as String
         val endDate = queryCache.get("endDate") as String
         val productReservations = queryCache.get("productReservations") as List<ProductReservation>
-        val reservation = DraftReservation(UUID.randomUUID(), ReservationPeriod(DateFormat.html.parse(startDate),DateFormat.html.parse(endDate)), productReservations.toMutableList())
+        val reservation = DraftReservation(UUID.randomUUID(), ReservationPeriod(DateFormat.html.parse(startDate), DateFormat.html.parse(endDate)), productReservations.toMutableList())
         service.createDraftReservation(reservation)
         redirect("reservations")
     }

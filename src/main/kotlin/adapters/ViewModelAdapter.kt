@@ -1,5 +1,6 @@
 package adapters
 
+import common.DateFormat
 import model.*
 
 fun Reservation.convertToViewModel(): ReservationViewModel {
