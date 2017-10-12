@@ -1,4 +1,4 @@
-package io.paju.templateservice.common
+package io.paju.templateservice.shared
 
 import java.text.SimpleDateFormat
 import java.time.temporal.ChronoUnit
