@@ -16,29 +16,43 @@ class SalesOrder(val customer: Customer) {
     private val startedServices: MutableList<ServiceAndPaymentStatus>
     private val deliveredServices: MutableList<ServiceAndPaymentStatus>
     private val orderedServices: MutableList<ServiceAndPaymentStatus>
-    private val orderedProducts: MutableList<ProductAndPaymentStatus>
-    private val deliveredProducts: MutableList<ProductAndPaymentStatus>
+    private val orderedProducts: MutableList<ProductAndStatus>
+    private val deliveredProducts: MutableList<ProductAndStatus>
     private val currentState: SalesOrderState
-    private val additionalParticipants: MutableList<Person>
-    private val orderConfirmed: Boolean = false
+    private val participants: MutableList<ParticipantAndRole>
+    private var orderConfirmed: Boolean = false
 
     init {
         startedServices = mutableListOf<ServiceAndPaymentStatus>()
         deliveredServices = mutableListOf<ServiceAndPaymentStatus>()
-        orderedProducts = mutableListOf<ProductAndPaymentStatus>()
-        deliveredProducts = mutableListOf<ProductAndPaymentStatus>()
+        orderedProducts = mutableListOf<ProductAndStatus>()
+        deliveredProducts = mutableListOf<ProductAndStatus>()
         orderedServices = mutableListOf<ServiceAndPaymentStatus>()
-        additionalParticipants = mutableListOf<Person>()
+        participants = mutableListOf<ParticipantAndRole>()
         currentState = SalesOrderState.QUOTE
     }
 
+
     // PUBLIC BUSINESS FUNCTIONS
+
+    fun listParticipantsAndRoles(): List<ParticipantAndRole> {
+        return participants.toList()
+    }
+
+    fun listProducts(): List<ProductAndStatus> {
+        return listOf<ProductAndStatus>(*orderedProducts.toTypedArray(), *deliveredProducts.toTypedArray())
+    }
+
+    fun listReservedServices(): List<ServiceAndPaymentStatus> {
+        return listOf<ServiceAndPaymentStatus>(*orderedServices.toTypedArray(), *deliveredServices.toTypedArray())
+    }
+
     fun addProduct(product: Product) {
-        orderedProducts.add(ProductAndPaymentStatus(PaymentStatus.OPEN, PaymentMethod.UNDEFINED, product))
+        orderedProducts.add(ProductAndStatus(PaymentStatus.OPEN, PaymentMethod.UNDEFINED, product))
     }
 
     fun removeProduct(product: Product) {
-        orderedProducts.remove(ProductAndPaymentStatus(PaymentStatus.OPEN, PaymentMethod.UNDEFINED, product))
+        orderedProducts.remove(ProductAndStatus(PaymentStatus.OPEN, PaymentMethod.UNDEFINED, product))
     }
 
     fun addReservedService(service: ReservedService) {
@@ -60,16 +74,17 @@ class SalesOrder(val customer: Customer) {
     }
 
     fun deliverProduct(product: Product) {
-        val productAndPaymentStatus = orderedProducts.find { productAndPaymentStatus -> productAndPaymentStatus.product.equals(product) }
-        if (productAndPaymentStatus != null) {
-            deliveredProducts.add(productAndPaymentStatus)
-            orderedProducts.remove(productAndPaymentStatus)
+        val s = orderedProducts.find { productAndPaymentStatus -> productAndPaymentStatus.product.equals(product) }
+        if (s != null) {
+            val newStatus = ProductAndStatus(s.paymentStatus, s.paymentMethod, s.product, DeliveryStatus.DELIVERED)
+            deliveredProducts.add(newStatus)
+            orderedProducts.remove(s)
         } else {
             //TODO should throw error?
         }
     }
 
-    fun invoiceDeliveredProductsAndServices() {
+    fun invoiceDeliveredProductsAndServices(paymentService: PaymentService) {
         val allDeliveredProducts = mutableListOf<Product>()
         allDeliveredProducts.addAll(deliveredServices.map { serviceAndPaymentStatus ->
             serviceAndPaymentStatus.service as Product
@@ -81,33 +96,42 @@ class SalesOrder(val customer: Customer) {
 
         for (product in allDeliveredProducts) {
             // TODO Should PaymentService be given as parameter? Now using as Singleton
-            PaymentService.handleProductPayment(product, customer, PaymentMethod.INVOICE)
+            paymentService.handleProductPayment(product, customer, PaymentMethod.INVOICE)
         }
     }
 
-    fun payDeliveredProduct(product: Product, method: PaymentMethod) {
-        PaymentService.handleProductPayment(product, customer, method)
+    fun payDeliveredProduct(paymentService: PaymentService, product: Product, method: PaymentMethod) {
+        paymentService.handleProductPayment(product, customer, method)
     }
 
-    fun payDeliveredServices(service: ReservedService, method: PaymentMethod) {
-        PaymentService.handleProductPayment(service, customer, method)
+    fun payDeliveredServices(paymentService: PaymentService, service: ReservedService, method: PaymentMethod) {
+        paymentService.handleProductPayment(service, customer, method)
     }
 
     fun addParticipant(person: Person) {
         // TODO: Here we could have business logic to verify sufficient amount of products for every participant
-        additionalParticipants.add(person)
+        participants.add(ParticipantAndRole(person, ParticipantRole.OTHER))
     }
 
+    fun addCustomerContactAsParticipant() {
+        participants.add(ParticipantAndRole(this.customer.contactPerson, ParticipantRole.ORGANIZER))
+    }
+    
     fun removeParticipant(person: Person) {
-        additionalParticipants.remove(person)
+        val participantAndStatus = participants.find { it.participant.equals(person) }
+        participants.remove(participantAndStatus)
     }
 
     fun cancelSalesOrder() {
         // TODO
     }
 
-    fun status() {
-        when {
+    fun confirmSalesOrder() {
+        orderConfirmed = true
+    }
+
+    fun status(): SalesOrderState {
+        return when {
             orderedProducts.isEmpty() && orderedServices.isEmpty() && (deliveredProducts.isNotEmpty() || deliveredServices.isNotEmpty()) -> SalesOrderState.DELIVERED
             (orderedProducts.isNotEmpty() || orderedServices.isNotEmpty()) && (deliveredServices.isNotEmpty() ||deliveredProducts.isNotEmpty()) -> SalesOrderState.PARTIALLY_DELIVERED
             orderConfirmed -> SalesOrderState.CONFIRMED
@@ -117,8 +141,17 @@ class SalesOrder(val customer: Customer) {
 }
 
 
-data class ProductAndPaymentStatus(var status: PaymentStatus, var method: PaymentMethod, val product: Product)
+data class ProductAndStatus(var paymentStatus: PaymentStatus, var paymentMethod: PaymentMethod, val product: Product, val deliveryStatus: DeliveryStatus = DeliveryStatus.NOT_DELIVERED)
 data class ServiceAndPaymentStatus(var status: PaymentStatus, var method: PaymentMethod, val service: ReservedService)
+data class ParticipantAndRole(val participant: Person, val role: ParticipantRole)
+
+enum class ParticipantRole {
+    ORGANIZER, OTHER
+}
+
+enum class DeliveryStatus {
+    NOT_DELIVERED, DELIVERED
+}
 
 enum class SalesOrderState {
     QUOTE, CONFIRMED, PARTIALLY_DELIVERED, DELIVERED

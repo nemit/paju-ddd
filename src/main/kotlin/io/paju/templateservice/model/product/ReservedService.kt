@@ -8,7 +8,6 @@ import java.util.*
  */
 
 class ReservedService(override val price: Price,
-                      override val vat: Vat,
                       override val name: String,
                       override val description: String,
                       val reservationPeriod: ReservationPeriod): Product {

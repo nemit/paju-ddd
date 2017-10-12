@@ -1,12 +1,6 @@
 package io.paju.templateservice.model.product
 
-import org.omg.CORBA.Current
-
-/**
-
- */
-
-data class Price(val price: Float, val vat: Vat, val currency: Currencies = Currencies.EURO) {
+data class Price(val price:Float , val vat: Vat, val currency: Currencies = Currencies.EURO) {
 
 }
 

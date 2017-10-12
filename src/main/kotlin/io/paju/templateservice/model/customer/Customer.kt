@@ -5,7 +5,6 @@ import java.util.*
 /**
  * Customer is ENTITY representing customer account
  */
-class Customer(customerId: CustomerId, name: String, contactPerson: Person) {
-}
+data class Customer(val customerId: CustomerId, val name: String, val contactPerson: Person)
 
 data class CustomerId(val value: UUID)

@@ -31,6 +31,8 @@ dependencies {
     compile "org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.4"
     compile 'com.sparkjava:spark-kotlin:1.0.0-alpha'
     compile 'com.sparkjava:spark-template-velocity:2.5.5'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.0.1'
+    testCompile "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
 }
 
 compileKotlin {
