@@ -5,14 +5,24 @@ import io.paju.templateservice.model.customer.Customer
 import io.paju.templateservice.model.customer.Person
 import io.paju.templateservice.model.product.ReservedService
 import io.paju.templateservice.services.PaymentService
+import java.util.*
 
 /**
  * SalesOrder is Aggregate responsible for Sales Order lifecycle starting from Quote to Confirmed and the to Delivered.
  * PaymentStatus is tracked per product or service
  * TODO: Is quote part of this? Quote expiration?
  */
-class SalesOrder(val customer: Customer) {
 
+class SalesOrder private constructor (val customer: Customer) {
+
+    // FACTORY METHOD
+    companion object {
+        fun createNewSalesOrder(customer: Customer): SalesOrder {
+            return SalesOrder(customer)
+        }
+    }
+
+    private val salesOrderId: SalesOrderId
     private val startedServices: MutableList<ServiceAndPaymentStatus>
     private val deliveredServices: MutableList<ServiceAndPaymentStatus>
     private val orderedServices: MutableList<ServiceAndPaymentStatus>
@@ -20,7 +30,8 @@ class SalesOrder(val customer: Customer) {
     private val deliveredProducts: MutableList<ProductAndStatus>
     private val currentState: SalesOrderState
     private val participants: MutableList<ParticipantAndRole>
-    private var orderConfirmed: Boolean = false
+    private var confirmed: Boolean = false
+    private var deleted: Boolean = false
 
     init {
         startedServices = mutableListOf<ServiceAndPaymentStatus>()
@@ -30,8 +41,8 @@ class SalesOrder(val customer: Customer) {
         orderedServices = mutableListOf<ServiceAndPaymentStatus>()
         participants = mutableListOf<ParticipantAndRole>()
         currentState = SalesOrderState.QUOTE
+        salesOrderId = SalesOrderId(UUID.randomUUID())
     }
-
 
     // PUBLIC BUSINESS FUNCTIONS
 
@@ -95,7 +106,6 @@ class SalesOrder(val customer: Customer) {
         })
 
         for (product in allDeliveredProducts) {
-            // TODO Should PaymentService be given as parameter? Now using as Singleton
             paymentService.handleProductPayment(product, customer, PaymentMethod.INVOICE)
         }
     }
@@ -122,24 +132,25 @@ class SalesOrder(val customer: Customer) {
         participants.remove(participantAndStatus)
     }
 
-    fun cancelSalesOrder() {
-        // TODO
+    fun deleteSalesOrder() {
+        deleted = true
     }
 
     fun confirmSalesOrder() {
-        orderConfirmed = true
+        confirmed = true
     }
 
     fun status(): SalesOrderState {
         return when {
             orderedProducts.isEmpty() && orderedServices.isEmpty() && (deliveredProducts.isNotEmpty() || deliveredServices.isNotEmpty()) -> SalesOrderState.DELIVERED
             (orderedProducts.isNotEmpty() || orderedServices.isNotEmpty()) && (deliveredServices.isNotEmpty() ||deliveredProducts.isNotEmpty()) -> SalesOrderState.PARTIALLY_DELIVERED
-            orderConfirmed -> SalesOrderState.CONFIRMED
+            confirmed -> SalesOrderState.CONFIRMED
             else -> SalesOrderState.QUOTE
         }
     }
 }
 
+data class SalesOrderId(val value: UUID)
 
 data class ProductAndStatus(var paymentStatus: PaymentStatus, var paymentMethod: PaymentMethod, val product: Product, val deliveryStatus: DeliveryStatus = DeliveryStatus.NOT_DELIVERED)
 data class ServiceAndPaymentStatus(var status: PaymentStatus, var method: PaymentMethod, val service: ReservedService)
@@ -154,7 +165,7 @@ enum class DeliveryStatus {
 }
 
 enum class SalesOrderState {
-    QUOTE, CONFIRMED, PARTIALLY_DELIVERED, DELIVERED
+    QUOTE, CONFIRMED, PARTIALLY_DELIVERED, DELIVERED, DELETED
 }
 
 enum class PaymentStatus {

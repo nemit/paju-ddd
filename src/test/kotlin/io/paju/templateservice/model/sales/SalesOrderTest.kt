@@ -29,7 +29,7 @@ internal class SalesOrderTest {
 
     @Test
     fun addProduct() {
-        val so = SalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer)
         so.addProduct(product1)
         val products = so.listProducts()
         assertEquals(1, products.size)
@@ -41,7 +41,7 @@ internal class SalesOrderTest {
 
     @Test
     fun removeProduct() {
-        val so = SalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer)
         so.addProduct(product1)
         so.addProduct(product2)
         so.addProduct(product1)
@@ -69,7 +69,7 @@ internal class SalesOrderTest {
 
     @Test
     fun deliverProduct() {
-        val so = SalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer)
         so.addProduct(product1)
         so.addProduct(product2)
         so.addProduct(product1)
@@ -82,7 +82,7 @@ internal class SalesOrderTest {
 
     @Test
     fun invoiceDeliveredProductsAndServices() {
-        val so = SalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer)
         so.addProduct(product1)
         so.addProduct(product2)
         so.addProduct(product1)
@@ -94,7 +94,7 @@ internal class SalesOrderTest {
 
     @Test
     fun payDeliveredProduct() {
-        val so = SalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer)
         so.addProduct(product1)
         so.addProduct(product2)
         so.addProduct(product1)
@@ -113,7 +113,7 @@ internal class SalesOrderTest {
     fun addParticipant() {
         val expectedParticipantAndRole = ParticipantAndRole(customer.contactPerson, ParticipantRole.ORGANIZER)
 
-        val so = SalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer)
         so.addCustomerContactAsParticipant()
         so.addParticipant(person1)
         val participantsAndRoles = so.listParticipantsAndRoles()
@@ -125,7 +125,7 @@ internal class SalesOrderTest {
     fun removeParticipant() {
         val expectedParticipantAndRole = ParticipantAndRole(customer.contactPerson, ParticipantRole.ORGANIZER)
 
-        val so = SalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer)
         so.addCustomerContactAsParticipant()
         so.addParticipant(person1)
         so.removeParticipant(person1)
@@ -141,7 +141,7 @@ internal class SalesOrderTest {
 
     @Test
     fun status() {
-        val so = SalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer)
         assertEquals(SalesOrderState.QUOTE, so.status())
 
         so.addProduct(product1)
@@ -155,5 +155,4 @@ internal class SalesOrderTest {
         so.deliverProduct(product2)
         assertEquals(SalesOrderState.DELIVERED, so.status())
     }
-
 }
