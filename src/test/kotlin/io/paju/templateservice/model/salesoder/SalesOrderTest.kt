@@ -1,6 +1,5 @@
-package io.paju.templateservice.model.sales
+package io.paju.templateservice.model.salesoder
 
-import com.nhaarman.mockito_kotlin.check
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
@@ -9,7 +8,6 @@ import io.paju.templateservice.model.customer.CustomerId
 import io.paju.templateservice.model.customer.Person
 import io.paju.templateservice.model.customer.PersonSex
 import io.paju.templateservice.model.product.Price
-import io.paju.templateservice.model.product.Product
 import io.paju.templateservice.model.product.SellableProduct
 import io.paju.templateservice.model.product.Vat
 import io.paju.templateservice.services.PaymentService
@@ -142,17 +140,17 @@ internal class SalesOrderTest {
     @Test
     fun status() {
         val so = SalesOrder.createNewSalesOrder(customer)
-        assertEquals(SalesOrderState.QUOTE, so.status())
+        assertEquals(SalesOrderState.QUOTE, so.state())
 
         so.addProduct(product1)
         so.addProduct(product2)
         so.confirmSalesOrder()
-        assertEquals(SalesOrderState.CONFIRMED, so.status())
+        assertEquals(SalesOrderState.CONFIRMED, so.state())
 
         so.deliverProduct(product1)
-        assertEquals(SalesOrderState.PARTIALLY_DELIVERED, so.status())
+        assertEquals(SalesOrderState.PARTIALLY_DELIVERED, so.state())
 
         so.deliverProduct(product2)
-        assertEquals(SalesOrderState.DELIVERED, so.status())
+        assertEquals(SalesOrderState.DELIVERED, so.state())
     }
 }

@@ -10,7 +10,9 @@ import java.util.*
 class ReservedService(override val price: Price,
                       override val name: String,
                       override val description: String,
-                      val reservationPeriod: ReservationPeriod): Product {
+                      val reservationPeriod: ReservationPeriod,
+                      val reservedServiceId: ReservedServiceId): Product {
 }
 
+data class ReservedServiceId(val value: UUID)
 class ReservationPeriod(start: Date, end: Date) : DateRange(start, end)
