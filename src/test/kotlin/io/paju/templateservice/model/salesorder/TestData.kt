@@ -1,4 +1,4 @@
-package io.paju.templateservice.model.salesoder
+package io.paju.templateservice.model.salesorder
 
 import io.paju.templateservice.model.customer.Customer
 import io.paju.templateservice.model.customer.CustomerId

@@ -1,7 +1,6 @@
-package io.paju.templateservice.model.salesoder
+package io.paju.templateservice.model.salesorder
 
 import io.paju.templateservice.model.product.Product
-import io.paju.templateservice.model.customer.Customer
 import io.paju.templateservice.model.customer.CustomerId
 import io.paju.templateservice.model.customer.Person
 import io.paju.templateservice.model.product.ReservedService
@@ -147,7 +146,7 @@ class SalesOrder internal constructor (val customer: CustomerId,
     fun participantsToDb(): List<PersonRoleInSalesOrderDb> {
         val list = mutableListOf<PersonRoleInSalesOrderDb>()
         for (personAndRole in this.listParticipantsAndRoles()) {
-            list.add(PersonRoleInSalesOrderDb(this.id.value, personAndRole.participant.valueObjectLocalId().id, personAndRole.role.toString()))
+            list.add(PersonRoleInSalesOrderDb(this.id.value, personAndRole.participant.valueObjectLocalId(), personAndRole.role.toString()))
         }
         return list
     }
@@ -189,14 +188,14 @@ class SalesOrder internal constructor (val customer: CustomerId,
     fun productsToDb(): List<ProductsInSalesOrderDb> {
         val list = mutableListOf<ProductsInSalesOrderDb>()
         for (product in orderedProducts) {
-            list.add(ProductsInSalesOrderDb(this.id.value, product.product.valueObjectLocalId().id,
+            list.add(ProductsInSalesOrderDb(this.id.value, product.product.valueObjectLocalId(),
                     product.paymentStatus.toString(),
                     product.paymentMethod.toString(),
                     product.deliveryStatus.toString()))
         }
 
         for (product in deliveredProducts) {
-            list.add(ProductsInSalesOrderDb(this.id.value, product.product.valueObjectLocalId().id,
+            list.add(ProductsInSalesOrderDb(this.id.value, product.product.valueObjectLocalId(),
                     product.paymentStatus.toString(),
                     product.paymentMethod.toString(),
                     product.deliveryStatus.toString()))

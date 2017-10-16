@@ -1,4 +1,4 @@
-package io.paju.templateservice.model.salesoder
+package io.paju.templateservice.model.salesorder
 
 import org.junit.jupiter.api.Test
 

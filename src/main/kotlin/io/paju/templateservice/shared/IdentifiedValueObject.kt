@@ -3,14 +3,13 @@ package io.paju.templateservice.shared
 abstract class IdentifiedValueObject {
     private var id: Long = -1
 
-    fun valueObjectLocalId(): ValueObjectLocalId {
-        return ValueObjectLocalId(this.id)
+    internal fun valueObjectLocalId(): Long {
+        return this.id
     }
 
-    fun setValueObjectLocalId(id: ValueObjectLocalId) {
-        this.id = id.id
+    internal fun setValueObjectLocalId(id: Long) {
+        this.id = id
     }
 
 }
 
-data class ValueObjectLocalId(val id: Long)

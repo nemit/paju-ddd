@@ -1,11 +1,9 @@
-package io.paju.templateservice.model.salesoder
+package io.paju.templateservice.model.salesorder
 
 import io.paju.templateservice.model.customer.CustomerId
 import io.paju.templateservice.model.customer.Person
-import io.paju.templateservice.model.customer.PersonSex
 import io.paju.templateservice.model.customer.sexEnumFromString
 import io.paju.templateservice.model.product.*
-import io.paju.templateservice.shared.ValueObjectLocalId
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
@@ -58,6 +56,11 @@ class SalesOrderRepository {
     }
 
     fun save(salesOrder: SalesOrder) {
+        // update logic
+        // in-place update for all
+        // insert value objects that are with id -1
+        // how to track deleted value objects?
+        // how to track added or deleted entities?
     }
 
     fun salesOrderOfId(id: SalesOrderId): SalesOrder? {
@@ -83,9 +86,8 @@ class SalesOrderRepository {
         }
 
         for (db in personRoleDbList) {
-            val id = ValueObjectLocalId(db.id)
             val person = Person(db.date_of_birth, db.first_name, db.last_name, sexEnumFromString(db.sex))
-            person.setValueObjectLocalId(id)
+            person.setValueObjectLocalId(db.id)
             personList.add(ParticipantAndRole(person, participantRoleFromString(db.role)))
         }
 
@@ -143,6 +145,8 @@ interface SalesOrderDao {
     @SqlQuery("SELECT p.id, p.name, p.description, p.price, p.price_vat, p.price_currency, m.delivery_status, " +
             "m.payment_method, m.payment_status FROM product p, products_in_sales_order m WHERE p.id = m.product_id AND m.sales_order_id = :id.value")
     fun findProducts(id: SalesOrderId): List<ProductAndDeliveryStatus>
+
+    // update
 }
 
 // DTOs matching database columns and extension functions to convert domain models to db models
@@ -217,7 +221,7 @@ data class ProductAndDeliveryStatus(val id: Long, val name: String,
 // SalesOrder.toDb() implemented in SalesOrder because it requires internal state
 // TODO WHERE TO PLACE THE CONVERSION FUNCTIONS?
 fun Person.toDb(): PersonDb {
-    return PersonDb(this.valueObjectLocalId().id, this.firstName, this.lastName, this.sex.toString(), this.dateOfBirth)
+    return PersonDb(this.valueObjectLocalId(), this.firstName, this.lastName, this.sex.toString(), this.dateOfBirth)
 }
 
 fun ReservedService.toDb(): ReservedServiceDb {
@@ -232,7 +236,7 @@ fun ReservedService.toDb(): ReservedServiceDb {
 }
 
 fun SellableProduct.toDb(): ProductDb {
-    return ProductDb(this.valueObjectLocalId().id,
+    return ProductDb(this.valueObjectLocalId(),
             this.name,
             this.description,
             this.price.price,

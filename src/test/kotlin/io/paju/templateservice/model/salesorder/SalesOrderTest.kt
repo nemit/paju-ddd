@@ -1,20 +1,12 @@
-package io.paju.templateservice.model.salesoder
+package io.paju.templateservice.model.salesorder
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import io.paju.templateservice.model.customer.Customer
-import io.paju.templateservice.model.customer.CustomerId
-import io.paju.templateservice.model.customer.Person
-import io.paju.templateservice.model.customer.PersonSex
-import io.paju.templateservice.model.product.Price
-import io.paju.templateservice.model.product.SellableProduct
-import io.paju.templateservice.model.product.Vat
 import io.paju.templateservice.services.PaymentService
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
-import java.util.*
 
 internal class SalesOrderTest {
 
