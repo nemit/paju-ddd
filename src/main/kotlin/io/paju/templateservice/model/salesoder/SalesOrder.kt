@@ -2,6 +2,7 @@ package io.paju.templateservice.model.salesoder
 
 import io.paju.templateservice.model.product.Product
 import io.paju.templateservice.model.customer.Customer
+import io.paju.templateservice.model.customer.CustomerId
 import io.paju.templateservice.model.customer.Person
 import io.paju.templateservice.model.product.ReservedService
 import io.paju.templateservice.model.product.SellableProduct
@@ -14,7 +15,7 @@ import java.util.*
  * TODO: Is quote part of this? Quote expiration?
  */
 
-class SalesOrder internal constructor (val customer: Customer,
+class SalesOrder internal constructor (val customer: CustomerId,
                                        private val startedServices: MutableList<ServiceAndPaymentStatus> = mutableListOf<ServiceAndPaymentStatus>(),
                                        private val deliveredServices: MutableList<ServiceAndPaymentStatus> = mutableListOf<ServiceAndPaymentStatus>(),
                                        private val orderedServices: MutableList<ServiceAndPaymentStatus> = mutableListOf<ServiceAndPaymentStatus>(),
@@ -27,7 +28,7 @@ class SalesOrder internal constructor (val customer: Customer,
 
     // FACTORY METHOD
     companion object {
-        fun createNewSalesOrder(customer: Customer): SalesOrder {
+        fun createNewSalesOrder(customer: CustomerId): SalesOrder {
             return SalesOrder(customer)
         }
     }
@@ -115,10 +116,6 @@ class SalesOrder internal constructor (val customer: Customer,
         participants.add(ParticipantAndRole(person, ParticipantRole.OTHER))
     }
 
-    fun addCustomerContactAsParticipant() {
-        participants.add(ParticipantAndRole(this.customer.contactPerson, ParticipantRole.ORGANIZER))
-    }
-    
     fun removeParticipant(person: Person) {
         val participantAndStatus = participants.find { it.participant.equals(person) }
         participants.remove(participantAndStatus)
@@ -144,7 +141,7 @@ class SalesOrder internal constructor (val customer: Customer,
 
     // CONVERSION TO DB DTOs
     fun toDb(): SalesOrderDb {
-        return SalesOrderDb(id.value, this.customer.customerId.value, confirmed, deleted)
+        return SalesOrderDb(id.value, this.customer.value, confirmed, deleted)
     }
 
     fun participantsToDb(): List<PersonRoleInSalesOrderDb> {
@@ -239,4 +236,34 @@ enum class PaymentStatus {
 
 enum class PaymentMethod {
     INVOICE, CASH, UNDEFINED
+}
+
+fun paymentStatusFromString(status: String): PaymentStatus {
+    return when(status) {
+        "INVOICED" -> PaymentStatus.INVOICED
+        "PAID" -> PaymentStatus.PAID
+        else -> PaymentStatus.OPEN
+    }
+}
+
+fun paymentMethodFromString(method: String): PaymentMethod {
+    return when(method) {
+        "INVOICE" -> PaymentMethod.INVOICE
+        "CASH" -> PaymentMethod.CASH
+        else -> PaymentMethod.UNDEFINED
+    }
+}
+
+fun deliveryStatusFromString(status: String): DeliveryStatus {
+    return when(status) {
+        "DELIVERED" -> DeliveryStatus.DELIVERED
+        else -> DeliveryStatus.NOT_DELIVERED
+    }
+}
+
+fun participantRoleFromString(role: String): ParticipantRole {
+    return when(role) {
+        "OGRANIZER" -> ParticipantRole.ORGANIZER
+        else -> ParticipantRole.OTHER
+    }
 }

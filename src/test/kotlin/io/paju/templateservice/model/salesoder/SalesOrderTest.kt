@@ -24,7 +24,7 @@ internal class SalesOrderTest {
 
     @Test
     fun addProduct() {
-        val so = SalesOrder.createNewSalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer.customerId)
         so.addProduct(product1)
         val products = so.listProducts()
         assertEquals(1, products.size)
@@ -36,7 +36,7 @@ internal class SalesOrderTest {
 
     @Test
     fun removeProduct() {
-        val so = SalesOrder.createNewSalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer.customerId)
         so.addProduct(product1)
         so.addProduct(product2)
         so.addProduct(product1)
@@ -64,7 +64,7 @@ internal class SalesOrderTest {
 
     @Test
     fun deliverProduct() {
-        val so = SalesOrder.createNewSalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer.customerId)
         so.addProduct(product1)
         so.addProduct(product2)
         so.addProduct(product1)
@@ -77,19 +77,19 @@ internal class SalesOrderTest {
 
     @Test
     fun invoiceDeliveredProductsAndServices() {
-        val so = SalesOrder.createNewSalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer.customerId)
         so.addProduct(product1)
         so.addProduct(product2)
         so.addProduct(product1)
         so.deliverProduct(product1)
 
         so.invoiceDeliveredProductsAndServices(paymentServiceMock)
-        verify(paymentServiceMock, times(1)).handleProductPayment(product1, customer, PaymentMethod.INVOICE)
+        verify(paymentServiceMock, times(1)).handleProductPayment(product1, customer.customerId, PaymentMethod.INVOICE)
     }
 
     @Test
     fun payDeliveredProduct() {
-        val so = SalesOrder.createNewSalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer.customerId)
         so.addProduct(product1)
         so.addProduct(product2)
         so.addProduct(product1)
@@ -97,7 +97,7 @@ internal class SalesOrderTest {
         so.deliverProduct(product1)
 
         so.payDeliveredProduct(paymentServiceMock, product1, PaymentMethod.CASH)
-        verify(paymentServiceMock, times(1)).handleProductPayment(product1, customer, PaymentMethod.CASH)
+        verify(paymentServiceMock, times(1)).handleProductPayment(product1, customer.customerId, PaymentMethod.CASH)
     }
 
     @Test
@@ -106,13 +106,13 @@ internal class SalesOrderTest {
 
     @Test
     fun addParticipant() {
-        val expectedParticipantAndRole = ParticipantAndRole(customer.contactPerson, ParticipantRole.ORGANIZER)
+        val expectedParticipantAndRole = ParticipantAndRole(person1, ParticipantRole.OTHER)
 
-        val so = SalesOrder.createNewSalesOrder(customer)
-        so.addCustomerContactAsParticipant()
+        val so = SalesOrder.createNewSalesOrder(customer.customerId)
+    //    so.addCustomerContactAsParticipant()
         so.addParticipant(person1)
         val participantsAndRoles = so.listParticipantsAndRoles()
-        assertEquals(2, participantsAndRoles.size)
+        assertEquals(1, participantsAndRoles.size)
         assertNotNull(participantsAndRoles.find { it.equals(expectedParticipantAndRole) })
     }
 
@@ -120,14 +120,14 @@ internal class SalesOrderTest {
     fun removeParticipant() {
         val expectedParticipantAndRole = ParticipantAndRole(customer.contactPerson, ParticipantRole.ORGANIZER)
 
-        val so = SalesOrder.createNewSalesOrder(customer)
-        so.addCustomerContactAsParticipant()
+        val so = SalesOrder.createNewSalesOrder(customer.customerId)
+      //  so.addCustomerContactAsParticipant()
         so.addParticipant(person1)
         so.removeParticipant(person1)
 
         val participantsAndRoles = so.listParticipantsAndRoles()
-        assertEquals(1, participantsAndRoles.size)
-        assertNotNull(participantsAndRoles.find { it.equals(expectedParticipantAndRole) })
+        assertEquals(0, participantsAndRoles.size)
+  //      assertNotNull(participantsAndRoles.find { it.equals(expectedParticipantAndRole) })
     }
 
     @Test
@@ -136,7 +136,7 @@ internal class SalesOrderTest {
 
     @Test
     fun status() {
-        val so = SalesOrder.createNewSalesOrder(customer)
+        val so = SalesOrder.createNewSalesOrder(customer.customerId)
         assertEquals(SalesOrderState.QUOTE, so.state())
 
         so.addProduct(product1)

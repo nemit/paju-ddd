@@ -8,7 +8,9 @@ CREATE TABLE sales_order (
 CREATE TABLE person (
   id BIGSERIAL PRIMARY KEY,
   first_name TEXT,
-  last_name TEXT
+  last_name TEXT,
+  sex VARCHAR(30),
+  date_of_birth DATE
 );
 
 CREATE TABLE person_role_in_sales_order (

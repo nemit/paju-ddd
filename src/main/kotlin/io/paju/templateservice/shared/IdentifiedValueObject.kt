@@ -6,6 +6,11 @@ abstract class IdentifiedValueObject {
     fun valueObjectLocalId(): ValueObjectLocalId {
         return ValueObjectLocalId(this.id)
     }
+
+    fun setValueObjectLocalId(id: ValueObjectLocalId) {
+        this.id = id.id
+    }
+
 }
 
 data class ValueObjectLocalId(val id: Long)
