@@ -2,7 +2,6 @@ package io.paju.templateservice.model.salesoder
 
 import io.paju.templateservice.model.product.Product
 import io.paju.templateservice.model.customer.Customer
-import io.paju.templateservice.model.customer.CustomerId
 import io.paju.templateservice.model.customer.Person
 import io.paju.templateservice.model.product.ReservedService
 import io.paju.templateservice.model.product.SellableProduct
@@ -15,37 +14,22 @@ import java.util.*
  * TODO: Is quote part of this? Quote expiration?
  */
 
-class SalesOrder private constructor (val customer: Customer) {
+class SalesOrder internal constructor (val customer: Customer,
+                                       private val startedServices: MutableList<ServiceAndPaymentStatus> = mutableListOf<ServiceAndPaymentStatus>(),
+                                       private val deliveredServices: MutableList<ServiceAndPaymentStatus> = mutableListOf<ServiceAndPaymentStatus>(),
+                                       private val orderedServices: MutableList<ServiceAndPaymentStatus> = mutableListOf<ServiceAndPaymentStatus>(),
+                                       private val orderedProducts: MutableList<ProductAndStatus> = mutableListOf<ProductAndStatus>(),
+                                       private val deliveredProducts: MutableList<ProductAndStatus> = mutableListOf<ProductAndStatus>(),
+                                       private val participants: MutableList<ParticipantAndRole> = mutableListOf<ParticipantAndRole>(),
+                                       private var confirmed: Boolean = false,
+                                       private var deleted: Boolean = false,
+                                       private val id: SalesOrderId = SalesOrderId(UUID.randomUUID())) {
 
     // FACTORY METHOD
     companion object {
         fun createNewSalesOrder(customer: Customer): SalesOrder {
             return SalesOrder(customer)
         }
-    }
-
-    private val id: SalesOrderId
-    private val startedServices: MutableList<ServiceAndPaymentStatus>
-    private val deliveredServices: MutableList<ServiceAndPaymentStatus>
-    private val orderedServices: MutableList<ServiceAndPaymentStatus>
-    private val orderedProducts: MutableList<ProductAndStatus>
-    private val deliveredProducts: MutableList<ProductAndStatus>
-    private val currentState: SalesOrderState
-    private val participants: MutableList<ParticipantAndRole>
-    private var confirmed: Boolean = false
-    private var deleted: Boolean = false
-
-    init {
-        orderedServices = mutableListOf<ServiceAndPaymentStatus>()
-        startedServices = mutableListOf<ServiceAndPaymentStatus>()
-        deliveredServices = mutableListOf<ServiceAndPaymentStatus>()
-
-        orderedProducts = mutableListOf<ProductAndStatus>()
-        deliveredProducts = mutableListOf<ProductAndStatus>()
-
-        participants = mutableListOf<ParticipantAndRole>()
-        currentState = SalesOrderState.QUOTE
-        id = SalesOrderId(UUID.randomUUID())
     }
 
     // PUBLIC BUSINESS FUNCTIONS
@@ -205,17 +189,17 @@ class SalesOrder private constructor (val customer: Customer) {
         return list
     }
 
-    fun productsToDb(): List<ProductsInSalesOderDb> {
-        val list = mutableListOf<ProductsInSalesOderDb>()
+    fun productsToDb(): List<ProductsInSalesOrderDb> {
+        val list = mutableListOf<ProductsInSalesOrderDb>()
         for (product in orderedProducts) {
-            list.add(ProductsInSalesOderDb(this.id.value, product.product.valueObjectLocalId().id,
+            list.add(ProductsInSalesOrderDb(this.id.value, product.product.valueObjectLocalId().id,
                     product.paymentStatus.toString(),
                     product.paymentMethod.toString(),
                     product.deliveryStatus.toString()))
         }
 
         for (product in deliveredProducts) {
-            list.add(ProductsInSalesOderDb(this.id.value, product.product.valueObjectLocalId().id,
+            list.add(ProductsInSalesOrderDb(this.id.value, product.product.valueObjectLocalId().id,
                     product.paymentStatus.toString(),
                     product.paymentMethod.toString(),
                     product.deliveryStatus.toString()))

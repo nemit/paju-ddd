@@ -18,10 +18,7 @@ import java.util.*
 
 internal class SalesOrderTest {
 
-    val customer = Customer(CustomerId(UUID.randomUUID()),"Test customer", Person(Date(), "Test", "Person", PersonSex.MALE))
-    val product1 = SellableProduct(Price(10.0f, Vat.vat24), "Test product1", "Test product description")
-    val product2 = SellableProduct(Price(12.0f, Vat.vat24), "Test product2", "Test product description")
-    val person1 = Person(Date(), "Pekka", "Person", PersonSex.MALE)
+
 
     val paymentServiceMock = mock<PaymentService>()
 

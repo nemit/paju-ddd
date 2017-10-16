@@ -32,9 +32,9 @@ CREATE TABLE reserved_service (
 CREATE TABLE reserved_services_in_sales_order (
   reserved_service_id UUID REFERENCES reserved_service,
   sales_order_id UUID REFERENCES sales_order,
-  payment_status VARCHAR(10),
-  payment_method VARCHAR(10),
-  delivery_status VARCHAR(10),
+  payment_status VARCHAR(30),
+  payment_method VARCHAR(30),
+  delivery_status VARCHAR(30),
   PRIMARY KEY (reserved_service_id, sales_order_id)
 );
 
@@ -50,9 +50,9 @@ CREATE TABLE product (
 CREATE TABLE products_in_sales_order (
   sales_order_id UUID REFERENCES sales_order,
   product_id BIGINT REFERENCES product,
-  payment_status VARCHAR(10),
-  payment_method VARCHAR(10),
-  delivery_status VARCHAR(10)
+  payment_status VARCHAR(30),
+  payment_method VARCHAR(30),
+  delivery_status VARCHAR(30)
 );
 
 
