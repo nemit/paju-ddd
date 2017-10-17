@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions.*
 
 internal class SalesOrderRepositoryTest {
     @Test
-    fun add() {
+    fun addAndModify() {
         val salesOrder = SalesOrder.createNewSalesOrder(customer.customerId)
         salesOrder.addParticipant(person1)
         salesOrder.addProduct(product1)
@@ -17,11 +17,22 @@ internal class SalesOrderRepositoryTest {
 
         val salesOrderFromDb = repo.salesOrderOfId(salesOrder.id())
         assertNotNull(salesOrderFromDb)
-        assert(salesOrder.listProducts().filter {
+        assert(salesOrderFromDb!!.listProducts().filter {
             p -> p.deliveryStatus == DeliveryStatus.DELIVERED }.isNotEmpty())
-        assert(salesOrder.listProducts().filter {
+        assert(salesOrderFromDb!!.listProducts().filter {
             p -> p.deliveryStatus == DeliveryStatus.NOT_DELIVERED }.isNotEmpty())
 
-    }
+        salesOrderFromDb!!.removeParticipant(person1)
+        salesOrderFromDb!!.deliverProduct(product2)
+        salesOrderFromDb.confirmSalesOrder()
 
+        repo.save(salesOrderFromDb)
+
+        val salesOrderFromDb2 = repo.salesOrderOfId(salesOrder.id())
+        assertNotNull(salesOrderFromDb2)
+        assertTrue(salesOrderFromDb2!!.confirmed)
+        assertTrue(salesOrderFromDb2.listParticipantsAndRoles().isEmpty())
+        assert(salesOrderFromDb2.listProducts().filter {
+            p -> p.deliveryStatus == DeliveryStatus.NOT_DELIVERED }.isEmpty())
+    }
 }
