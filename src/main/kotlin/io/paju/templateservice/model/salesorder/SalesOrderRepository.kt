@@ -90,6 +90,23 @@ class SalesOrderRepository {
         }
     }
 
+    fun findAll(): List<SalesOrder> {
+        return jdbi.withExtension<List<SalesOrder>, SalesOrderDao, Exception>(SalesOrderDao::class.java) { dao: SalesOrderDao ->
+            val salesOrderlist = mutableListOf<SalesOrder>()
+            val salesOrderDbs = dao.findAllSalesOrders()
+            for (item in salesOrderDbs) {
+                salesOrderlist.add(fetchSalesOrder(dao, item))
+            }
+            salesOrderlist
+        }
+    }
+
+    fun salesOrderOfId(id: SalesOrderId): SalesOrder? {
+        val dao = jdbi.onDemand(SalesOrderDao::class.java)
+        val salesOrderDb = dao.findSalesOrderById(id)
+        return fetchSalesOrder(dao, salesOrderDb)
+    }
+
     //
     // Helper functions to return generated ID for the value objects
     //
@@ -107,9 +124,8 @@ class SalesOrderRepository {
                 productAndStatus.deliveryStatus.toString()))
     }
 
-    fun salesOrderOfId(id: SalesOrderId): SalesOrder? {
-        val dao = jdbi.onDemand(SalesOrderDao::class.java)
-        val salesOrderDb = dao.findSalesOrderById(id)
+    private fun fetchSalesOrder(dao: SalesOrderDao, salesOrderDb: SalesOrderDb): SalesOrder {
+        val id = SalesOrderId(salesOrderDb.id)
         val personRoleDbList = dao.findPersons(id)
         val productsDb = dao.findProducts(id)
 
@@ -117,7 +133,7 @@ class SalesOrderRepository {
         val orderedProducts = mutableListOf<ProductAndStatus>()
         val deliveredProducts = mutableListOf<ProductAndStatus>()
 
-        for(db in productsDb) {
+        for (db in productsDb) {
             val deliveryStatus = deliveryStatusFromString(db.delivery_status)
             val paymentMethod = paymentMethodFromString(db.payment_method)
             val paymentStatus = paymentStatusFromString(db.payment_status)
@@ -145,6 +161,8 @@ class SalesOrderRepository {
                 deliveredProducts = deliveredProducts
         )
     }
+
+
 }
 
 

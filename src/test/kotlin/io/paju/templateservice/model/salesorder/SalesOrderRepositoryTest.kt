@@ -35,4 +35,12 @@ internal class SalesOrderRepositoryTest {
         assert(salesOrderFromDb2.listProducts().filter {
             p -> p.deliveryStatus == DeliveryStatus.NOT_DELIVERED }.isEmpty())
     }
+
+    @Test
+    fun findAll() {
+        val repo = SalesOrderRepository()
+        val list = repo.findAll()
+        assertTrue(list.isNotEmpty())
+    }
+
 }

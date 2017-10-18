@@ -49,6 +49,9 @@ interface SalesOrderDao {
             "m.payment_method, m.payment_status FROM product p, products_in_sales_order m WHERE p.id = m.product_id AND m.sales_order_id = :id.value")
     fun findProducts(id: SalesOrderId): List<ProductAndDeliveryStatusDb>
 
+    @SqlQuery("SELECT * FROM sales_order")
+    fun findAllSalesOrders(): List<SalesOrderDb>
+
     // update
     @SqlUpdate("UPDATE sales_order SET customer_id = :data.customer_id, confirmed = :data.confirmed, deleted = :data.deleted WHERE id = :data.id")
     fun update(data: SalesOrderDb)
