@@ -1,2 +1,6 @@
 rootProject.name = 'arch-demo'
+include 'domain'
+include 'application'
+include 'shared'
+include 'infrastructure'
 
