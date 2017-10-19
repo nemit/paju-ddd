@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+
+  postgresql:
+    build: postgresql
+    container_name: postgresql-pajulahti
+    ports:
+      - "0.0.0.0:5432:5432"
+    volumes:
+      - postgresql_pajulahti_vol:/var/lib/postgresql/data
+
+volumes:
+  postgresql_pajulahti_vol:
+

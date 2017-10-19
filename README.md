@@ -1,2 +1,2 @@
 # pajulahti-domain-demo
-Demo repository for proposed architecture and domain model prototyping
+Demo io.paju.templateservice.repository for proposed architecture and domain io.paju.templateservice.model prototyping
