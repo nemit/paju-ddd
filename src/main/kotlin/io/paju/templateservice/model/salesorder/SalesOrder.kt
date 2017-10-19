@@ -99,6 +99,7 @@ class SalesOrder internal constructor(internal val customer: CustomerId,
             unitOfWork.registerRemoved(s)
             unitOfWork.registerNew(newStatus)
         } else {
+
             //TODO should throw error?
         }
     }
@@ -165,7 +166,4 @@ class SalesOrder internal constructor(internal val customer: CustomerId,
             else -> SalesOrderState.QUOTE
         }
     }
-
-    // CONVERSION TO DB DTOs
-
 }

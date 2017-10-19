@@ -42,18 +42,6 @@ class SalesOrderRepository {
                         productAndStatus.deliveryStatus.toString())
                 dao.insert(salesOrderMapping)
             }
-
-/*
-            // services
-            for (serviceAndStatus in salesOrder.listReservedServices()) {
-                dao.insert(serviceAndStatus.service.toDb())
-            }
-
-            // services to sales order mapping
-            for (servicesInSalesOrder in salesOrder.servicesToDb()) {
-                dao.insert(servicesInSalesOrder)
-            }
-        }*/
         }
     }
 
@@ -67,6 +55,7 @@ class SalesOrderRepository {
             // 1. SalesOrder
             // 2. Value Objects
             // 3. Mappings
+            //TODO sort by type
             for (obj in unitOfWork.newObjects()) {
                 when(obj) {
                     is SalesOrder -> dao.insert(obj.toDb())
