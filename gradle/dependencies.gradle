@@ -1,0 +1,42 @@
+ext {
+    versions = [
+            // libs
+            kotlin                  : '1.1.51',
+            sparkKotlin             : '1.0.0-alpha',
+            spark                   : '2.6.0',
+            sparkTemplateVelocity   : '2.5.5',
+            postgresql              : '42.1.4',
+            flyway                  : '4.2.0',
+
+            // test libs
+            junitJupiter            : '5.0.1',
+            mockitoKotlin           : '1.5.0',
+
+            // plugins
+            dependencyManagementPlugin : '1.0.0.RC2'
+    ]
+
+    libs = [
+            // libs
+            kotlinGradlePlugin      : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
+            kotlinStdLib            : "org.jetbrains.kotlin:kotlin-stdlib-jre8:$versions.kotlin",
+            sparkCore               : "com.sparkjava:spark-core:$versions.spark",
+            sparkKotlin             : "com.sparkjava:spark-kotlin:$versions.sparkKotlin",
+            sparkTemplateVelocity   : "com.sparkjava:spark-template-velocity:$versions.sparkTemplateVelocity",
+            postgresql              : "org.postgresql:postgresql:$versions.postgresql",
+            flywayCore              : "org.flywaydb:flyway-core:$versions.flyway",
+
+            // test libs
+            junitJupiterApi         : "org.junit.jupiter:junit-jupiter-api:$versions.junitJupiter",
+            mockitoKotlin           : "com.nhaarman:mockito-kotlin-kt1.1:$versions.mockitoKotlin",
+
+    ]
+
+    pluginLibs = [
+            // plugins
+            kotlinGradlePlugin      : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
+            dependencyManagementPlugin : "io.spring.gradle:dependency-management-plugin:$versions.dependencyManagementPlugin",
+            flywayPlugin            : "gradle.plugin.com.boxfuse.client:flyway-release:$versions.flyway",
+
+    ]
+}

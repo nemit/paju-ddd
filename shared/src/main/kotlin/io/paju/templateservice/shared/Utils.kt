@@ -15,7 +15,7 @@ open class DateRange(val start: Date, val end: Date) : Iterable<Date>{
 
         override fun next(): Date {
             if (!hasNext()) {
-                throw NoSuchElementException() as Throwable
+                throw NoSuchElementException()
             }
 
             val result = current
