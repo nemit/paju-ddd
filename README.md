@@ -4,7 +4,7 @@ Demo io.paju.templateservice.repository for proposed architecture and domain io.
 
 # Build
 
-Project is uses Gradle build tool
+Project build is done with Gradle.
 
 ## How to build
 ```bash
