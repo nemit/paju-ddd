@@ -1,6 +1,6 @@
-rootProject.name = 'arch-demo'
+rootProject.name = 'pajulahti-domain-demo'
+
+include 'shared'
 include 'domain'
 include 'application'
-include 'shared'
 include 'infrastructure'
-
