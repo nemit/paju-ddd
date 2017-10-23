@@ -9,7 +9,6 @@ ext {
             flyway                  : '4.2.0',
 
             // test libs
-            junit                   : '4.12',
             junitJupiter            : '5.0.1',
             mockitoKotlin           : '1.5.0',
 
@@ -28,7 +27,6 @@ ext {
             flywayCore              : "org.flywaydb:flyway-core:$versions.flyway",
 
             // test libs
-            junit                   : "junit:junit:$versions.junit",
             junitJupiterApi         : "org.junit.jupiter:junit-jupiter-api:$versions.junitJupiter",
             mockitoKotlin           : "com.nhaarman:mockito-kotlin-kt1.1:$versions.mockitoKotlin",
 
