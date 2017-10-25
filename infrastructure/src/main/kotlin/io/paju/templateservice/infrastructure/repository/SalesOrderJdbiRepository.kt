@@ -22,13 +22,9 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
         val salesOrderDao = jdbi.onDemand(SalesOrderDao::class.java)
 
         val data = SalesOrderFactory.salesOrderData({ id: SalesOrderId,
-                                                      customerId: CustomerId,
-                                                      products: List<ProductAndStatus>,
-                                                      services: List<ServiceAndStatus>,
-                                                      participants: List<ParticipantAndRole>,
                                                       confirmed: Boolean,
                                                       deleted: Boolean ->
-            SalesOrderData(customerId, products, services, participants, confirmed, deleted, id)
+            SalesOrderInternalDataWrapper(confirmed, deleted, id)
         }, salesOrder)
 
         val mediator = salesOrder.repositoryMediator
@@ -41,7 +37,7 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
         //TODO sort by type
         for (obj in mediator.newObjects()) {
             when (obj) {
-                is SalesOrder -> salesOrderDao.insert(data.id, data.customerId, data.confirmed, data.deleted)
+                is SalesOrder -> salesOrderDao.insert(data.id, salesOrder.customer, data.confirmed, data.deleted)
                 is ParticipantAndRole -> insertParticipant(obj, salesOrder.id())
                 is ProductAndStatus -> insertProductAndStatus(obj, salesOrder.id())
             }

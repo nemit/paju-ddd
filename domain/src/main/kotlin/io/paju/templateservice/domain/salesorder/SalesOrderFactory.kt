@@ -10,19 +10,12 @@ object SalesOrderFactory {
     }
 
     // Factor exposes internal data to data containers that can be implemented by repositories
-    fun <T: SalesOrderInternalData> salesOrderData(mapperFactory: (id: SalesOrderId,
-                                                                   customerId: CustomerId,
-                                                                   products: List<ProductAndStatus>,
-                                                                   services: List<ServiceAndStatus>,
-                                                                   participants: List<ParticipantAndRole>,
-                                                                   deleted: Boolean,
-                                                                   confirmed: Boolean)
+    // Infrastructure implementation is decoupled via provider constructor function (NAMING??)
+    fun <T: SalesOrderInternalData> salesOrderData(providerConstructor: (id: SalesOrderId,
+                                                                         deleted: Boolean,
+                                                                         confirmed: Boolean)
                                                                  -> T, salesOrder: SalesOrder): T {
-        val mapper = mapperFactory(salesOrder.id(),
-                salesOrder.customer,
-                salesOrder.listProducts(),
-                salesOrder.listReservedServices(),
-                salesOrder.listParticipantsAndRoles(),
+        val mapper = providerConstructor(salesOrder.id(),
                 salesOrder.deleted,
                 salesOrder.confirmed)
         return mapper
