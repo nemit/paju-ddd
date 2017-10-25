@@ -3,16 +3,12 @@ package io.paju.templateservice.infrastructure.repository
 import io.paju.templateservice.domain.customer.Person
 import io.paju.templateservice.domain.product.ReservedService
 import io.paju.templateservice.domain.product.SellableProduct
-import io.paju.templateservice.domain.salesorder.SalesOrder
 import java.time.LocalDate
 import java.util.*
 
 //
 // Data classes matching database tables
 //
-
-// sales_order table
-data class SalesOrderDb(val id: UUID, val customer_id: UUID, val confirmed: Boolean, val deleted: Boolean)
 
 // person table
 data class PersonDb(val id: Long,
@@ -46,17 +42,6 @@ data class ReservedServicesInSalesOrder(val reserved_service_id: UUID,
                                         val payment_status: String,
                                         val payment_method: String,
                                         val delivery_status: String)
-
-data class ReservedServiceAndDeliveryStatusDb(val id: UUID, val name: String,
-                                              val description: String,
-                                              val price: Float,
-                                              val price_currency: String,
-                                              val price_vat: String,
-                                              val start_date: Date,
-                                              val end_date: Date,
-                                              val payment_status: String,
-                                              val payment_method: String,
-                                              val delivery_status: String)
 
 data class ProductDb(val id: Long, val name: String,
                      val description: String,
@@ -104,10 +89,6 @@ fun SellableProduct.toDb(): ProductDb {
             this.price.price,
             this.price.currency.toString(),
             this.price.vat.toString())
-}
-
-fun SalesOrder.toDb(): SalesOrderDb {
-    return SalesOrderDb(this.id().value, this.customer.value, this.confirmed, this.deleted)
 }
 
 

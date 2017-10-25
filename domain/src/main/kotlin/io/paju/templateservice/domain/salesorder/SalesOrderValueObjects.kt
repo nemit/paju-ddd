@@ -28,7 +28,7 @@ enum class DeliveryStatus {
     NOT_DELIVERED, DELIVERED
 }
 
-enum class SalesOrderState {
+enum class Status {
     QUOTE, CONFIRMED, PARTIALLY_DELIVERED, DELIVERED, DELETED
 }
 
