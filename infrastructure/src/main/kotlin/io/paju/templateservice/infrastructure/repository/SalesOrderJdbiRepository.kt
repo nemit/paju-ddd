@@ -17,7 +17,7 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
     }
 
     override fun save(salesOrder: SalesOrder) {
-        val personDao = jdbi.onDemand(PersonDao::class.java)
+        val personDao = PersonDao(jdbi)
         val productDao = jdbi.onDemand(ProductDao::class.java)
         val salesOrderDao = jdbi.onDemand(SalesOrderDao::class.java)
 
@@ -38,8 +38,8 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
         for (obj in mediator.newObjects()) {
             when (obj) {
                 is SalesOrder -> salesOrderDao.insert(data.id, salesOrder.customer, data.confirmed, data.deleted)
-                is ParticipantAndRole -> insertParticipant(obj, salesOrder.id())
-                is ProductAndStatus -> insertProductAndStatus(obj, salesOrder.id())
+                is ParticipantAndRole -> insertParticipant(personDao, obj, salesOrder.id())
+                is ProductAndStatus -> insertProductAndStatus(productDao, obj, salesOrder.id())
             }
         }
 
@@ -55,53 +55,50 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
                 is ProductAndStatus -> productDao.delete(obj.product.toDb())
             }
         }
-
     }
 
     override fun findAll(): List<SalesOrder> {
-        return jdbi.withExtension<List<SalesOrder>, SalesOrderDao, Exception>(SalesOrderDao::class.java) { dao: SalesOrderDao ->
-            val salesOrderlist = mutableListOf<SalesOrder>()
-            val salesOrderDbs = dao.findAllSalesOrders()
-            for (item in salesOrderDbs) {
-                salesOrderlist.add(fetchSalesOrder(item))
-            }
-            salesOrderlist
+        val personDao = PersonDao(jdbi)
+        val productDao = jdbi.onDemand(ProductDao::class.java)
+        val salesOrderDao = jdbi.onDemand(SalesOrderDao::class.java)
+        val salesOrderlist = mutableListOf<SalesOrder>()
+        val salesOrderDbs = salesOrderDao.findAllSalesOrders()
+        for (item in salesOrderDbs) {
+            salesOrderlist.add(fetchSalesOrder(personDao, productDao, item))
         }
+        return salesOrderlist
+
     }
 
     override fun salesOrderOfId(id: SalesOrderId): SalesOrder? {
         val dao = jdbi.onDemand(SalesOrderDao::class.java)
+        val productDao = jdbi.onDemand(ProductDao::class.java)
+        val personDao = PersonDao(jdbi)
         val salesOrderData = dao.findSalesOrderById(id)
-        return fetchSalesOrder(salesOrderData)
+        return fetchSalesOrder(personDao, productDao, salesOrderData)
     }
 
     //
     // Helper functions to insert and fetch aggregate members in proper order
     //
-    private fun insertParticipant(participantAndRole: ParticipantAndRole, salesOrderId: SalesOrderId) {
-        jdbi.useExtension<PersonDao, Exception>(PersonDao::class.java) { dao: PersonDao ->
-            val p = dao.insert(participantAndRole.participant.toDb())
-            dao.insert(PersonRoleInSalesOrderDb(salesOrderId.value, p.id, participantAndRole.role.toString()))
-        }
+    private fun insertParticipant(dao: PersonDao, participantAndRole: ParticipantAndRole, salesOrderId: SalesOrderId) {
+        val p = dao.insert(participantAndRole.participant.toDb())
+        dao.insert(PersonRoleInSalesOrderDb(salesOrderId.value, p.id, participantAndRole.role.toString()))
     }
 
-    private fun insertProductAndStatus(productAndStatus: ProductAndStatus, salesOrderId: SalesOrderId) {
-        jdbi.useExtension<ProductDao, Exception>(ProductDao::class.java) { dao: ProductDao ->
-            val p = dao.insert(productAndStatus.product.toDb())
-            dao.insert(ProductsInSalesOrderDb(salesOrderId.value,
-                    p.id,
-                    productAndStatus.paymentStatus.toString(),
-                    productAndStatus.paymentMethod.toString(),
-                    productAndStatus.deliveryStatus.toString()))
-        }
+    private fun insertProductAndStatus(dao: ProductDao, productAndStatus: ProductAndStatus, salesOrderId: SalesOrderId) {
+        val p = dao.insert(productAndStatus.product.toDb())
+        dao.insert(ProductsInSalesOrderDb(salesOrderId.value,
+                p.id,
+                productAndStatus.paymentStatus.toString(),
+                productAndStatus.paymentMethod.toString(),
+                productAndStatus.deliveryStatus.toString()))
     }
 
-    private fun fetchSalesOrder(data: SalesOrderResult): SalesOrder {
+    private fun fetchSalesOrder(personDao: PersonDao, productDao: ProductDao, data: SalesOrderResult): SalesOrder {
         val id = SalesOrderId(data.id)
 
-        val persons = jdbi.withExtension<List<PersonRoleDb>, PersonDao, Exception>(PersonDao::class.java) { dao: PersonDao ->
-            dao.findPersons(id)
-        }.map { person ->
+        val persons = personDao.findPersons(id).map { person ->
             val pers = Person(person.date_of_birth,
                     person.first_name,
                     person.last_name,
@@ -110,9 +107,7 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
             ParticipantAndRole(pers, participantRoleFromString(person.role))
         }
 
-        val products = jdbi.withExtension<List<ProductAndDeliveryStatusDb>, ProductDao, Exception>(ProductDao::class.java) { dao: ProductDao ->
-            dao.findProducts(id)
-        }.map { product ->
+        val products = productDao.findProducts(id).map { product ->
             val prod = SellableProduct(Price(product.price, vatFromString(product.price_vat), Currencies.EURO),
                     product.name,
                     product.description)
