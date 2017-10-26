@@ -1,28 +1,38 @@
-apply from: "gradle/dependencies.gradle"
-
 buildscript {
     apply from: "gradle/dependencies.gradle"
-
     repositories {
         mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
     }
+    configurations.create("ktlint")
     dependencies {
         classpath pluginLibs.kotlinGradlePlugin
+        classpath pluginLibs.ktlintPlugin
+        ktlint pluginLibs.ktlint
     }
+}
+
+apply from: "gradle/ktlint.gradle"
+apply plugin: "org.jlleitschuh.gradle.ktlint"
+
+ktlint {
+    verbose = true
+    reporter = "checkstyle"
+    ignoreFailures = true
 }
 
 allprojects {
     group 'nemit.fi'
     version '1.0-SNAPSHOT'
-
 }
 
 subprojects {
 
     apply plugin: 'kotlin'
+
+    task allDeps(type: DependencyReportTask) {}
 
     repositories {
         mavenCentral()
@@ -43,14 +53,16 @@ subprojects {
         kotlinOptions.jvmTarget = "1.8"
     }
 
-    configurations.all {
-        resolutionStrategy {
+    configurations
+        .matching{ it.name != 'ktlint' }
+        .all {
+            resolutionStrategy {
+                failOnVersionConflict()
+                preferProjectModules()
 
-            failOnVersionConflict()
-
-            libs.each { k, v -> force(v) }
-            force "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
-            force "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
+                libs.each { k, v -> force(v) }
+                force "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
+                force "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
+            }
         }
-    }
 }
