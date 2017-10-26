@@ -1,8 +1,7 @@
-package io.paju.templateservice.infrastructure.repository
+package io.paju.templateservice.infrastructure.repository.salesorder
 
 import io.paju.templateservice.domain.customer.CustomerId
 import io.paju.templateservice.domain.salesorder.*
-import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*

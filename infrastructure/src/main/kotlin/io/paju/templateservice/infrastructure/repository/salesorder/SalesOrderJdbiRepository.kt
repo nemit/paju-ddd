@@ -1,12 +1,11 @@
-package io.paju.templateservice.infrastructure.repository
+package io.paju.templateservice.infrastructure.repository.salesorder
 
 import io.paju.templateservice.domain.customer.CustomerId
-import io.paju.templateservice.domain.customer.Person
-import io.paju.templateservice.domain.customer.sexEnumFromString
 import io.paju.templateservice.domain.product.*
 import io.paju.templateservice.domain.salesorder.*
 import io.paju.templateservice.shared.AbstractRepository
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.sqlobject.kotlin.onDemand
 
 
 class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
@@ -18,8 +17,8 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
 
     override fun save(salesOrder: SalesOrder) {
         val personDao = PersonDao(jdbi)
-        val productDao = jdbi.onDemand(ProductDao::class.java)
-        val salesOrderDao = jdbi.onDemand(SalesOrderDao::class.java)
+        val productDao = jdbi.onDemand<ProductDao>()
+        val salesOrderDao = jdbi.onDemand<SalesOrderDao>()
 
         val data = SalesOrderFactory.salesOrderData({ id: SalesOrderId,
                                                       confirmed: Boolean,
@@ -51,7 +50,7 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
 
         for (obj in mediator.removedObjects()) {
             when (obj) {
-                is ParticipantAndRole -> personDao.delete(obj.participant.toDb())
+                is ParticipantAndRole -> personDao.delete(obj.participant)
                 is ProductAndStatus -> productDao.delete(obj.product.toDb())
             }
         }
@@ -59,8 +58,8 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
 
     override fun findAll(): List<SalesOrder> {
         val personDao = PersonDao(jdbi)
-        val productDao = jdbi.onDemand(ProductDao::class.java)
-        val salesOrderDao = jdbi.onDemand(SalesOrderDao::class.java)
+        val productDao = jdbi.onDemand<ProductDao>()
+        val salesOrderDao = jdbi.onDemand<SalesOrderDao>()
         val salesOrderlist = mutableListOf<SalesOrder>()
         val salesOrderDbs = salesOrderDao.findAllSalesOrders()
         for (item in salesOrderDbs) {
@@ -71,8 +70,8 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
     }
 
     override fun salesOrderOfId(id: SalesOrderId): SalesOrder? {
-        val dao = jdbi.onDemand(SalesOrderDao::class.java)
-        val productDao = jdbi.onDemand(ProductDao::class.java)
+        val dao = jdbi.onDemand<SalesOrderDao>()
+        val productDao = jdbi.onDemand<ProductDao>()
         val personDao = PersonDao(jdbi)
         val salesOrderData = dao.findSalesOrderById(id)
         return fetchSalesOrder(personDao, productDao, salesOrderData)
@@ -82,8 +81,8 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
     // Helper functions to insert and fetch aggregate members in proper order
     //
     private fun insertParticipant(dao: PersonDao, participantAndRole: ParticipantAndRole, salesOrderId: SalesOrderId) {
-        val p = dao.insert(participantAndRole.participant.toDb())
-        dao.insert(PersonRoleInSalesOrderDb(salesOrderId.value, p.id, participantAndRole.role.toString()))
+        val p = dao.insert(participantAndRole.participant)
+        dao.insert(salesOrderId, participantAndRole)
     }
 
     private fun insertProductAndStatus(dao: ProductDao, productAndStatus: ProductAndStatus, salesOrderId: SalesOrderId) {
@@ -98,15 +97,7 @@ class SalesOrderJdbiRepository : AbstractRepository(), SalesOrderRepository {
     private fun fetchSalesOrder(personDao: PersonDao, productDao: ProductDao, data: SalesOrderResult): SalesOrder {
         val id = SalesOrderId(data.id)
 
-        val persons = personDao.findPersons(id).map { person ->
-            val pers = Person(person.date_of_birth,
-                    person.first_name,
-                    person.last_name,
-                    sexEnumFromString(person.sex))
-            pers.setValueObjectLocalId(person.id)
-            ParticipantAndRole(pers, participantRoleFromString(person.role))
-        }
-
+        val persons = personDao.findParticipants(id)
         val products = productDao.findProducts(id).map { product ->
             val prod = SellableProduct(Price(product.price, vatFromString(product.price_vat), Currencies.EURO),
                     product.name,

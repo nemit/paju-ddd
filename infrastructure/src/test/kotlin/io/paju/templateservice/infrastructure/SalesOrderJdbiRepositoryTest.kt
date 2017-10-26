@@ -5,7 +5,7 @@ import io.paju.templateservice.domain.TestData.person1
 import io.paju.templateservice.domain.TestData.product1
 import io.paju.templateservice.domain.TestData.product2
 import io.paju.templateservice.domain.salesorder.*
-import io.paju.templateservice.infrastructure.repository.SalesOrderJdbiRepository
+import io.paju.templateservice.infrastructure.repository.salesorder.SalesOrderJdbiRepository
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*

@@ -1,4 +1,4 @@
-package io.paju.templateservice.infrastructure.repository
+package io.paju.templateservice.infrastructure.repository.salesorder
 
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 
