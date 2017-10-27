@@ -67,15 +67,14 @@ subprojects {
     configurations
             .matching{ it.name != 'ktlint' }
             .all {
+                resolutionStrategy {
+                failOnVersionConflict()
+                preferProjectModules()
 
-        resolutionStrategy {
-            failOnVersionConflict()
-            preferProjectModules()
-
-            libs.each { k, v -> force(v) }
-            force "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
-            force "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
-        }
+                libs.each { k, v -> force(v) }
+                force "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
+                force "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
+            }
     }
 }
 
