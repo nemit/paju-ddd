@@ -16,25 +16,25 @@ import java.util.*
  */
 
 class SalesOrder internal constructor(var customer: CustomerId,
-                                      internal val services: MutableList<ServiceAndStatus> = mutableListOf<ServiceAndStatus>(),
-                                      internal val products: MutableList<ProductAndStatus> = mutableListOf<ProductAndStatus>(),
-                                      internal val participants: MutableList<ParticipantAndRole> = mutableListOf<ParticipantAndRole>(),
-                                      internal var confirmed: Boolean = false,
-                                      internal var deleted: Boolean = false,
-                                      internal var id: SalesOrderId? = null
-                                      ): AbstractAggregate() {
-    init {
-        // This is to avoid having dedicated add method in repository - if id omitted in constructor, new ID generated
-        // and aggregate root marked as new object
-        if (id == null) {
-            id = SalesOrderId(UUID.randomUUID())
-            repositoryMediator.registerNew(this)
-        }
+    internal val services: MutableList<ServiceAndStatus> = mutableListOf<ServiceAndStatus>(),
+    internal val products: MutableList<ProductAndStatus> = mutableListOf<ProductAndStatus>(),
+    internal val participants: MutableList<ParticipantAndRole> = mutableListOf<ParticipantAndRole>(),
+    internal var confirmed: Boolean = false,
+    internal var deleted: Boolean = false,
+    internal val id: SalesOrderId): AbstractAggregate() {
+
+    internal constructor(customer: CustomerId, services: MutableList<ServiceAndStatus> = mutableListOf<ServiceAndStatus>(),
+        products: MutableList<ProductAndStatus> = mutableListOf<ProductAndStatus>(),
+        participants: MutableList<ParticipantAndRole> = mutableListOf<ParticipantAndRole>(),
+        confirmed: Boolean = false,
+        deleted: Boolean = false) : this(customer, services, products, participants, confirmed, deleted, SalesOrderId(UUID.randomUUID())) {
+        repositoryMediator.registerNew(this)
     }
+
     // PUBLIC BUSINESS FUNCTIONS
 
     fun id(): SalesOrderId {
-        return id!!
+        return id
     }
 
     fun listParticipantsAndRoles(): List<ParticipantAndRole> {
@@ -103,8 +103,8 @@ class SalesOrder internal constructor(var customer: CustomerId,
     fun invoiceDeliveredProductsAndServices(paymentService: PaymentService) {
         val allDeliveredProducts = mutableListOf<Product>()
 
-        allDeliveredProducts.addAll(services.filter { it.deliveryStatus == DeliveryStatus.DELIVERED}.map({it.service as Product}))
-        allDeliveredProducts.addAll(products.filter { it.deliveryStatus == DeliveryStatus.DELIVERED}.map({it.product as Product}))
+        allDeliveredProducts.addAll(services.filter { it.deliveryStatus == DeliveryStatus.DELIVERED }.map({ it.service as Product }))
+        allDeliveredProducts.addAll(products.filter { it.deliveryStatus == DeliveryStatus.DELIVERED }.map({ it.product as Product }))
 
         for (product in allDeliveredProducts) {
             paymentService.handleProductPayment(product, customer, PaymentMethod.INVOICE)
@@ -136,7 +136,6 @@ class SalesOrder internal constructor(var customer: CustomerId,
         } else {
             //TODO
         }
-
     }
 
     fun deleteSalesOrder() {
