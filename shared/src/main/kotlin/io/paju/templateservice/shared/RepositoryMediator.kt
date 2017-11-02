@@ -1,6 +1,8 @@
 package io.paju.templateservice.shared
 
-class UnitOfWork {
+// Class to mediate changes between Aggregate roots and Repositories
+
+class RepositoryMediator {
     private val dirtyObjects = mutableListOf<Any>()
     private val newObjects = mutableListOf<Any>()
     private val removedObjects = mutableListOf<Any>()
