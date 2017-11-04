@@ -66,6 +66,7 @@ subprojects {
 
     dependencies {
         compile libs.kotlinStdLib
+        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
         testCompile libs.junitJupiterApi
         testCompile libs.mockitoKotlin
     }

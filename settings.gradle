@@ -1,6 +1,3 @@
-rootProject.name = 'pajulahti-domain-demo'
+rootProject.name = 'paju-ddd-base'
 
-include 'shared'
-include 'domain'
-include 'application'
-include 'infrastructure'
+
