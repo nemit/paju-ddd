@@ -1,3 +1,4 @@
 rootProject.name = 'paju-ddd-base'
 
 include 'ddd-core'
+include 'example:ddd-salesorder-domain'
