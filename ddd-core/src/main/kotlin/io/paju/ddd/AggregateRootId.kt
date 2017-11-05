@@ -16,7 +16,7 @@ open class AggregateRootId constructor(val id: String) : Serializable {
                 return AggregateRootId(id)
             } else if (id is UUID) {
                 return AggregateRootId(id.toString())
-            }else {
+            } else {
                 throw IllegalArgumentException("The id should be of either String or UUID type")
             }
         }

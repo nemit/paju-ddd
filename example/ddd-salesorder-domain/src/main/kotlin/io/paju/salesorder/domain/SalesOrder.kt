@@ -22,7 +22,7 @@ import io.paju.salesorder.service.DummyPaymentService
 class SalesOrder internal constructor(
     id: AggregateRootId,
     private val customerId: EntityId
-): AggregateRoot(id) {
+) : AggregateRoot(id) {
 
     private var confirmed: Boolean = false
     private var deleted: Boolean = false
@@ -86,8 +86,7 @@ class SalesOrder internal constructor(
     fun invoiceDeliveredProductsAndServices(paymentService: DummyPaymentService) {
         val delivered = products
             .filter { it.deliveryStatus == DeliveryStatus.DELIVERED }
-            .map {it.product}
-
+            .map { it.product }
 
         for (product in delivered) {
             // call external service
@@ -135,7 +134,6 @@ class SalesOrder internal constructor(
         // TODO
     }
 
-
     fun state(): Status {
         val delivered = products.filter { it.deliveryStatus == DeliveryStatus.DELIVERED }.size
         val total = products.size
@@ -151,17 +149,17 @@ class SalesOrder internal constructor(
 
     fun products(): List<Product> =
         products
-            .map{ it.product }
+            .map { it.product }
 
     fun products(deliveryStatus: DeliveryStatus): List<Product> =
         products
             .filter { it.deliveryStatus == deliveryStatus }
-            .map{ it.product }
+            .map { it.product }
 
     fun products(paymentStatus: PaymentStatus): List<Product> =
         products
             .filter { it.paymentStatus == paymentStatus }
-            .map{ it.product }
+            .map { it.product }
 
     companion object :
         StateConstructor<SalesOrder, SalesOrderState>,

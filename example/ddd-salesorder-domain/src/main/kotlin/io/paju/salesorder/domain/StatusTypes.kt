@@ -1,6 +1,5 @@
 package io.paju.salesorder.domain
 
-
 enum class DeliveryStatus {
     NOT_DELIVERED, DELIVERED
 }

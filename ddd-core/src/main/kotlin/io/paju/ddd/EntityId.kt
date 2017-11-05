@@ -15,7 +15,7 @@ class EntityId private constructor(private val id: String) : Serializable {
                 return EntityId(id)
             } else if (id is UUID) {
                 return EntityId(id.toString())
-            }else {
+            } else {
                 throw IllegalArgumentException("The id should be of either String or UUID type")
             }
         }

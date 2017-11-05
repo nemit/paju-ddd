@@ -15,8 +15,8 @@ class LocalEventStore : EventStoreReader, EventStoreWriter {
 
     override fun saveEvents(topicName: String, events: Iterable<Event>, expectedVersion: Int) {
         // check events
-        val aggregateIds = events.map{ it.id }.distinct()
-        if(aggregateIds.size != 1){
+        val aggregateIds = events.map { it.id }.distinct()
+        if (aggregateIds.size != 1) {
             throw DDDRuntimeException("One and only one aggregate id expected while saving events [${aggregateIds.joinToString(",")}]")
         }
         val aggregateId = aggregateIds.first()
