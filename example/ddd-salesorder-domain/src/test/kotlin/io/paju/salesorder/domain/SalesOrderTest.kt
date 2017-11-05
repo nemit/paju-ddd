@@ -3,10 +3,6 @@ package io.paju.salesorder.domain
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import io.paju.salesorder.domain.DeliveryStatus
-import io.paju.salesorder.domain.PaymentMethod
-import io.paju.salesorder.domain.PaymentStatus
-import io.paju.salesorder.domain.SalesOrder
 import io.paju.salesorder.domain.SalesOrderTestData.customerId
 import io.paju.salesorder.domain.SalesOrderTestData.makeSalesOrder
 import io.paju.salesorder.domain.SalesOrderTestData.product1

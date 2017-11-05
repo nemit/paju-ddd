@@ -51,14 +51,13 @@ abstract class SalesOrderRepository(
 
 abstract class SalesOrderStore : StateStoreWriter<SalesOrderState>, StateStoreReader<SalesOrderState> {
 
-    // getters
-    abstract fun getSalesOrder(id: AggregateRootId): SalesOrderState
+    abstract fun getSalesOrderWithoutRelations(id: AggregateRootId): SalesOrderState
     abstract fun getProducts(id: AggregateRootId): List<ProductState>
     abstract fun getProduct(id: AggregateRootId, product: Product): ProductState
-
-    // save
-    abstract fun save(product: ProductState)
-    abstract fun save(salesOrder: SalesOrderState)
+    abstract fun add(id: AggregateRootId, product: ProductState)
+    abstract fun update(id: AggregateRootId, product: ProductState)
+    abstract fun add(salesOrder: SalesOrderState)
+    abstract fun update(salesOrder: SalesOrderState)
     abstract fun saveSnapshot(salesOrder: SalesOrderState)
 
     override fun saveState(events: Iterable<Event>, expectedVersion: Int){
@@ -67,34 +66,34 @@ abstract class SalesOrderStore : StateStoreWriter<SalesOrderState>, StateStoreRe
 
     private fun saveState(e: Event){
         when(e) {
-            is SalesOrderDeleted -> save(
-                getSalesOrder(e.id).copy(deleted = true)
+            is SalesOrderDeleted -> update(
+                getSalesOrderWithoutRelations(e.id).copy(deleted = true)
             )
 
-            is SalesOrderConfirmed -> save(
-                getSalesOrder(e.id).copy(confirmed = true)
+            is SalesOrderConfirmed -> update(
+                getSalesOrderWithoutRelations(e.id).copy(confirmed = true)
             )
 
-            is ProductAdded -> save(
-                ProductState(e.product, e.paymentStatus, e.paymentMethod, e.deliveryStatus)
+            is ProductAdded -> add(
+                e.id, ProductState(e.product, e.paymentStatus, e.paymentMethod, e.deliveryStatus)
             )
 
-            is ProductDelivered -> save(
-                getProduct(e.id, e.product).copy(deliveryStatus = DeliveryStatus.DELIVERED)
+            is ProductDelivered -> update(
+                e.id, getProduct(e.id, e.product).copy(deliveryStatus = DeliveryStatus.DELIVERED)
             )
 
-            is ProductInvoiced -> save(
-                getProduct(e.id, e.product).copy(paymentStatus = PaymentStatus.INVOICED)
+            is ProductInvoiced -> update(
+                e.id, getProduct(e.id, e.product).copy(paymentStatus = PaymentStatus.INVOICED)
             )
 
-            is ProductPayed -> save(
-                getProduct(e.id, e.product).copy(paymentStatus = PaymentStatus.PAID)
+            is ProductPayed -> update(
+                e.id, getProduct(e.id, e.product).copy(paymentStatus = PaymentStatus.PAID)
             )
         }
     }
 
     override fun readState(id: AggregateRootId): SalesOrderState {
-        val salesOrder = getSalesOrder(id)
+        val salesOrder = getSalesOrderWithoutRelations(id)
         val products = getProducts(id)
         return salesOrder.copy(products = products)
     }
