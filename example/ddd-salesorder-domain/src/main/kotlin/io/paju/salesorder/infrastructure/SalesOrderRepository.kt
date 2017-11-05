@@ -16,8 +16,8 @@ import io.paju.salesorder.domain.event.ProductInvoiced
 import io.paju.salesorder.domain.event.ProductPayed
 import io.paju.salesorder.domain.event.SalesOrderConfirmed
 import io.paju.salesorder.domain.event.SalesOrderDeleted
-import io.paju.salesorder.domain.internal.ProductState
-import io.paju.salesorder.domain.internal.SalesOrderState
+import io.paju.salesorder.domain.state.ProductState
+import io.paju.salesorder.domain.state.SalesOrderState
 
 abstract class SalesOrderRepository(
     val eventWriter: EventStoreWriter,
@@ -32,7 +32,7 @@ abstract class SalesOrderRepository(
         stateWriter.saveState(uncommitted, version)
 
         // save state snapshot
-        stateWriter.saveState(SalesOrder.extractState(aggregate), version)
+        stateWriter.saveState(SalesOrder.extractAggregateState(aggregate), version)
 
         // save events
         eventWriter.saveEvents("salesorder", uncommitted, version)

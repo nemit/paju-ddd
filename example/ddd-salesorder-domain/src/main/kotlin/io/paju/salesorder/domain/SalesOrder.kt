@@ -2,8 +2,8 @@ package io.paju.salesorder.domain
 
 import io.paju.ddd.AggregateRoot
 import io.paju.ddd.AggregateRootId
-import io.paju.ddd.AggregateRootStateConstructor
-import io.paju.ddd.AggregateRootStateExtractor
+import io.paju.ddd.state.StateConstructor
+import io.paju.ddd.state.StateExtractor
 import io.paju.ddd.EntityId
 import io.paju.ddd.exception.InvalidStateException
 import io.paju.salesorder.domain.event.ProductAdded
@@ -11,8 +11,8 @@ import io.paju.salesorder.domain.event.ProductDelivered
 import io.paju.salesorder.domain.event.ProductInvoiced
 import io.paju.salesorder.domain.event.ProductPayed
 import io.paju.salesorder.domain.event.ProductRemoved
-import io.paju.salesorder.domain.internal.ProductState
-import io.paju.salesorder.domain.internal.SalesOrderState
+import io.paju.salesorder.domain.state.ProductState
+import io.paju.salesorder.domain.state.SalesOrderState
 import io.paju.salesorder.service.DummyPaymentService
 
 /**
@@ -164,8 +164,8 @@ class SalesOrder internal constructor(
             .map{ it.product }
 
     companion object :
-        AggregateRootStateConstructor<SalesOrder, SalesOrderState>,
-        AggregateRootStateExtractor<SalesOrder, SalesOrderState>
+        StateConstructor<SalesOrder, SalesOrderState>,
+        StateExtractor<SalesOrder, SalesOrderState>
     {
         override fun constructAggregate(state: SalesOrderState): SalesOrder {
             val salesOrder = SalesOrder(state.id, state.customerId)
@@ -175,10 +175,9 @@ class SalesOrder internal constructor(
             return salesOrder
         }
 
-        override fun extractState(aggregate: SalesOrder): SalesOrderState {
+        override fun extractAggregateState(aggregate: SalesOrder): SalesOrderState {
             return SalesOrderState(
                 aggregate.id,
-                aggregate.version,
                 aggregate.customerId,
                 aggregate.confirmed,
                 aggregate.deleted,
