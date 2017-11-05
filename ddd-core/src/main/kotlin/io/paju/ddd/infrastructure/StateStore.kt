@@ -1,7 +1,7 @@
 package io.paju.ddd.infrastructure
 
 import io.paju.ddd.AggregateRootId
-import io.paju.ddd.AggregateRootState
+import io.paju.ddd.state.AggregateRootState
 import io.paju.ddd.Event
 
 interface StateStoreWriter<in A: AggregateRootState> {
