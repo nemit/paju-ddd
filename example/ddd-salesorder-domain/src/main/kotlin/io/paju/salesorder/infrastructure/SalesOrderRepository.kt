@@ -20,9 +20,9 @@ import io.paju.salesorder.domain.state.ProductState
 import io.paju.salesorder.domain.state.SalesOrderState
 
 abstract class SalesOrderRepository(
-    val eventWriter: EventStoreWriter,
-    val stateWriter: StateStoreWriter<SalesOrderState>,
-    val stateReader: StateStoreReader<SalesOrderState>
+    private val eventWriter: EventStoreWriter,
+    private val stateWriter: StateStoreWriter<SalesOrderState>,
+    private val stateReader: StateStoreReader<SalesOrderState>
 ) : Repository<SalesOrder> {
 
     override fun save(aggregate: SalesOrder, version: Int) {
