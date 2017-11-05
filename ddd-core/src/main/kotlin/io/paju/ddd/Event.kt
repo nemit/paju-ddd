@@ -1,6 +1,6 @@
 package io.paju.ddd
 
-interface Event {
-    val id: AggregateRootId
-    val version: Int
+abstract class Event {
+    abstract val id: AggregateRootId
+    var version: Int = -1
 }

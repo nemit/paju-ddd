@@ -6,10 +6,10 @@ import io.paju.ddd.Event
 
 interface StateStoreWriter<in A: AggregateRootState> {
     fun saveState(events: Iterable<Event>, expectedVersion: Int)
-    fun saveState(aggregateState: A, expectedVersion: Int)
+    fun saveState(state: A, expectedVersion: Int)
 }
 
 interface StateStoreReader<out A: AggregateRootState> {
-    fun readState(aggregateId: AggregateRootId): A
+    fun readState(id: AggregateRootId): A
 }
 
