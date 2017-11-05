@@ -8,7 +8,6 @@ enum class Vat {
     vat0, vat10, vat22, vat24, undefined;
 }
 
-
 enum class Currencies {
     EURO
 }

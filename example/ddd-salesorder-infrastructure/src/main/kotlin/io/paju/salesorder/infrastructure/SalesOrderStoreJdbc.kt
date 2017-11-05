@@ -41,7 +41,7 @@ class SalesOrderStoreJdbc(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    override fun saveSnapshot(salesOrder: SalesOrderState){
+    override fun saveSnapshot(salesOrder: SalesOrderState) {
         // not implemented
     }
 

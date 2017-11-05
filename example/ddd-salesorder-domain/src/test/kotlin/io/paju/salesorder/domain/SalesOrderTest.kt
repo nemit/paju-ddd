@@ -29,7 +29,7 @@ internal class SalesOrderTest {
         so.removeProduct(product2)
 
         assertEquals(2, so.products().size)
-        so.products().forEach{ assertEquals(product1, it) }
+        so.products().forEach { assertEquals(product1, it) }
     }
 
     @Test

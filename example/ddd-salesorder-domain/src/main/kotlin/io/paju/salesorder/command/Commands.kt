@@ -18,7 +18,6 @@ data class DeliverProductsAndServices(override val id: AggregateRootId, override
 data class DeleteSalesOrder(override val id: AggregateRootId, override val originalVersion: Int) : SalesOrderCommand()
 data class ConfirmSalesOrder(override val id: AggregateRootId, override val originalVersion: Int) : SalesOrderCommand()
 
-
 // Product Commands
 data class AddProductToSalesOrder(override val id: AggregateRootId, override val originalVersion: Int, val product: Product) : SalesOrderCommand()
 data class RemoveProductFromSalesOrder(override val id: AggregateRootId, override val originalVersion: Int, val product: Product) : SalesOrderCommand()

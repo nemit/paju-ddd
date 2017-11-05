@@ -7,7 +7,7 @@ abstract class AggregateRoot constructor(val id: AggregateRootId) {
     private val changes = mutableListOf<Event>()
     var version: Int = 0
 
-    fun uncommittedChanges(): List<Event>{
+    fun uncommittedChanges(): List<Event> {
         return changes.toList()
     }
 

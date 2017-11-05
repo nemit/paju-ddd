@@ -8,7 +8,7 @@ import io.paju.salesorder.domain.PaymentMethod
 import io.paju.salesorder.domain.PaymentStatus
 import io.paju.salesorder.domain.Product
 
-sealed class SalesOrderEvent: Event()
+sealed class SalesOrderEvent : Event()
 
 // Sales order Events
 data class SalesOrderCreated(
