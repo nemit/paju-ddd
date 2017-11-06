@@ -1,5 +1,5 @@
 package io.paju.ddd
 
-interface CommandHandler {
-    fun handle(command: Command)
+interface CommandHandler<in C : Command> {
+    fun handle(command: C)
 }
