@@ -163,12 +163,6 @@ class SalesOrder internal constructor(
             .filter { it.paymentStatus == paymentStatus }
             .map { it.product }
 
-    private fun updateState(newState: SalesOrderState) {
-        this.confirmed = newState.confirmed
-        this.deleted = newState.deleted
-        this.products.addAll(newState.products)
-    }
-
     companion object :
         StateConstructor<SalesOrder, SalesOrderState>,
         StateExtractor<SalesOrder, SalesOrderState>
