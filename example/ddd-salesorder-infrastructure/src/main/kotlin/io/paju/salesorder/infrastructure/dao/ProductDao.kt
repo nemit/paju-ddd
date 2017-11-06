@@ -79,6 +79,22 @@ class ProductDao(val jdbi: Jdbi) {
         }
     }
 
+    private val deleteSql =
+        """
+            DELETE FROM product
+            WHERE sales_order_id = :sales_order_id and id = :id
+        """.trimIndent()
+
+    fun delete(salesOrderId: AggregateRootId, id: EntityId) {
+        jdbi.useHandle<Exception> { handle ->
+            handle
+                .createUpdate(deleteSql)
+                .bind("sales_order_id", salesOrderId.toString())
+                .bind("id", id.toString())
+                .execute()
+        }
+    }
+
     private fun buildBindMap(salesOrderId: AggregateRootId, data: ProductState): Map<String, Any> {
         return mapOf(
             "sales_order_id" to salesOrderId.toString(),
