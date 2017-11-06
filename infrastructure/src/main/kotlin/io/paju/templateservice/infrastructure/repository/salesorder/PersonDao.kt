@@ -14,7 +14,7 @@ class PersonDao(val jdbi: Jdbi) {
                 """
                     INSERT INTO person (first_name, last_name, sex, date_of_birth)
                     VALUES (:first_name, :last_name, :sex, :date_of_birth)
-                """
+                """.trimIndent()
             val map = handle.createUpdate(sql)
                 .bind("first_name", data.firstName)
                 .bind("last_name", data.lastName)
@@ -35,7 +35,7 @@ class PersonDao(val jdbi: Jdbi) {
                 """
                     INSERT INTO person_role_in_sales_order (sales_order_id, person_id, role)
                     VALUES (:sales_order_id, :person_id, :role)
-                """
+                """.trimIndent()
 
             val update = handle.createUpdate(sql)
             update.bind("sales_order_id", salesOrderId.value)
@@ -50,7 +50,7 @@ class PersonDao(val jdbi: Jdbi) {
                 """
                     SELECT p.id, p.first_name, p.last_name, p.sex, p.date_of_birth, r.role FROM person p,
                         person_role_in_sales_order r WHERE r.person_id = p.id and r.sales_order_id = :id
-                """
+                """.trimIndent()
             val query = handle.createQuery(sql)
             val results: Map<Person, String> = query.bind("id", id.value).collectInto(object : GenericType<Map<Person, String>>() {})
             results
