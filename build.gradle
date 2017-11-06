@@ -11,6 +11,7 @@ buildscript {
         classpath pluginLibs.kotlinGradlePlugin
         classpath pluginLibs.ktlintPlugin
         ktlint pluginLibs.ktlint
+        classpath pluginLibs.junitGradlePlugin
     }
 }
 
@@ -26,17 +27,41 @@ ktlint {
 allprojects {
     group 'nemit.fi'
     version '1.0-SNAPSHOT'
+
+    apply plugin: 'org.junit.platform.gradle.plugin'
+    apply from: "$rootDir/gradle/integrationtests.gradle"
+
+    junitPlatform {
+        filters {
+            tags {
+                if(gradle.startParameter.taskRequests.flatten().find({ it.args.find {it == "integrationTests"}}) != null) {
+                    exclude '*'
+                    include 'integration'
+                } else {
+                    exclude 'integration'
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testRuntime libs.junitJupiterEngine
+    }
 }
 
 subprojects {
 
     apply plugin: 'kotlin'
 
+
     task allDeps(type: DependencyReportTask) {}
 
     repositories {
-        mavenCentral()
-        maven {url "https://jcenter.bintray.com"}
+         maven {url "https://jcenter.bintray.com"}
     }
 
     dependencies {
@@ -54,9 +79,9 @@ subprojects {
     }
 
     configurations
-        .matching{ it.name != 'ktlint' }
-        .all {
-            resolutionStrategy {
+            .matching{ it.name != 'ktlint' }
+            .all {
+                resolutionStrategy {
                 failOnVersionConflict()
                 preferProjectModules()
 
@@ -64,5 +89,6 @@ subprojects {
                 force "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
                 force "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
             }
-        }
+    }
 }
+
