@@ -34,7 +34,7 @@ allprojects {
     junitPlatform {
         filters {
             tags {
-                if(gradle.startParameter.taskRequests.flatten().find({ it.args.find {it == "integrationtests"}}) != null) {
+                if(gradle.startParameter.taskRequests.flatten().find({ it.args.find {it == "integrationTests"}}) != null) {
                     exclude '*'
                     include 'integration'
                 } else {
