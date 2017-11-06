@@ -1,6 +1,7 @@
 package io.paju.salesorder.infrastructure
 
 import io.paju.ddd.AggregateRootId
+import io.paju.ddd.EntityId
 import io.paju.salesorder.domain.Product
 import io.paju.salesorder.domain.state.ProductState
 import io.paju.salesorder.domain.state.SalesOrderState
@@ -26,6 +27,10 @@ class SalesOrderStoreJdbc(
 
     override fun add(id: AggregateRootId, product: ProductState) {
         productDao.insert(id, product)
+    }
+
+    override fun remove(id: AggregateRootId, productId: EntityId) {
+        productDao.delete(id, productId)
     }
 
     override fun update(id: AggregateRootId, product: ProductState) {

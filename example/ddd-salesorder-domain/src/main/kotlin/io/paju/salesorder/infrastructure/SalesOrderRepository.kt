@@ -1,6 +1,7 @@
 package io.paju.salesorder.infrastructure
 
 import io.paju.ddd.AggregateRootId
+import io.paju.ddd.EntityId
 import io.paju.ddd.Event
 import io.paju.ddd.infrastructure.EventStoreWriter
 import io.paju.ddd.infrastructure.Repository
@@ -14,6 +15,7 @@ import io.paju.salesorder.domain.event.ProductAdded
 import io.paju.salesorder.domain.event.ProductDelivered
 import io.paju.salesorder.domain.event.ProductInvoiced
 import io.paju.salesorder.domain.event.ProductPaid
+import io.paju.salesorder.domain.event.ProductRemoved
 import io.paju.salesorder.domain.event.SalesOrderConfirmed
 import io.paju.salesorder.domain.event.SalesOrderDeleted
 import io.paju.salesorder.domain.state.ProductState
@@ -54,6 +56,7 @@ abstract class SalesOrderStore : StateStoreWriter<SalesOrderState>, StateStoreRe
     abstract fun getProducts(id: AggregateRootId): List<ProductState>
     abstract fun getProduct(id: AggregateRootId, product: Product): ProductState
     abstract fun add(id: AggregateRootId, product: ProductState)
+    abstract fun remove(id: AggregateRootId, productId: EntityId)
     abstract fun update(id: AggregateRootId, product: ProductState)
     abstract fun add(salesOrder: SalesOrderState)
     abstract fun update(salesOrder: SalesOrderState)
@@ -78,6 +81,11 @@ abstract class SalesOrderStore : StateStoreWriter<SalesOrderState>, StateStoreRe
             is ProductAdded ->
                 add(
                     e.id, ProductState(e.product, e.paymentStatus, e.paymentMethod, e.deliveryStatus)
+                )
+
+            is ProductRemoved ->
+                remove(
+                    e.id, e.product.id
                 )
 
             is ProductDelivered ->
