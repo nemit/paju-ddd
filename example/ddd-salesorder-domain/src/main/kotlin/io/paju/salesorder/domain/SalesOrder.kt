@@ -40,20 +40,20 @@ class SalesOrder internal constructor(
         )
 
         // update state
-        applyChange(event)
-    }
-
-    private fun apply(event: ProductAdded) {
-        products.add(
-            ProductState(event.product, event.paymentStatus, event.paymentMethod, event.deliveryStatus)
-        )
+        applyChange<ProductAdded>(event) {
+            products.add(
+                ProductState(event.product, event.paymentStatus, event.paymentMethod, event.deliveryStatus)
+            )
+        }
     }
 
     fun removeProduct(product: Product) {
         val event = ProductRemoved(id, product)
 
         // update state
-        applyChange(event)
+        applyChange<ProductRemoved>(event) {
+            apply(event)
+        }
     }
 
     private fun apply(event: ProductRemoved) {
@@ -93,7 +93,9 @@ class SalesOrder internal constructor(
             paymentService.handleProductPayment(product, customerId, PaymentMethod.INVOICE)
 
             // update state
-            applyChange(ProductInvoiced(id, product))
+            applyChange<ProductInvoiced>(ProductInvoiced(id, product)) {
+
+            }
         }
     }
 
@@ -160,6 +162,12 @@ class SalesOrder internal constructor(
         products
             .filter { it.paymentStatus == paymentStatus }
             .map { it.product }
+
+    private fun updateState(newState: SalesOrderState) {
+        this.confirmed = newState.confirmed
+        this.deleted = newState.deleted
+        this.products.addAll(newState.products)
+    }
 
     companion object :
         StateConstructor<SalesOrder, SalesOrderState>,
