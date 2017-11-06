@@ -26,8 +26,6 @@ abstract class AggregateRoot constructor(val id: AggregateRootId) {
     }
 
     protected fun <E: Event> applyChange(event: Event, isNew: Boolean = false, block: AggregateRoot.(event: Event) -> Unit) {
-        applyChange(event, true)
-
         block(event)
 
         if (isNew) {
