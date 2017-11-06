@@ -9,7 +9,7 @@ import io.paju.ddd.exception.InvalidStateException
 import io.paju.salesorder.domain.event.ProductAdded
 import io.paju.salesorder.domain.event.ProductDelivered
 import io.paju.salesorder.domain.event.ProductInvoiced
-import io.paju.salesorder.domain.event.ProductPayed
+import io.paju.salesorder.domain.event.ProductPaid
 import io.paju.salesorder.domain.event.ProductRemoved
 import io.paju.salesorder.domain.state.ProductState
 import io.paju.salesorder.domain.state.SalesOrderState
@@ -113,10 +113,10 @@ class SalesOrder internal constructor(
         p ?: throw InvalidStateException(id, version, "Failed to pay product, product not found")
 
         paymentService.handleProductPayment(product, customerId, method)
-        apply(ProductPayed(id, product))
+        apply(ProductPaid(id, product))
     }
 
-    private fun apply(event: ProductPayed) {
+    private fun apply(event: ProductPaid) {
         val p = products.find { it.product == event.product }
         if (p != null) {
             products.remove(p)

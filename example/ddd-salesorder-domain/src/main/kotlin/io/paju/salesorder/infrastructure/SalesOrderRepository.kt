@@ -13,7 +13,7 @@ import io.paju.salesorder.domain.SalesOrder
 import io.paju.salesorder.domain.event.ProductAdded
 import io.paju.salesorder.domain.event.ProductDelivered
 import io.paju.salesorder.domain.event.ProductInvoiced
-import io.paju.salesorder.domain.event.ProductPayed
+import io.paju.salesorder.domain.event.ProductPaid
 import io.paju.salesorder.domain.event.SalesOrderConfirmed
 import io.paju.salesorder.domain.event.SalesOrderDeleted
 import io.paju.salesorder.domain.state.ProductState
@@ -90,7 +90,7 @@ abstract class SalesOrderStore : StateStoreWriter<SalesOrderState>, StateStoreRe
                     e.id, getProduct(e.id, e.product).copy(paymentStatus = PaymentStatus.INVOICED)
                 )
 
-            is ProductPayed ->
+            is ProductPaid ->
                 update(
                     e.id, getProduct(e.id, e.product).copy(paymentStatus = PaymentStatus.PAID)
                 )

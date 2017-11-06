@@ -29,4 +29,4 @@ data class ProductAdded(
 data class ProductRemoved(override val id: AggregateRootId, val product: Product) : SalesOrderEvent()
 data class ProductDelivered(override val id: AggregateRootId, val product: Product) : SalesOrderEvent()
 data class ProductInvoiced(override val id: AggregateRootId, val product: Product) : SalesOrderEvent()
-data class ProductPayed(override val id: AggregateRootId, val product: Product) : SalesOrderEvent()
+data class ProductPaid(override val id: AggregateRootId, val product: Product) : SalesOrderEvent()
