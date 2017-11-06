@@ -4,15 +4,19 @@ import io.paju.templateservice.domain.TestData.customer
 import io.paju.templateservice.domain.TestData.person1
 import io.paju.templateservice.domain.TestData.product1
 import io.paju.templateservice.domain.TestData.product2
-import io.paju.templateservice.domain.salesorder.*
+import io.paju.templateservice.domain.salesorder.DeliveryStatus
+import io.paju.templateservice.domain.salesorder.SalesOrder
 import io.paju.templateservice.infrastructure.repository.SalesOrderJdbiRepository
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
-
+@Tag("integration")
 internal class SalesOrderJdbiRepositoryTest {
 
     @Test
+    @Tag("integration")
     fun addNewSalesOrder() {
         val salesOrder = SalesOrder.createNewSalesOrder(customer.customerId)
         salesOrder.addParticipant(person1)

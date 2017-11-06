@@ -17,7 +17,6 @@ buildscript {
 
 apply from: "gradle/ktlint.gradle"
 apply plugin: "org.jlleitschuh.gradle.ktlint"
-apply plugin: 'org.junit.platform.gradle.plugin'
 
 ktlint {
     verbose = true
@@ -30,6 +29,20 @@ allprojects {
     version '1.0-SNAPSHOT'
 
     apply plugin: 'org.junit.platform.gradle.plugin'
+    apply from: "$rootDir/gradle/integrationtests.gradle"
+
+    junitPlatform {
+        filters {
+            tags {
+                if(gradle.startParameter.taskRequests.flatten().find({ it.args.find {it == "integrationtests"}}) != null) {
+                    exclude '*'
+                    include 'integration'
+                } else {
+                    exclude 'integration'
+                }
+            }
+        }
+    }
 
     repositories {
         mavenCentral()
@@ -43,6 +56,7 @@ allprojects {
 subprojects {
 
     apply plugin: 'kotlin'
+
 
     task allDeps(type: DependencyReportTask) {}
 
