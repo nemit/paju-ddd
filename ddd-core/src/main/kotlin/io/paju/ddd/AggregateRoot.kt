@@ -1,13 +1,21 @@
 package io.paju.ddd
 
-import org.slf4j.LoggerFactory
-import java.lang.reflect.InvocationTargetException
-
-abstract class AggregateRoot constructor(val id: AggregateRootId) {
-    private val changes = mutableListOf<Event>()
+abstract class AggregateRoot<out S : AggregateState, E : Event>
+constructor(val id: AggregateRootId)
+{
+    // version of aggregate
     var version: Int = 0
 
-    fun uncommittedChanges(): List<Event> {
+    // all events will modify this
+    abstract protected val state: S
+
+    // all new uncommitted events
+    private val changes = mutableListOf<E>()
+
+    // now events will modify state is implemented here
+    abstract protected fun apply(event: E)
+
+    fun uncommittedChanges(): List<E> {
         return changes.toList()
     }
 
@@ -15,52 +23,19 @@ abstract class AggregateRoot constructor(val id: AggregateRootId) {
         changes.clear()
     }
 
-    fun loadFromHistory(history: Iterable<Event>) {
-        for (e in history) {
-            if (version < e.version) {
-                version = e.version
-            }
-            applyChange(e, false)
-        }
-    }
-
-    protected fun applyChange(event: Event) {
+    protected fun applyChange(event: E) {
         applyChange(event, true)
     }
 
-    private fun applyChange(event: Event, isNew: Boolean) {
-        invokeApplyIfEntitySupports(event)
+    protected fun reconstruct(events: Iterable<E>) {
+        events.forEach { applyChange(it, false) }
+    }
+
+    private fun applyChange(event: E, isNew: Boolean) {
+        apply(event)
 
         if (isNew) {
             changes.add(event)
-        }
-    }
-
-    private fun invokeApplyIfEntitySupports(event: Event) {
-        val eventType = nonAnonymous(event.javaClass)
-        try {
-            val method = this.javaClass.getDeclaredMethod(APPLY_METHOD_NAME, eventType)
-            method.isAccessible = true
-            method.invoke(this, event)
-        } catch (ex: SecurityException) {
-            throw RuntimeException(ex)
-        } catch (ex: IllegalAccessException) {
-            throw RuntimeException(ex)
-        } catch (ex: InvocationTargetException) {
-            throw RuntimeException(ex)
-        } catch (ex: NoSuchMethodException) {
-            logger.warn("Event {} not applicable to {}!", event, this)
-        }
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(AggregateRoot::class.java)
-
-        private val APPLY_METHOD_NAME = "apply"
-
-        @Suppress("UNCHECKED_CAST")
-        private fun <T> nonAnonymous(clazz: Class<T>): Class<T> {
-            return if (clazz.isAnonymousClass) clazz.superclass as Class<T> else clazz
         }
     }
 }
