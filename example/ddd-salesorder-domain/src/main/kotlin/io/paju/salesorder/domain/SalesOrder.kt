@@ -11,6 +11,8 @@ import io.paju.salesorder.domain.event.ProductDelivered
 import io.paju.salesorder.domain.event.ProductInvoiced
 import io.paju.salesorder.domain.event.ProductPaid
 import io.paju.salesorder.domain.event.ProductRemoved
+import io.paju.salesorder.domain.event.SalesOrderCreated
+import io.paju.salesorder.domain.event.SalesOrderEvent
 import io.paju.salesorder.domain.state.ProductState
 import io.paju.salesorder.domain.state.SalesOrderState
 import io.paju.salesorder.service.DummyPaymentService
@@ -39,11 +41,10 @@ class SalesOrder internal constructor(
             id, product, PaymentStatus.OPEN, PaymentMethod.UNDEFINED, DeliveryStatus.NOT_DELIVERED
         )
 
+        val currentState = SalesOrder.extractAggregateState(this)
         // update state
         applyChange<ProductAdded>(event) {
-            products.add(
-                ProductState(event.product, event.paymentStatus, event.paymentMethod, event.deliveryStatus)
-            )
+            updateState(event.applyTo(currentState))
         }
     }
 
@@ -163,8 +164,15 @@ class SalesOrder internal constructor(
             .filter { it.paymentStatus == paymentStatus }
             .map { it.product }
 
+    private fun updateState(newState: SalesOrderState) {
+        this.confirmed = newState.confirmed
+        this.deleted = newState.deleted
+        this.products.clear()
+        this.products.addAll(newState.products)
+    }
+
     companion object :
-        StateConstructor<SalesOrder, SalesOrderState>,
+        StateConstructor<SalesOrder, SalesOrderState, SalesOrderCreated, SalesOrderEvent>,
         StateExtractor<SalesOrder, SalesOrderState>
     {
         override fun constructAggregate(state: SalesOrderState): SalesOrder {
@@ -184,6 +192,11 @@ class SalesOrder internal constructor(
                 aggregate.products
             )
         }
-    }
 
+        override fun constructAggregateFromEvents(creationEvent: SalesOrderCreated, events: List<SalesOrderEvent>): SalesOrder {
+            val initialState = SalesOrderState(creationEvent.id, creationEvent.customer, false, false ,listOf<ProductState>())
+            val state = events.fold(initialState, { state, event -> event.applyTo(state)})
+            return constructAggregate(state)
+        }
+    }
 }
