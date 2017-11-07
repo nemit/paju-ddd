@@ -1,5 +1,6 @@
 package io.paju.ddd
 
+import io.paju.ddd.state.AggregateRootState
 import org.slf4j.LoggerFactory
 import java.lang.reflect.InvocationTargetException
 
@@ -24,8 +25,12 @@ abstract class AggregateRoot constructor(val id: AggregateRootId) {
         }
     }
 
-    protected fun applyChange(event: Event) {
-        applyChange(event, true)
+    protected fun <E: Event> applyChange(event: Event, isNew: Boolean = false, block: AggregateRoot.(event: Event) -> Unit) {
+        block(event)
+
+        if (isNew) {
+            changes.add(event)
+        }
     }
 
     private fun applyChange(event: Event, isNew: Boolean) {
