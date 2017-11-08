@@ -10,11 +10,11 @@ class CounterAggregate(id: AggregateRootId) :
 
     // public api
     fun add() {
-        applyChange(CounterEvent.Add(id))
+        applyChange(CounterEvent.Added(id))
     }
 
     fun subtract() {
-        applyChange(CounterEvent.Subtract(id))
+        applyChange(CounterEvent.Subtracted(id))
     }
 
     override fun state(): CounterState {
@@ -23,8 +23,8 @@ class CounterAggregate(id: AggregateRootId) :
 
     override fun apply(event: CounterEvent) {
         when (event) {
-            is CounterEvent.Add -> state.counter++
-            is CounterEvent.Subtract -> state.counter--
+            is CounterEvent.Added -> state.counter++
+            is CounterEvent.Subtracted -> state.counter--
         }.let {} // let is required for exhaustive when
     }
 
@@ -42,8 +42,8 @@ data class CounterState(
 ) : AggregateState
 
 sealed class CounterEvent: Event() {
-    data class Add(override val id: AggregateRootId) : CounterEvent()
-    data class Subtract(override val id: AggregateRootId) : CounterEvent()
+    data class Added(override val id: AggregateRootId) : CounterEvent()
+    data class Subtracted(override val id: AggregateRootId) : CounterEvent()
 }
 
 fun makeAggregate(): CounterAggregate {
