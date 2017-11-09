@@ -3,7 +3,7 @@ package io.paju.ddd
 import java.util.UUID
 
 class CounterAggregate(id: AggregateRootId) :
-    AggregateRoot<CounterState, CounterEvent>(id),
+    AggregateRoot<CounterEvent>(id),
     StateExposed<CounterState>,
     EventReconstructable<CounterEvent>,
     StateReconstructable<CounterState>
