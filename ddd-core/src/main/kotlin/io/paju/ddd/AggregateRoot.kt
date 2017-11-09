@@ -1,13 +1,10 @@
 package io.paju.ddd
 
-abstract class AggregateRoot<S : State, E : StateChangeEvent>
+abstract class AggregateRoot<E : StateChangeEvent>
 constructor(val id: AggregateRootId)
 {
     // version of aggregate
     var version: Int = 0
-
-    // all events will modify this
-    abstract fun state(): S
 
     // all new uncommitted events
     private val changes = mutableListOf<E>()
