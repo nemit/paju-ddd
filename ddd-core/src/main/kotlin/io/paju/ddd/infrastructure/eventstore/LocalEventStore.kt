@@ -2,7 +2,6 @@ package io.paju.ddd.infrastructure.eventstore
 
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.StateChangeEvent
-import io.paju.ddd.exception.DddRuntimeException
 import io.paju.ddd.infrastructure.EventStoreReader
 import io.paju.ddd.infrastructure.EventStoreWriter
 import org.slf4j.LoggerFactory
@@ -16,19 +15,17 @@ class LocalEventStore : EventStoreReader, EventStoreWriter {
     private val storage: MutableMap<String, MutableList<StateChangeEvent>> = mutableMapOf()
     private val lock = ReentrantLock()
 
-    override fun saveEvents(topicName: String, events: Iterable<StateChangeEvent>, expectedVersion: Int) {
-        // check events
-        val aggregateIds = events.map { it.id }.distinct()
-        if (aggregateIds.size != 1) {
-            throw DddRuntimeException("One and only one aggregate id is expected while saving events [${aggregateIds.joinToString(",")}]")
-        }
-        val aggregateId = aggregateIds.first()
-
-        logger.debug("Saving events for [$topicName] with Id [$aggregateId]")
+    override fun saveEvents(
+        topicName: String,
+        id: AggregateRootId,
+        events: Iterable<StateChangeEvent>,
+        expectedVersion: Int)
+    {
+        logger.debug("Saving events for [$topicName] with Id [$id]")
 
         lock.lock()
         try {
-            val storedEvents = storage.getOrElse(aggregateId.toString(), { mutableListOf() })
+            val storedEvents = storage.getOrElse(id.toString(), { mutableListOf() })
             val actualVersion = storedEvents.lastOrNull()?.version ?: 0
             if (actualVersion != expectedVersion && expectedVersion != -1) {
                 throw ConcurrentModificationException("The actual version is [$actualVersion] and the expected version is [$expectedVersion]")
@@ -41,7 +38,7 @@ class LocalEventStore : EventStoreReader, EventStoreWriter {
                 event.version = version
                 storedEvents.add(event)
             }
-            storage.put(aggregateId.toString(), storedEvents)
+            storage.put(id.toString(), storedEvents)
         } finally {
             lock.unlock()
         }
