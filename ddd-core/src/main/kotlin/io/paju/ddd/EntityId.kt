@@ -3,7 +3,9 @@ package io.paju.ddd
 import java.io.Serializable
 import java.util.UUID
 
-class EntityId private constructor(private val id: String) : Serializable {
+object NotInitializedEntityId : EntityId("not initialized")
+
+open class EntityId protected constructor(private val id: String) : Serializable {
 
     override fun toString(): String {
         return id
