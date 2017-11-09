@@ -2,7 +2,7 @@ package io.paju.salesorder.infrastructure
 
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.EntityId
-import io.paju.ddd.Event
+import io.paju.ddd.StateChangeEvent
 import io.paju.ddd.infrastructure.EventStoreWriter
 import io.paju.ddd.infrastructure.Repository
 import io.paju.ddd.infrastructure.StateStoreReader
@@ -62,11 +62,11 @@ abstract class SalesOrderStore : StateStoreWriter<SalesOrderState>, StateStoreRe
     abstract fun update(salesOrder: SalesOrderState)
     abstract fun saveSnapshot(salesOrder: SalesOrderState)
 
-    override fun saveState(events: Iterable<Event>, expectedVersion: Int) {
+    override fun saveState(events: Iterable<StateChangeEvent>, expectedVersion: Int) {
         events.forEach { it -> saveState(it) }
     }
 
-    private fun saveState(e: Event) {
+    private fun saveState(e: StateChangeEvent) {
         when (e) {
             is SalesOrderDeleted ->
                 update(

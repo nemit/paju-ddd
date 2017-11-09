@@ -1,6 +1,6 @@
 package io.paju.ddd
 
-abstract class AggregateRoot<S : AggregateState, E : Event>
+abstract class AggregateRoot<S : State, E : StateChangeEvent>
 constructor(val id: AggregateRootId)
 {
     // version of aggregate

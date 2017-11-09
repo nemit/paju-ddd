@@ -1,13 +1,13 @@
 package io.paju.ddd.infrastructure
 
 import io.paju.ddd.AggregateRootId
-import io.paju.ddd.AggregateState
+import io.paju.ddd.State
 
-interface StateStoreWriter<in A: AggregateState> {
+interface StateStoreWriter<in A: State> {
     fun saveState(state: A, expectedVersion: Int)
 }
 
-interface StateStoreReader<out A: AggregateState> {
+interface StateStoreReader<out A: State> {
     fun readState(id: AggregateRootId): A
 }
 

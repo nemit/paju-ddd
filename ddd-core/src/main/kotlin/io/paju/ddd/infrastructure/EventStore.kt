@@ -1,17 +1,17 @@
 package io.paju.ddd.infrastructure
 
 import io.paju.ddd.AggregateRootId
-import io.paju.ddd.Event
+import io.paju.ddd.StateChangeEvent
 
 interface EventStoreWriter {
-    fun saveEvents(topicName: String, events: Iterable<Event>, expectedVersion: Int)
+    fun saveEvents(topicName: String, events: Iterable<StateChangeEvent>, expectedVersion: Int)
 }
 
 interface EventStoreReader {
 
-    fun getEventsForAggregate(topicName: String, id: AggregateRootId): Iterable<Event>
+    fun getEventsForAggregate(topicName: String, id: AggregateRootId): Iterable<StateChangeEvent>
 
-    fun <E: Event>getEventsForAggregate(topicName: String, id: AggregateRootId, clazz: Class<E>): Iterable<E> {
+    fun <E: StateChangeEvent>getEventsForAggregate(topicName: String, id: AggregateRootId, clazz: Class<E>): Iterable<E> {
         return getEventsForAggregate(topicName, id).map { clazz.cast(it) }
     }
 
