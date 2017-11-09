@@ -1,6 +1,6 @@
 package io.paju.ddd
 
-interface AggregateEventReconstructable<in E : Event> {
+interface EventReconstructable<in E : StateChangeEvent> {
     fun reconstruct(events: Iterable<E>)
 }
 

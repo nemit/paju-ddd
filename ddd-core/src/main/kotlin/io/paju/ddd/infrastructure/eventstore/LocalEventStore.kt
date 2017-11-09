@@ -1,8 +1,8 @@
 package io.paju.ddd.infrastructure.eventstore
 
 import io.paju.ddd.AggregateRootId
-import io.paju.ddd.Event
-import io.paju.ddd.exception.DDDRuntimeException
+import io.paju.ddd.StateChangeEvent
+import io.paju.ddd.exception.DddRuntimeException
 import io.paju.ddd.infrastructure.EventStoreReader
 import io.paju.ddd.infrastructure.EventStoreWriter
 import org.slf4j.LoggerFactory
@@ -13,14 +13,14 @@ import java.util.concurrent.locks.ReentrantLock
 class LocalEventStore : EventStoreReader, EventStoreWriter {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
-    private val storage: MutableMap<String, MutableList<Event>> = mutableMapOf()
+    private val storage: MutableMap<String, MutableList<StateChangeEvent>> = mutableMapOf()
     private val lock = ReentrantLock()
 
-    override fun saveEvents(topicName: String, events: Iterable<Event>, expectedVersion: Int) {
+    override fun saveEvents(topicName: String, events: Iterable<StateChangeEvent>, expectedVersion: Int) {
         // check events
         val aggregateIds = events.map { it.id }.distinct()
         if (aggregateIds.size != 1) {
-            throw DDDRuntimeException("One and only one aggregate id is expected while saving events [${aggregateIds.joinToString(",")}]")
+            throw DddRuntimeException("One and only one aggregate id is expected while saving events [${aggregateIds.joinToString(",")}]")
         }
         val aggregateId = aggregateIds.first()
 
@@ -47,7 +47,7 @@ class LocalEventStore : EventStoreReader, EventStoreWriter {
         }
     }
 
-    override fun getEventsForAggregate(topicName: String, id: AggregateRootId): Iterable<Event> {
+    override fun getEventsForAggregate(topicName: String, id: AggregateRootId): Iterable<StateChangeEvent> {
         return storage.getOrElse(id.toString(), { listOf() })
     }
 }

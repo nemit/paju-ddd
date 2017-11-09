@@ -4,9 +4,9 @@ import java.util.UUID
 
 class CounterAggregate(id: AggregateRootId) :
     AggregateRoot<CounterState, CounterEvent>(id),
-    AggregateStateExposed<CounterState>,
-    AggregateEventReconstructable<CounterEvent>,
-    AggregateStateReconstructable<CounterState>
+    StateExposed<CounterState>,
+    EventReconstructable<CounterEvent>,
+    StateReconstructable<CounterState>
 {
 
     var state = CounterState()
@@ -42,9 +42,9 @@ class CounterAggregate(id: AggregateRootId) :
 
 data class CounterState(
     var counter: Int = 0
-) : AggregateState
+) : State
 
-sealed class CounterEvent: Event() {
+sealed class CounterEvent: StateChangeEvent() {
     data class Added(override val id: AggregateRootId) : CounterEvent()
     data class Subtracted(override val id: AggregateRootId) : CounterEvent()
 }
