@@ -8,5 +8,11 @@ interface EventStoreWriter {
 }
 
 interface EventStoreReader {
+
     fun getEventsForAggregate(topicName: String, id: AggregateRootId): Iterable<Event>
+
+    fun <E: Event>getEventsForAggregate(topicName: String, id: AggregateRootId, clazz: Class<E>): Iterable<E> {
+        return getEventsForAggregate(topicName, id).map { clazz.cast(it) }
+    }
+
 }
