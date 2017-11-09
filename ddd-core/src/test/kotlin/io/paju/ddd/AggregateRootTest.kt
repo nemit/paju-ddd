@@ -23,7 +23,9 @@ internal class AggregateRootTest {
     @Test
     fun reconstruct() {
         val aggregate = makeAggregate()
-        val reconstructed = CounterAggregate.constructAggregate(aggregate.id, aggregate.uncommittedChanges())
+        val reconstructed = CounterAggregate(aggregate.id).apply {
+            reconstruct(aggregate.uncommittedChanges())
+        }
         assertEquals(1, reconstructed.state().counter)
         assertEquals(0, reconstructed.uncommittedChanges().size)
     }

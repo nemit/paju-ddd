@@ -3,10 +3,13 @@ package io.paju.ddd
 import java.util.UUID
 
 class CounterAggregate(id: AggregateRootId) :
-    AggregateRoot<CounterState, CounterEvent>(id), AggregateStateExposer<CounterState>
+    AggregateRoot<CounterState, CounterEvent>(id),
+    AggregateStateExposed<CounterState>,
+    AggregateEventReconstructable<CounterEvent>,
+    AggregateStateReconstructable<CounterState>
 {
 
-    override val state = CounterState()
+    var state = CounterState()
 
     // public api
     fun add() {
@@ -28,12 +31,12 @@ class CounterAggregate(id: AggregateRootId) :
         }.let {} // let is required for exhaustive when
     }
 
-    companion object : AggregateEventConstructor<CounterState, CounterEvent, CounterAggregate> {
-        override fun constructAggregate(id: AggregateRootId, events: Iterable<CounterEvent>): CounterAggregate {
-            val aggregate = CounterAggregate(id)
-            aggregate.reconstruct(events)
-            return aggregate
-        }
+    override fun reconstruct(state: CounterState) {
+        this.state = state;
+    }
+
+    override fun reconstruct(events: Iterable<CounterEvent>) {
+        events.forEach { applyChange(it, false) }
     }
 }
 
