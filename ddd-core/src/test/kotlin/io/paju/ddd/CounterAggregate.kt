@@ -13,11 +13,11 @@ class CounterAggregate(id: AggregateRootId) :
 
     // public api
     fun add() {
-        applyChange(CounterEvent.Added(id))
+        applyChange(CounterEvent.Added)
     }
 
     fun subtract() {
-        applyChange(CounterEvent.Subtracted(id))
+        applyChange(CounterEvent.Subtracted)
     }
 
     override fun state(): CounterState {
@@ -32,7 +32,7 @@ class CounterAggregate(id: AggregateRootId) :
     }
 
     override fun reconstruct(state: CounterState) {
-        this.state = state;
+        this.state = state
     }
 
     override fun reconstruct(events: Iterable<CounterEvent>) {
@@ -45,8 +45,8 @@ data class CounterState(
 ) : State
 
 sealed class CounterEvent: StateChangeEvent() {
-    data class Added(override val id: AggregateRootId) : CounterEvent()
-    data class Subtracted(override val id: AggregateRootId) : CounterEvent()
+    object Added : CounterEvent()
+    object Subtracted : CounterEvent()
 }
 
 fun makeAggregate(): CounterAggregate {
