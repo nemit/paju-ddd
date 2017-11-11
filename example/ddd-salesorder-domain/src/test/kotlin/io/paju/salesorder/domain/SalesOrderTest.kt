@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 
 internal class SalesOrderTest {
 
-    val paymentServiceMock = mock<DummyPaymentService>()
+    private val paymentServiceMock = mock<DummyPaymentService>()
 
     @Test
     fun addProduct() {
@@ -47,7 +47,7 @@ internal class SalesOrderTest {
         val so: SalesOrder = makeSalesOrder(product1, product2, product1)
         so.deliverProduct(product1)
 
-        so.invoiceDeliveredProductsAndServices(paymentServiceMock)
+        so.invoiceDeliveredProducts(paymentServiceMock)
         verify(paymentServiceMock, times(1))
             .handleProductPayment(product1, customerId, PaymentMethod.INVOICE)
     }

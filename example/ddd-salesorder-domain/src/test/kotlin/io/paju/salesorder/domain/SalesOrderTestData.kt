@@ -7,9 +7,10 @@ import java.util.UUID
 
 object SalesOrderTestData {
     fun makeSalesOrder(vararg products: Product): SalesOrder {
-        val s = SalesOrder(AggregateRootId.fromObject(UUID.randomUUID()), customerId)
-        products.forEach { s.addProduct(it) }
-        return s
+        return SalesOrder(AggregateRootId.fromObject(UUID.randomUUID())).apply {
+            setCustomer(customerId)
+            products.forEach { addProduct(it) }
+        }
     }
     val customerId = EntityId.fromObject("1")
     val product1 = Product(EntityId.fromObject(UUID.randomUUID()), Price(BigDecimal.valueOf(10.0), Vat.vat24), "Test product1", "Test product description")

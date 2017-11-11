@@ -37,16 +37,16 @@ class SalesOrderStoreJdbc(
         productDao.update(id, product)
     }
 
-    override fun add(salesOrder: SalesOrderState) {
-        salesOrderDao.insert(salesOrder)
+    override fun add(id: AggregateRootId, salesOrder: SalesOrderState) {
+        salesOrderDao.insert(id, salesOrder)
     }
 
-    override fun update(salesOrder: SalesOrderState) {
-        salesOrderDao.update(salesOrder)
+    override fun update(id: AggregateRootId, salesOrder: SalesOrderState) {
+        salesOrderDao.update(id, salesOrder)
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    override fun saveSnapshot(salesOrder: SalesOrderState) {
+    @Suppress("unused_parameter")
+    override fun saveSnapshot(id: AggregateRootId, salesOrder: SalesOrderState) {
         // not implemented
     }
 

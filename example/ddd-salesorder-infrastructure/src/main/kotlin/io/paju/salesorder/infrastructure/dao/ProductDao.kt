@@ -17,7 +17,7 @@ import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.Optional
 
-class ProductDao(val jdbi: Jdbi) {
+class ProductDao(private val jdbi: Jdbi) {
 
     private val insertSql =
         """
