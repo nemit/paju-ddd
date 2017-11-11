@@ -10,7 +10,7 @@ import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.Optional
 
-class SalesOrderDao(val jdbi: Jdbi) {
+class SalesOrderDao(private val jdbi: Jdbi) {
 
     private val insertSql =
         """
@@ -18,11 +18,11 @@ class SalesOrderDao(val jdbi: Jdbi) {
             VALUES (:id, :customer_id, :confirmed, :deleted)
         """.trimIndent()
 
-    fun insert(data: SalesOrderState) {
+    fun insert(id: AggregateRootId, data: SalesOrderState) {
         jdbi.useHandle<Exception> { handle ->
             handle
                 .createUpdate(insertSql)
-                .bindMap(buildBindMap(data))
+                .bindMap(buildBindMap(id, data))
                 .execute()
         }
     }
@@ -42,24 +42,24 @@ class SalesOrderDao(val jdbi: Jdbi) {
         }
     }
 
-    val updateSql =
+    private val updateSql =
         """
             INSERT INTO sales_order (id, customer_id, confirmed, deleted)
             VALUES (:id, :customer_id, :confirmed, :deleted)
         """.trimIndent()
 
-    fun update(data: SalesOrderState) {
+    fun update(id: AggregateRootId, data: SalesOrderState) {
         jdbi.useHandle<Exception> { handle ->
             handle
                 .createUpdate(updateSql)
-                .bindMap(buildBindMap(data))
+                .bindMap(buildBindMap(id, data))
                 .execute()
         }
     }
 
-    private fun buildBindMap(data: SalesOrderState): Map<String, Any> {
+    private fun buildBindMap(id: AggregateRootId, data: SalesOrderState): Map<String, Any> {
         return mapOf(
-            "id" to data.id.toString(),
+            "id" to id.toString(),
             "customer_id" to data.customerId.toString(),
             "confirmed" to data.confirmed,
             "deleted" to data.deleted
@@ -70,7 +70,6 @@ class SalesOrderDao(val jdbi: Jdbi) {
         @Throws(SQLException::class)
         override fun map(r: ResultSet, ctx: StatementContext): SalesOrderState {
             return SalesOrderState(
-                id = AggregateRootId.fromObject(r.getString("id")),
                 customerId = EntityId.fromObject(r.getString("customer_id")),
                 confirmed = r.getBoolean("confirmed"),
                 deleted = r.getBoolean("deleted"),

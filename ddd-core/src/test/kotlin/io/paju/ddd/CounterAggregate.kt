@@ -9,7 +9,7 @@ class CounterAggregate(id: AggregateRootId) :
     StateReconstructable<CounterState>
 {
 
-    var state = CounterState()
+    private var state = CounterState()
 
     // public api
     fun add() {
