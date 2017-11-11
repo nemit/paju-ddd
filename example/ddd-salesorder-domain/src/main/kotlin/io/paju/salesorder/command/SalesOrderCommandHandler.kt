@@ -12,16 +12,17 @@ class SalesOrderCommandHandler(
     override fun handle(command: SalesOrderCommand) {
         when (command) {
             is CreateSalesOrder ->
-                Unit // TODO
+                //aggregate.setCustomer(command.customerId)
+                TODO()
 
-            is DeliverProductsAndServices ->
-                Unit // TODO
+            is DeliverProducts ->
+                aggregate.deliverProducts()
 
             is  DeleteSalesOrder ->
-                Unit // TODO
+                aggregate.deleteSalesOrder()
 
             is ConfirmSalesOrder ->
-                Unit // TODO
+                aggregate.confirmSalesOrder()
 
             is AddProductToSalesOrder ->
                 aggregate.addProduct(command.product)
@@ -34,6 +35,10 @@ class SalesOrderCommandHandler(
 
             is PayDeliveredProducts ->
                 aggregate.payDeliveredProduct(paymentService, command.product, command.method)
+
+            is InvoiceDeliveredProducts ->
+                aggregate.invoiceDeliveredProducts(paymentService)
+
         }.let {} // let is required for exhaustive when
     }
 }

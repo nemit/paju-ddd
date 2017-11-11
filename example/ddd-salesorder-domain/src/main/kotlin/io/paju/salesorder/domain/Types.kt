@@ -11,3 +11,19 @@ enum class Vat {
 enum class Currencies {
     EURO
 }
+
+enum class DeliveryStatus {
+    NOT_DELIVERED, DELIVERED
+}
+
+enum class Status {
+    QUOTE, CONFIRMED, PARTIALLY_DELIVERED, DELIVERED, DELETED
+}
+
+enum class PaymentStatus {
+    OPEN, INVOICED, PAID
+}
+
+enum class PaymentMethod {
+    INVOICE, CASH, UNDEFINED
+}
