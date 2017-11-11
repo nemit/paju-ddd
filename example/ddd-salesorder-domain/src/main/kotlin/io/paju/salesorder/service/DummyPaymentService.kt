@@ -6,7 +6,7 @@ import io.paju.salesorder.domain.Product
 
 object DummyPaymentService {
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress("unused_parameter")
     fun handleProductPayment(product: Product, customerId: EntityId, paymentMethod: PaymentMethod) {
         // do nothing
     }

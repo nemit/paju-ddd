@@ -2,55 +2,55 @@ package io.paju.salesorder.infrastructure
 
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.EntityId
-import io.paju.ddd.StateChangeEvent
 import io.paju.ddd.infrastructure.EventStoreWriter
 import io.paju.ddd.infrastructure.Repository
+import io.paju.ddd.infrastructure.StateStoreEventWriter
 import io.paju.ddd.infrastructure.StateStoreReader
-import io.paju.ddd.infrastructure.StateStoreWriter
+import io.paju.ddd.infrastructure.StateStoreStateWriter
 import io.paju.salesorder.domain.DeliveryStatus
 import io.paju.salesorder.domain.PaymentStatus
 import io.paju.salesorder.domain.Product
 import io.paju.salesorder.domain.SalesOrder
-import io.paju.salesorder.domain.event.ProductAdded
-import io.paju.salesorder.domain.event.ProductDelivered
-import io.paju.salesorder.domain.event.ProductInvoiced
-import io.paju.salesorder.domain.event.ProductPaid
-import io.paju.salesorder.domain.event.ProductRemoved
-import io.paju.salesorder.domain.event.SalesOrderConfirmed
-import io.paju.salesorder.domain.event.SalesOrderDeleted
+import io.paju.salesorder.domain.event.SalesOrderEvent
 import io.paju.salesorder.domain.state.ProductState
 import io.paju.salesorder.domain.state.SalesOrderState
 
 abstract class SalesOrderRepository(
     private val eventWriter: EventStoreWriter,
-    private val stateWriter: StateStoreWriter<SalesOrderState>,
+    private val stateWriter: StateStoreEventWriter<SalesOrderEvent>,
+    private val stateSnapshotWriter: StateStoreStateWriter<SalesOrderState>,
     private val stateReader: StateStoreReader<SalesOrderState>
-) : Repository<SalesOrder> {
+) : Repository<SalesOrderEvent, SalesOrder> {
 
     override fun save(aggregate: SalesOrder, version: Int) {
         val uncommitted = aggregate.uncommittedChanges()
 
         // save state from events
-        stateWriter.saveState(uncommitted, version)
+        stateWriter.saveState(aggregate.id(), uncommitted, version)
 
         // save state snapshot
-        stateWriter.saveState(SalesOrder.extractAggregateState(aggregate), version)
+        stateSnapshotWriter.saveState(aggregate.id(), aggregate.state(), version)
 
         // save events
-        eventWriter.saveEvents("salesorder", uncommitted, version)
+        eventWriter.saveEvents("salesorder", aggregate.id(), uncommitted, version)
 
         // mark changes saved
         aggregate.markChangesAsCommitted()
     }
 
     override fun getById(id: AggregateRootId): SalesOrder {
-        val salesOrderState = stateReader.readState(id)
-        return SalesOrder.constructAggregate(salesOrderState)
+        return SalesOrder(id).apply {
+            reconstruct(stateReader.readState(id))
+        }
     }
 
 }
 
-abstract class SalesOrderStore : StateStoreWriter<SalesOrderState>, StateStoreReader<SalesOrderState> {
+abstract class SalesOrderStore :
+    StateStoreEventWriter<SalesOrderEvent>,
+    StateStoreStateWriter<SalesOrderState>,
+    StateStoreReader<SalesOrderState>
+{
 
     abstract fun getSalesOrderWithoutRelations(id: AggregateRootId): SalesOrderState
     abstract fun getProducts(id: AggregateRootId): List<ProductState>
@@ -58,51 +58,40 @@ abstract class SalesOrderStore : StateStoreWriter<SalesOrderState>, StateStoreRe
     abstract fun add(id: AggregateRootId, product: ProductState)
     abstract fun remove(id: AggregateRootId, productId: EntityId)
     abstract fun update(id: AggregateRootId, product: ProductState)
-    abstract fun add(salesOrder: SalesOrderState)
-    abstract fun update(salesOrder: SalesOrderState)
-    abstract fun saveSnapshot(salesOrder: SalesOrderState)
+    abstract fun add(id: AggregateRootId, salesOrder: SalesOrderState)
+    abstract fun update(id: AggregateRootId, salesOrder: SalesOrderState)
+    abstract fun saveSnapshot(id: AggregateRootId, salesOrder: SalesOrderState)
 
-    override fun saveState(events: Iterable<StateChangeEvent>, expectedVersion: Int) {
-        events.forEach { it -> saveState(it) }
+    override fun saveState(id: AggregateRootId, events: Iterable<SalesOrderEvent>, expectedVersion: Int) {
+        events.forEach { it -> saveState(id, it) }
     }
 
-    private fun saveState(e: StateChangeEvent) {
+    private fun saveState(id: AggregateRootId, e: SalesOrderEvent) {
         when (e) {
-            is SalesOrderDeleted ->
-                update(
-                    getSalesOrderWithoutRelations(e.id).copy(deleted = true)
-                )
+            is SalesOrderEvent.CustomerSet ->
+                update(id, getSalesOrderWithoutRelations(id).copy(customerId = e.customerId) )
 
-            is SalesOrderConfirmed ->
-                update(
-                    getSalesOrderWithoutRelations(e.id).copy(confirmed = true)
-                )
+            is SalesOrderEvent.Deleted ->
+                update(id, getSalesOrderWithoutRelations(id).copy(deleted = true) )
 
-            is ProductAdded ->
-                add(
-                    e.id, ProductState(e.product, e.paymentStatus, e.paymentMethod, e.deliveryStatus)
-                )
+            is SalesOrderEvent.Confirmed ->
+                update(id, getSalesOrderWithoutRelations(id).copy(confirmed = true) )
 
-            is ProductRemoved ->
-                remove(
-                    e.id, e.product.id
-                )
+            is SalesOrderEvent.ProductAdded ->
+                add(id, ProductState(e.product, e.paymentStatus, e.paymentMethod, e.deliveryStatus))
 
-            is ProductDelivered ->
-                update(
-                    e.id, getProduct(e.id, e.product).copy(deliveryStatus = DeliveryStatus.DELIVERED)
-                )
+            is SalesOrderEvent.ProductRemoved ->
+                remove(id, e.product.id)
 
-            is ProductInvoiced ->
-                update(
-                    e.id, getProduct(e.id, e.product).copy(paymentStatus = PaymentStatus.INVOICED)
-                )
+            is SalesOrderEvent.ProductDelivered ->
+                update(id, getProduct(id, e.product).copy(deliveryStatus = DeliveryStatus.DELIVERED))
 
-            is ProductPaid ->
-                update(
-                    e.id, getProduct(e.id, e.product).copy(paymentStatus = PaymentStatus.PAID)
-                )
-        }
+            is SalesOrderEvent.ProductInvoiced ->
+                update(id, getProduct(id, e.product).copy(paymentStatus = PaymentStatus.INVOICED))
+
+            is SalesOrderEvent.ProductPaid ->
+                update(id, getProduct(id, e.product).copy(paymentStatus = PaymentStatus.PAID))
+        }.let { }
     }
 
     override fun readState(id: AggregateRootId): SalesOrderState {
@@ -111,8 +100,7 @@ abstract class SalesOrderStore : StateStoreWriter<SalesOrderState>, StateStoreRe
         return salesOrder.copy(products = products)
     }
 
-    override fun saveState(state: SalesOrderState, expectedVersion: Int) {
-        saveSnapshot(state)
+    override fun saveState(id: AggregateRootId, state: SalesOrderState, expectedVersion: Int) {
+        saveSnapshot(id, state)
     }
-
 }
