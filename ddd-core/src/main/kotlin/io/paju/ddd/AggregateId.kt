@@ -12,9 +12,9 @@ open class AggregateRootId constructor(val id: String) : Serializable {
     companion object {
 
         fun fromObject(id: Any): AggregateRootId {
-            when (id) {
-                is String -> return AggregateRootId(id)
-                is UUID -> return AggregateRootId(id.toString())
+            return when (id) {
+                is String -> AggregateRootId(id)
+                is UUID -> AggregateRootId(id.toString())
                 else -> throw IllegalArgumentException("The id should be of either String or UUID type")
             }
         }

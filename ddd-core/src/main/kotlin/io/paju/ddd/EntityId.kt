@@ -13,9 +13,9 @@ open class EntityId protected constructor(private val id: String) : Serializable
 
     companion object {
         fun fromObject(id: Any): EntityId {
-            when (id) {
-                is String -> return EntityId(id)
-                is UUID -> return EntityId(id.toString())
+            return when (id) {
+                is String -> EntityId(id)
+                is UUID -> EntityId(id.toString())
                 else -> throw IllegalArgumentException("The id should be of either String or UUID type")
             }
         }
