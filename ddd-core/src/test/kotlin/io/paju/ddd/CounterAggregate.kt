@@ -41,8 +41,11 @@ class CounterAggregate(id: AggregateRootId) :
 }
 
 data class CounterState(
+    var version: Int = 1,
     var counter: Int = 0
-) : State
+) : State {
+    override fun version(): Int = version
+}
 
 sealed class CounterEvent: StateChangeEvent() {
     object Added : CounterEvent()

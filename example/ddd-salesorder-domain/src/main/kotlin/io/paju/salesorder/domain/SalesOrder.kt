@@ -23,7 +23,7 @@ class SalesOrder internal constructor(id: AggregateRootId) :
     StateExposed<SalesOrderState>
 {
 
-    var state: SalesOrderState = SalesOrderState(
+    var state: SalesOrderState = SalesOrderState(1,
         NotInitializedEntityId, false, false, mutableListOf()
     )
     private val stateManager = SalesOrderStateManager(this)
