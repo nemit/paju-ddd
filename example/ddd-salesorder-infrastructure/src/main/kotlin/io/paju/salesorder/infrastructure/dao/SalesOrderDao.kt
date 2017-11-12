@@ -70,6 +70,7 @@ class SalesOrderDao(private val jdbi: Jdbi) {
         @Throws(SQLException::class)
         override fun map(r: ResultSet, ctx: StatementContext): SalesOrderState {
             return SalesOrderState(
+                1, // TODO: implement version handling
                 customerId = EntityId.fromObject(r.getString("customer_id")),
                 confirmed = r.getBoolean("confirmed"),
                 deleted = r.getBoolean("deleted"),

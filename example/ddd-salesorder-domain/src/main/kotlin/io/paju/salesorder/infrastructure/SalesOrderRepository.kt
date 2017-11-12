@@ -2,11 +2,13 @@ package io.paju.salesorder.infrastructure
 
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.EntityId
+import io.paju.ddd.State
 import io.paju.ddd.infrastructure.EventStoreWriter
 import io.paju.ddd.infrastructure.Repository
 import io.paju.ddd.infrastructure.StateStoreEventWriter
-import io.paju.ddd.infrastructure.StateStoreReader
-import io.paju.ddd.infrastructure.StateStoreStateWriter
+import io.paju.ddd.infrastructure.StateStoreTypedEventWriter
+import io.paju.ddd.infrastructure.StateStoreTypedReader
+import io.paju.ddd.infrastructure.StateStoreTypedStateWriter
 import io.paju.salesorder.domain.DeliveryStatus
 import io.paju.salesorder.domain.PaymentStatus
 import io.paju.salesorder.domain.Product
@@ -17,9 +19,9 @@ import io.paju.salesorder.domain.state.SalesOrderState
 
 abstract class SalesOrderRepository(
     private val eventWriter: EventStoreWriter,
-    private val stateWriter: StateStoreEventWriter<SalesOrderEvent>,
-    private val stateSnapshotWriter: StateStoreStateWriter<SalesOrderState>,
-    private val stateReader: StateStoreReader<SalesOrderState>
+    private val stateWriter: StateStoreEventWriter,
+    private val stateSnapshotWriter: StateStoreTypedStateWriter<SalesOrderState>,
+    private val stateReader: StateStoreTypedReader<SalesOrderState>
 ) : Repository<SalesOrderEvent, SalesOrder> {
 
     override fun save(aggregate: SalesOrder, version: Int) {
@@ -40,16 +42,16 @@ abstract class SalesOrderRepository(
 
     override fun getById(id: AggregateRootId): SalesOrder {
         return SalesOrder(id).apply {
-            reconstruct(stateReader.readState(id))
+            reconstruct(stateReader.readStateOrFail(id))
         }
     }
 
 }
 
 abstract class SalesOrderStore :
-    StateStoreEventWriter<SalesOrderEvent>,
-    StateStoreStateWriter<SalesOrderState>,
-    StateStoreReader<SalesOrderState>
+    StateStoreTypedEventWriter<SalesOrderEvent>,
+    StateStoreTypedStateWriter<SalesOrderState>,
+    StateStoreTypedReader<SalesOrderState>
 {
 
     abstract fun getSalesOrderWithoutRelations(id: AggregateRootId): SalesOrderState
