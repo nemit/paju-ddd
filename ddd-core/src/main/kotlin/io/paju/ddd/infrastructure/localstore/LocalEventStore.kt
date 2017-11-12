@@ -1,4 +1,4 @@
-package io.paju.ddd.infrastructure.eventstore
+package io.paju.ddd.infrastructure.localstore
 
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.StateChangeEvent
