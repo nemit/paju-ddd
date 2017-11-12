@@ -1,3 +1,5 @@
 package io.paju.ddd
 
-interface State
+interface State {
+    fun version(): Int
+}
