@@ -15,14 +15,14 @@ class SalesOrderDao(private val jdbi: Jdbi) {
     private val insertSql =
         """
             INSERT INTO sales_order (id, customer_id, confirmed, deleted)
-            VALUES (:id, :customer_id, :confirmed, :deleted)
+            VALUES (:id, null, false, false)
         """.trimIndent()
 
-    fun insert(id: AggregateRootId, data: SalesOrderState) {
+    fun create(id: AggregateRootId) {
         jdbi.useHandle<Exception> { handle ->
             handle
                 .createUpdate(insertSql)
-                .bindMap(buildBindMap(id, data))
+                .bind("id", id.toString())
                 .execute()
         }
     }
@@ -36,7 +36,8 @@ class SalesOrderDao(private val jdbi: Jdbi) {
     fun getById(id: AggregateRootId): Optional<SalesOrderState> {
         return jdbi.withHandle<Optional<SalesOrderState>, Exception> { handle ->
             handle
-                .select(selectByIdSql, id.toString())
+                .select(selectByIdSql)
+                .bind("id", id.toString())
                 .map(SalesOrderMapper)
                 .findFirst()
         }
@@ -44,8 +45,8 @@ class SalesOrderDao(private val jdbi: Jdbi) {
 
     private val updateSql =
         """
-            INSERT INTO sales_order (id, customer_id, confirmed, deleted)
-            VALUES (:id, :customer_id, :confirmed, :deleted)
+            UPDATE sales_order SET customer_id = :customer_id, confirmed = :confirmed, deleted = :deleted
+            where id = :id
         """.trimIndent()
 
     fun update(id: AggregateRootId, data: SalesOrderState) {
@@ -71,7 +72,12 @@ class SalesOrderDao(private val jdbi: Jdbi) {
         override fun map(r: ResultSet, ctx: StatementContext): SalesOrderState {
             return SalesOrderState(
                 1, // TODO: implement version handling
-                customerId = EntityId.fromObject(r.getString("customer_id")),
+                customerId =
+                    if (r.getString("customer_id") != null) {
+                        EntityId.fromObject(r.getString("customer_id"))
+                    } else {
+                        EntityId.NotInitialized
+                    },
                 confirmed = r.getBoolean("confirmed"),
                 deleted = r.getBoolean("deleted"),
                 products = emptyList()

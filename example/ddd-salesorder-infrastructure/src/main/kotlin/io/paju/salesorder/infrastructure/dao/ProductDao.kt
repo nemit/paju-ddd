@@ -21,8 +21,8 @@ class ProductDao(private val jdbi: Jdbi) {
 
     private val insertSql =
         """
-            INSERT INTO product (sales_order_id, id, name, description, price, price_currency, price_vat, payment_method, delivery_status)
-            VALUES (:sales_order_id, :id, :name, :description, :price, :price_currency, :price_vat, :payment_method, :delivery_status)
+            INSERT INTO product (sales_order_id, id, name, description, price, price_currency, price_vat, payment_status, payment_method, delivery_status)
+            VALUES (:sales_order_id, :id, :name, :description, :price, :price_currency, :price_vat, :payment_status, :payment_method, :delivery_status)
         """.trimIndent()
 
     fun insert(salesOrderId: AggregateRootId, data: ProductState) {
@@ -36,14 +36,17 @@ class ProductDao(private val jdbi: Jdbi) {
 
     private val selectByIdSql =
         """
-            SELECT sales_order_id, id, name, description, price, price_currency, price_vat, payment_method, delivery_status
-            where sales_order_id = :sales_order_id and id = :id
+            SELECT sales_order_id, id, name, description, price, price_currency, price_vat, payment_status, payment_method, delivery_status
+            FROM product
+            WHERE sales_order_id = :sales_order_id and id = :id
         """.trimIndent()
 
     fun getById(salesOrderId: AggregateRootId, id: EntityId): Optional<ProductState> {
         return jdbi.withHandle<Optional<ProductState>, Exception> { handle ->
             handle
-                .select(selectByIdSql, salesOrderId.toString(), id.toString())
+                .select(selectByIdSql)
+                .bind("sales_order_id", salesOrderId.toString())
+                .bind("id", id.toString())
                 .map(ProductStateMapper())
                 .findFirst()
         }
@@ -51,14 +54,16 @@ class ProductDao(private val jdbi: Jdbi) {
 
     private val selectBySalesOrderIdSql =
         """
-            SELECT sales_order_id, id, name, description, price, price_currency, price_vat, payment_method, delivery_status
-            where sales_order_id = :sales_order_id
+            SELECT sales_order_id, id, name, description, price, price_currency, price_vat, payment_status, payment_method, delivery_status
+            FROM product
+            WHERE sales_order_id = :sales_order_id
         """.trimIndent()
 
     fun getBySalesOrderId(salesOrderId: AggregateRootId): List<ProductState> {
         return jdbi.withHandle<List<ProductState>, Exception> { handle ->
             handle
-                .select(selectBySalesOrderIdSql, salesOrderId.toString())
+                .select(selectBySalesOrderIdSql)
+                .bind("sales_order_id", salesOrderId.toString())
                 .map(ProductStateMapper())
                 .list()
         }
@@ -66,7 +71,7 @@ class ProductDao(private val jdbi: Jdbi) {
 
     private val updateSql =
         """
-            UPDATE product SET name = :name, description = :description, price = :price, price_currency = :price_currency, price_vat = :price_vat, payment_method = :payment_method, delivery_status = :delivery_status
+            UPDATE product SET name = :name, description = :description, price = :price, price_currency = :price_currency, price_vat = :price_vat, payment_status = :payment_status, payment_method = :payment_method, delivery_status = :delivery_status
             WHERE sales_order_id = :sales_order_id and id = :id
         """.trimIndent()
 
@@ -101,7 +106,7 @@ class ProductDao(private val jdbi: Jdbi) {
             "id" to data.product.id.toString(),
             "name" to data.product.name,
             "description" to data.product.description,
-            "price" to data.product.price,
+            "price" to data.product.price.price,
             "price_currency" to data.product.price.currency.name,
             "price_vat" to data.product.price.vat.name,
             "payment_status" to data.paymentStatus.name,

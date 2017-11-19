@@ -7,7 +7,7 @@ ext {
             sparkTemplateVelocity   : '2.5.5',
             postgresql              : '42.1.4',
             flyway                  : '4.2.0',
-
+            slf4jApi                : '1.7.25',
             // test libs
             junitJupiter            : '5.0.1',
             junitGradlePlugin       : '1.0.1',
@@ -23,11 +23,14 @@ ext {
             // libs
             kotlinGradlePlugin      : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
             kotlinStdLib            : "org.jetbrains.kotlin:kotlin-stdlib-jre8:$versions.kotlin",
+            kotlinStdLib2           : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
+            kotlinReflect           : "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
             sparkCore               : "com.sparkjava:spark-core:$versions.spark",
             sparkKotlin             : "com.sparkjava:spark-kotlin:$versions.sparkKotlin",
             sparkTemplateVelocity   : "com.sparkjava:spark-template-velocity:$versions.sparkTemplateVelocity",
             postgresql              : "org.postgresql:postgresql:$versions.postgresql",
             flywayCore              : "org.flywaydb:flyway-core:$versions.flyway",
+            slf4jApi                : "org.slf4j:slf4j-api:$versions.slf4jApi",
 
             // test libs
             junitJupiterApi         : "org.junit.jupiter:junit-jupiter-api:$versions.junitJupiter",

@@ -6,6 +6,10 @@ import io.paju.ddd.infrastructure.Repository
 import io.paju.salesorder.domain.SalesOrder
 import io.paju.salesorder.domain.event.SalesOrderEvent
 import io.paju.salesorder.service.DummyPaymentService
+import mu.KotlinLogging
+import java.util.UUID
+
+private val logger = KotlinLogging.logger {}
 
 class SalesOrderCommandHandler(
     private val repository: Repository<SalesOrderEvent, SalesOrder>,
@@ -13,13 +17,23 @@ class SalesOrderCommandHandler(
 ) : CommandHandler<SalesOrderCommand> {
 
     override fun handle(command: SalesOrderCommand) {
+        logger.info { "Handle command ${command::class.simpleName} ${command.id}" }
 
         fun aggregate() = repository.getById(command.id)
-        fun createNewAggregate(id: AggregateRootId) = SalesOrder(id)
+        fun createNewAggregate(id: AggregateRootId) = SalesOrder(id, true)
 
         val aggregate: SalesOrder = when (command) {
-            is CreateSalesOrder ->
-                createNewAggregate(command.id).apply { setCustomer(command.customerId) }
+            is CreateSalesOrder -> {
+                val aggregateId: AggregateRootId =
+                    if(command.id == AggregateRootId.NotInitialized){
+                        AggregateRootId.fromObject(UUID.randomUUID())
+                    }else{
+                        command.id
+                    }
+                createNewAggregate(aggregateId).apply {
+                    setCustomer(command.customerId)
+                }
+            }
 
             is DeliverProducts ->
                 aggregate().apply { deliverProducts() }

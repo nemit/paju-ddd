@@ -2,6 +2,7 @@ package io.paju.ddd.infrastructure.localstore
 
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.StateChangeEvent
+import io.paju.ddd.StateChangeEventPublisher
 import io.paju.ddd.infrastructure.EventStoreReader
 import io.paju.ddd.infrastructure.EventStoreWriter
 import org.slf4j.LoggerFactory
@@ -14,6 +15,7 @@ class LocalEventStore : EventStoreReader, EventStoreWriter {
     private val logger = LoggerFactory.getLogger(this::class.java)
     private val storage: MutableMap<String, MutableList<StateChangeEvent>> = mutableMapOf()
     private val lock = ReentrantLock()
+    private val publishers = mutableSetOf<StateChangeEventPublisher>()
 
     override fun saveEvents(
         topicName: String,
@@ -26,10 +28,11 @@ class LocalEventStore : EventStoreReader, EventStoreWriter {
         lock.lock()
         try {
             val storedEvents = storage.getOrElse(id.toString(), { mutableListOf() })
-            val actualVersion = storedEvents.lastOrNull()?.version ?: 0
-            if (actualVersion != expectedVersion && expectedVersion != -1) {
-                throw ConcurrentModificationException("The actual version is [$actualVersion] and the expected version is [$expectedVersion]")
-            }
+
+            //val actualVersion = storedEvents.lastOrNull()?.version ?: 0
+            //if (actualVersion != expectedVersion && expectedVersion != -1) {
+            //    throw ConcurrentModificationException("The actual version is [$actualVersion] and the expected version is [$expectedVersion]")
+            //}
 
             // set event versions
             var version = expectedVersion
@@ -37,6 +40,7 @@ class LocalEventStore : EventStoreReader, EventStoreWriter {
                 version++
                 event.version = version
                 storedEvents.add(event)
+                publishers.forEach { it.publish(topicName, event) }
             }
             storage.put(id.toString(), storedEvents)
         } finally {
@@ -46,5 +50,13 @@ class LocalEventStore : EventStoreReader, EventStoreWriter {
 
     override fun getEventsForAggregate(topicName: String, id: AggregateRootId): Iterable<StateChangeEvent> {
         return storage.getOrElse(id.toString(), { listOf() })
+    }
+
+    fun addPublisher(publisher: StateChangeEventPublisher){
+        publishers.add(publisher)
+    }
+
+    fun removePublisher(publisher: StateChangeEventPublisher){
+        publishers.remove(publisher)
     }
 }

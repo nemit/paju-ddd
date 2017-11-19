@@ -1,17 +1,36 @@
 package io.paju.salesorder.command
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.Command
 import io.paju.ddd.EntityId
-import io.paju.ddd.NotInitializedAggregateRootId
 import io.paju.salesorder.domain.PaymentMethod
 import io.paju.salesorder.domain.Product
 
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type")
+@JsonSubTypes(
+    Type(name = "CreateSalesOrder", value = CreateSalesOrder::class),
+    Type(name = "DeliverProducts", value = DeliverProducts::class),
+    Type(name = "DeleteSalesOrder", value = DeleteSalesOrder::class),
+    Type(name = "ConfirmSalesOrder", value = ConfirmSalesOrder::class),
+    Type(name = "AddProductToSalesOrder", value = AddProductToSalesOrder::class),
+    Type(name = "RemoveProductFromSalesOrder", value = RemoveProductFromSalesOrder::class),
+    Type(name = "DeliverProduct", value = DeliverProduct::class),
+    Type(name = "InvoiceDeliveredProducts", value = InvoiceDeliveredProducts::class),
+    Type(name = "PayDeliveredProducts", value = PayDeliveredProducts::class)
+)
 sealed class SalesOrderCommand : Command
 
 // Sales order Commands
-data class CreateSalesOrder(val customerId: EntityId) : SalesOrderCommand() {
-    override val id: AggregateRootId = NotInitializedAggregateRootId
+data class CreateSalesOrder(
+    override val id: AggregateRootId = AggregateRootId.NotInitialized,
+    val customerId: EntityId) : SalesOrderCommand()
+{
     override val originalVersion: Int = -1
 }
 data class DeliverProducts(override val id: AggregateRootId, override val originalVersion: Int) : SalesOrderCommand()
