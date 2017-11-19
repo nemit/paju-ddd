@@ -7,11 +7,14 @@ import io.paju.salesorder.domain.state.ProductState
 import io.paju.salesorder.domain.state.SalesOrderState
 import io.paju.salesorder.infrastructure.dao.ProductDao
 import io.paju.salesorder.infrastructure.dao.SalesOrderDao
+import org.jdbi.v3.core.Jdbi
 
-class SalesOrderStoreJdbc(
-    private val salesOrderDao: SalesOrderDao,
-    private val productDao: ProductDao
-) : SalesOrderStore() {
+class SalesOrderStoreJdbc(private val salesOrderDao: SalesOrderDao, private val productDao: ProductDao) : SalesOrderStore() {
+
+    constructor(jdbi: Jdbi):
+        this(SalesOrderDao(jdbi), ProductDao(jdbi))
+
+    constructor(jdbcUrl: String): this(Jdbi.create(jdbcUrl))
 
     override fun getSalesOrderWithoutRelations(id: AggregateRootId): SalesOrderState {
         return salesOrderDao.getById(id).get()
@@ -37,8 +40,8 @@ class SalesOrderStoreJdbc(
         productDao.update(id, product)
     }
 
-    override fun add(id: AggregateRootId, salesOrder: SalesOrderState) {
-        salesOrderDao.insert(id, salesOrder)
+    override fun create(id: AggregateRootId) {
+        salesOrderDao.create(id)
     }
 
     override fun update(id: AggregateRootId, salesOrder: SalesOrderState) {

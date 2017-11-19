@@ -41,7 +41,9 @@ subprojects {
 
     dependencies {
         compile libs.kotlinStdLib
-        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+        compile libs.kotlinStdLib2
+        compile libs.kotlinReflect
+        compile 'io.github.microutils:kotlin-logging:1.4.6'
         testCompile libs.junitJupiterApi
         testCompile libs.mockitoKotlin
     }

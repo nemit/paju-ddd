@@ -2,10 +2,8 @@ package io.paju.salesorder.infrastructure
 
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.EntityId
-import io.paju.ddd.State
 import io.paju.ddd.infrastructure.EventStoreWriter
 import io.paju.ddd.infrastructure.Repository
-import io.paju.ddd.infrastructure.StateStoreEventWriter
 import io.paju.ddd.infrastructure.StateStoreTypedEventWriter
 import io.paju.ddd.infrastructure.StateStoreTypedReader
 import io.paju.ddd.infrastructure.StateStoreTypedStateWriter
@@ -17,9 +15,9 @@ import io.paju.salesorder.domain.event.SalesOrderEvent
 import io.paju.salesorder.domain.state.ProductState
 import io.paju.salesorder.domain.state.SalesOrderState
 
-abstract class SalesOrderRepository(
+class SalesOrderRepository(
     private val eventWriter: EventStoreWriter,
-    private val stateWriter: StateStoreEventWriter,
+    private val stateWriter: StateStoreTypedEventWriter<SalesOrderEvent>,
     private val stateSnapshotWriter: StateStoreTypedStateWriter<SalesOrderState>,
     private val stateReader: StateStoreTypedReader<SalesOrderState>
 ) : Repository<SalesOrderEvent, SalesOrder> {
@@ -41,7 +39,7 @@ abstract class SalesOrderRepository(
     }
 
     override fun getById(id: AggregateRootId): SalesOrder {
-        return SalesOrder(id).apply {
+        return SalesOrder(id, false).apply {
             reconstruct(stateReader.readStateOrFail(id))
         }
     }
@@ -60,7 +58,7 @@ abstract class SalesOrderStore :
     abstract fun add(id: AggregateRootId, product: ProductState)
     abstract fun remove(id: AggregateRootId, productId: EntityId)
     abstract fun update(id: AggregateRootId, product: ProductState)
-    abstract fun add(id: AggregateRootId, salesOrder: SalesOrderState)
+    abstract fun create(id: AggregateRootId)
     abstract fun update(id: AggregateRootId, salesOrder: SalesOrderState)
     abstract fun saveSnapshot(id: AggregateRootId, salesOrder: SalesOrderState)
 
@@ -70,6 +68,9 @@ abstract class SalesOrderStore :
 
     private fun saveState(id: AggregateRootId, e: SalesOrderEvent) {
         when (e) {
+            is SalesOrderEvent.Created ->
+                create(id)
+
             is SalesOrderEvent.CustomerSet ->
                 update(id, getSalesOrderWithoutRelations(id).copy(customerId = e.customerId) )
 

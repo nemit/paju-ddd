@@ -1,5 +1,6 @@
 package io.paju.salesorder.domain.event
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.paju.ddd.EntityId
 import io.paju.ddd.StateChangeEvent
 import io.paju.salesorder.domain.DeliveryStatus
@@ -7,8 +8,14 @@ import io.paju.salesorder.domain.PaymentMethod
 import io.paju.salesorder.domain.PaymentStatus
 import io.paju.salesorder.domain.Product
 
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type")
 sealed class SalesOrderEvent : StateChangeEvent() {
 
+    object Created : SalesOrderEvent()
     data class CustomerSet(val customerId: EntityId) : SalesOrderEvent()
     object Deleted : SalesOrderEvent()
     object Confirmed : SalesOrderEvent()

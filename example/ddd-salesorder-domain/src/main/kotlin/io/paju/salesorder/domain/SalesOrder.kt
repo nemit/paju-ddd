@@ -3,12 +3,10 @@ package io.paju.salesorder.domain
 import io.paju.ddd.AggregateRoot
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.EntityId
-import io.paju.ddd.NotInitializedEntityId
 import io.paju.ddd.StateExposed
 import io.paju.ddd.StateReconstructable
 import io.paju.ddd.exception.InvalidStateException
 import io.paju.salesorder.domain.event.SalesOrderEvent
-import io.paju.salesorder.domain.state.ProductState
 import io.paju.salesorder.domain.state.SalesOrderState
 import io.paju.salesorder.domain.state.SalesOrderStateManager
 import io.paju.salesorder.service.DummyPaymentService
@@ -17,14 +15,19 @@ import io.paju.salesorder.service.DummyPaymentService
  * SalesOrder is Aggregate responsible for Sales Order lifecycle starting from Quote to Confirmed and the to Delivered.
  * PaymentStatus is tracked per product
  */
-class SalesOrder internal constructor(id: AggregateRootId) :
+class SalesOrder constructor(id: AggregateRootId, isNew: Boolean) :
     AggregateRoot<SalesOrderEvent>(id),
     StateReconstructable<SalesOrderState>,
     StateExposed<SalesOrderState>
 {
+    init {
+        if(isNew){
+            applyChange(SalesOrderEvent.Created)
+        }
+    }
 
     var state: SalesOrderState = SalesOrderState(1,
-        NotInitializedEntityId, false, false, mutableListOf()
+        EntityId.NotInitialized, false, false, mutableListOf()
     )
     private val stateManager = SalesOrderStateManager(this)
 
@@ -39,6 +42,7 @@ class SalesOrder internal constructor(id: AggregateRootId) :
     // event handling
     override fun apply(event: SalesOrderEvent) {
         when(event) {
+            is SalesOrderEvent.Created -> Unit
             is SalesOrderEvent.CustomerSet -> stateManager.apply(event)
             is SalesOrderEvent.Deleted -> stateManager.apply(event)
             is SalesOrderEvent.Confirmed -> stateManager.apply(event)

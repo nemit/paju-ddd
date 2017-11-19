@@ -24,16 +24,14 @@ dependencies {
 
     compile libs.postgresql
     compile libs.flywayCore
-    compile 'org.jdbi:jdbi3'
-    compile 'org.jdbi:jdbi3-kotlin'
-    compile 'org.jdbi:jdbi3-kotlin-sqlobject'
+    compile 'org.jdbi:jdbi3:3.0.0-beta2'
+    compile 'org.jdbi:jdbi3-kotlin:3.0.0-beta2'
+    compile 'org.jdbi:jdbi3-kotlin-sqlobject:3.0.0-beta2'
+    compile 'ru.yandex.qatools.embed:postgresql-embedded:2.5'
 }
 
 
 dependencyManagement {
-    imports {
-        mavenBom 'org.jdbi:jdbi3-bom:3.0.0-beta2'
-    }
     // override old kotlin (transitive) version from jdbi3
     dependencies {
         dependency "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
