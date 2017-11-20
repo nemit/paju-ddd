@@ -33,5 +33,5 @@ class LocalTypedStateStore<S: State> : StateStoreTypedStateWriter<S>, StateStore
         }
     }
 
-    override fun readState(id: AggregateRootId): S?  = storage[id]
+    override fun readState(id: AggregateRootId): S? = storage[id]
 }

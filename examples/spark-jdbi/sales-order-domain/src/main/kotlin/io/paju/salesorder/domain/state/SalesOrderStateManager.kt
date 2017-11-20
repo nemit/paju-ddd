@@ -7,7 +7,7 @@ import io.paju.salesorder.domain.event.SalesOrderEvent
 
 class SalesOrderStateManager(private val salesOrder: SalesOrder)
 {
-    private fun state(): SalesOrderState{
+    private fun state(): SalesOrderState {
         return salesOrder.state
     }
 
@@ -43,8 +43,8 @@ class SalesOrderStateManager(private val salesOrder: SalesOrder)
     }
 
     fun apply(event: SalesOrderEvent.ProductDelivered) {
-        val products = state().products.map{
-            if(it.product.id == event.product.id){
+        val products = state().products.map {
+            if (it.product.id == event.product.id) {
                 it.copy(deliveryStatus = DeliveryStatus.DELIVERED)
             } else {
                 it
@@ -54,8 +54,8 @@ class SalesOrderStateManager(private val salesOrder: SalesOrder)
     }
 
     fun apply(event: SalesOrderEvent.ProductInvoiced) {
-        val products = state().products.map{
-            if(it.product.id == event.product.id){
+        val products = state().products.map {
+            if (it.product.id == event.product.id) {
                 it.copy(paymentStatus = PaymentStatus.INVOICED)
             } else {
                 it
@@ -65,8 +65,8 @@ class SalesOrderStateManager(private val salesOrder: SalesOrder)
     }
 
     fun apply(event: SalesOrderEvent.ProductPaid) {
-        val products = state().products.map{
-            if(it.product.id == event.product.id){
+        val products = state().products.map {
+            if (it.product.id == event.product.id) {
                 it.copy(paymentStatus = PaymentStatus.PAID)
             } else {
                 it

@@ -9,7 +9,10 @@ import io.paju.salesorder.domain.event.SalesOrderEvent
 import io.paju.salesorder.infrastructure.SalesOrderRepository
 import mu.KotlinLogging
 import org.eclipse.jetty.websocket.api.Session
-import spark.Spark.*
+import spark.Spark.awaitInitialization
+import spark.Spark.get
+import spark.Spark.post
+import spark.Spark.webSocket
 import java.io.IOException
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose
@@ -32,32 +35,32 @@ class SalesOrderRestApi(
         get("/hello") { _, _ -> "Hello from sales order" }
 
         // Style 1: Handle commands in separate path
-        post("/sales-order/command/create-sales-order", "application/json") {req, _ ->
+        post("/sales-order/command/create-sales-order", "application/json") { req, _ ->
             val json = req.body()
             try {
                 val command = Serializer.objectMapper.readValue(json, CreateSalesOrder::class.java)
                 logger.info { "Sales order command ${command::class.simpleName} ${command.id}" }
                 commandHandler.handle(command)
-            }catch (t: Throwable){
-                logger.error(t) { "Sales order command failed"}
+            } catch (t: Throwable) {
+                logger.error(t) { "Sales order command failed" }
             }
             "OK"
         }
 
         // Style 2: Handle commands polymorphism in json parser
-        post("/sales-order/command", "application/json") {req, _ ->
+        post("/sales-order/command", "application/json") { req, _ ->
             val json = req.body()
             try {
                 val command = Serializer.jsonToCommand(json)
                 logger.info { "Sales order command ${command::class.simpleName} ${command.id}" }
                 commandHandler.handle(command)
-            }catch (t: Throwable){
-                logger.error(t) { "Sales order command failed"}
+            } catch (t: Throwable) {
+                logger.error(t) { "Sales order command failed" }
             }
             "OK"
         }
 
-        get("/sales-order/:id") {req, _ ->
+        get("/sales-order/:id") { req, _ ->
             val id = req.params(":id")
             logger.info { "Get sales order $id" }
             val aggregate = repository.getById(AggregateRootId.fromObject(UUID.fromString(id)))
@@ -91,21 +94,21 @@ class SalesOrderWebSocket : StateChangeEventPublisher {
     @OnWebSocketMessage
     @Throws(IOException::class)
     fun message(session: Session, message: String) {
-        logger.info {"Received ${session.remoteAddress.hostName} message: $message " }
-        try{
+        logger.info { "Received ${session.remoteAddress.hostName} message: $message " }
+        try {
             commandHandler?.handle(
                 Serializer.jsonToCommand(message)
             )
 
-        }catch (t: Throwable){
-            logger.error(t) { "Websocket command handling failed"}
+        } catch (t: Throwable) {
+            logger.error(t) { "Websocket command handling failed" }
         }
         session.getRemote().sendString(message)
     }
 
     override fun publish(topicName: String, event: StateChangeEvent) {
         logger.info { "Publishing event ${event::class.simpleName} to websocket" }
-        when(event) {
+        when (event) {
             is SalesOrderEvent -> sendToAll(event)
         }
     }

@@ -8,7 +8,6 @@ import io.paju.salesorder.domain.PaymentMethod
 import io.paju.salesorder.domain.PaymentStatus
 import io.paju.salesorder.domain.Product
 
-
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,

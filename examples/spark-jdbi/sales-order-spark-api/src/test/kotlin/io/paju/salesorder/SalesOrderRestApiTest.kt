@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.util.UUID
 
-internal class SalesOrderRestApiTest{
+internal class SalesOrderRestApiTest {
 
     val aggregateId = AggregateRootId.fromObject(UUID.fromString("e94ce3ee-1631-47f7-a1e1-3a3f4f3fa4a5"))
     val enityId = NotInitialized
@@ -27,7 +27,7 @@ internal class SalesOrderRestApiTest{
         val command = CreateSalesOrder(aggregateId, enityId)
         val serialized = Serializer.commandToJson(command)
         val deserialize = Serializer.jsonToCommand(serialized)
-        assertEquals(command,  deserialize)
+        assertEquals(command, deserialize)
     }
 
     @Test
@@ -35,7 +35,7 @@ internal class SalesOrderRestApiTest{
         val command = PayDeliveredProducts(aggregateId, 1, Product(NotInitialized, Price(BigDecimal.ONE, Vat.vat0, Currencies.EURO), "qwerty", "qwerty"), PaymentMethod.INVOICE)
         val serialized = Serializer.commandToJson(command)
         val deserialize = Serializer.jsonToCommand(serialized)
-        assertEquals(command,  deserialize)
+        assertEquals(command, deserialize)
     }
 
     @Test
@@ -43,7 +43,7 @@ internal class SalesOrderRestApiTest{
         val command = AddProductToSalesOrder(aggregateId, 1, Product(NotInitialized, Price(BigDecimal.ONE, Vat.vat0, Currencies.EURO), "qwerty", "qwerty"))
         val serialized = Serializer.commandToJson(command)
         val deserialize = Serializer.jsonToCommand(serialized)
-        assertEquals(command,  deserialize)
+        assertEquals(command, deserialize)
     }
 
     @Test
@@ -57,6 +57,5 @@ internal class SalesOrderRestApiTest{
         println(Serializer.commandToJson(addProduct))
 
     }
-
 
 }

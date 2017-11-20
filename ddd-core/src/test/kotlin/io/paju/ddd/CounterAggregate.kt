@@ -47,7 +47,7 @@ data class CounterState(
     override fun version(): Int = version
 }
 
-sealed class CounterEvent: StateChangeEvent() {
+sealed class CounterEvent : StateChangeEvent() {
     object Added : CounterEvent()
     object Subtracted : CounterEvent()
 }

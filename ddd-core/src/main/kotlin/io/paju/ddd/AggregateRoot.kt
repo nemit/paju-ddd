@@ -10,7 +10,7 @@ constructor(val id: AggregateRootId)
     private val changes = mutableListOf<E>()
 
     // now events will modify state is implemented here
-    abstract protected fun apply(event: E)
+    protected abstract fun apply(event: E)
 
     fun uncommittedChanges(): List<E> {
         return changes.toList()

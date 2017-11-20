@@ -6,9 +6,7 @@ import io.paju.ddd.StateChangeEventPublisher
 import io.paju.ddd.infrastructure.EventStoreReader
 import io.paju.ddd.infrastructure.EventStoreWriter
 import org.slf4j.LoggerFactory
-import java.util.ConcurrentModificationException
 import java.util.concurrent.locks.ReentrantLock
-
 
 class LocalEventStore : EventStoreReader, EventStoreWriter {
 
@@ -52,11 +50,11 @@ class LocalEventStore : EventStoreReader, EventStoreWriter {
         return storage.getOrElse(id.toString(), { listOf() })
     }
 
-    fun addPublisher(publisher: StateChangeEventPublisher){
+    fun addPublisher(publisher: StateChangeEventPublisher) {
         publishers.add(publisher)
     }
 
-    fun removePublisher(publisher: StateChangeEventPublisher){
+    fun removePublisher(publisher: StateChangeEventPublisher) {
         publishers.remove(publisher)
     }
 }
