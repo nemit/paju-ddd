@@ -1,6 +1,7 @@
 rootProject.name = 'paju-ddd-base'
 
 include 'ddd-core'
-include 'example:ddd-salesorder-domain'
-include 'example:ddd-salesorder-infrastructure'
-include 'example:ddd-salesorder-restapi'
+include 'examples:spark-jdbi:sales-order-domain'
+include 'examples:spark-jdbi:sales-order-jdbi-statestore'
+include 'examples:spark-jdbi:sales-order-spark-api'
+include 'examples:spark-jdbi:sales-order-boot'

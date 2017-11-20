@@ -1,7 +1,7 @@
 dependencies {
     compile project(':ddd-core')
-    compile project(':example:ddd-salesorder-domain')
-    compile project(':example:ddd-salesorder-infrastructure')
+    compile project(':examples:spark-jdbi:sales-order-domain')
+    compile project(':examples:spark-jdbi:sales-order-jdbi-statestore')
 
     compile 'com.sparkjava:spark-core:2.7.0'
     //compile 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
