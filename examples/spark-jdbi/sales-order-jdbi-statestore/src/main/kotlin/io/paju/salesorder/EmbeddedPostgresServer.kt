@@ -12,7 +12,7 @@ private constructor(val postgres: EmbeddedPostgres, var url: String)
 {
     companion object {
         val instance: EmbeddedPostgresServer by lazy {
-            val postgres = EmbeddedPostgres(Version.V10_0);
+            val postgres = EmbeddedPostgres(Version.V10_0)
             val runtimeCachePath = Paths.get(System.getProperty("user.home"), ".embedpostgresql" )
             val url = postgres.start(cachedRuntimeConfig(runtimeCachePath))
             EmbeddedPostgresServer(postgres, url).apply {

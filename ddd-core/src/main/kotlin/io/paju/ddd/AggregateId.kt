@@ -35,6 +35,5 @@ class AggregateRootId constructor(val id: String) : Serializable {
         val NotInitialized = AggregateRootId("0")
     }
 
-
 }
 

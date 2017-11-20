@@ -25,9 +25,9 @@ class SalesOrderCommandHandler(
         val aggregate: SalesOrder = when (command) {
             is CreateSalesOrder -> {
                 val aggregateId: AggregateRootId =
-                    if(command.id == AggregateRootId.NotInitialized){
+                    if (command.id == AggregateRootId.NotInitialized) {
                         AggregateRootId.fromObject(UUID.randomUUID())
-                    }else{
+                    } else {
                         command.id
                     }
                 createNewAggregate(aggregateId).apply {
@@ -38,7 +38,7 @@ class SalesOrderCommandHandler(
             is DeliverProducts ->
                 aggregate().apply { deliverProducts() }
 
-            is  DeleteSalesOrder ->
+            is DeleteSalesOrder ->
                 aggregate().apply { deleteSalesOrder() }
 
             is ConfirmSalesOrder ->

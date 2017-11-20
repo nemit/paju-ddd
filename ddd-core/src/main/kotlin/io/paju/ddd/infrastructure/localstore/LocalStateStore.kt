@@ -40,7 +40,6 @@ class LocalStateStore : StateStoreStateWriter, StateStoreReader {
 
     override fun <S: State>readState(id: AggregateRootId, clazz: Class<S>): S? {
         val state = storage[getKey(id, clazz)]
-        return if(state != null) clazz.cast(state)
-        else null
+        return if (state != null) clazz.cast(state) else null
     }
 }

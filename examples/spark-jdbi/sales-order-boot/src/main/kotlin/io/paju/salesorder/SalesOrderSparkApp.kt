@@ -13,7 +13,7 @@ import mu.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 @Suppress("unused_parameter")
-fun main(args : Array<String>){
+fun main(args : Array<String>) {
 
     // 1) WS ws://localhost:4567/sales-order-ws
     // 2) GET http://localhost:4567/hello

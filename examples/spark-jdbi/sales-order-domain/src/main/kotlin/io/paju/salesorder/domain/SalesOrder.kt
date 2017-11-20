@@ -21,7 +21,7 @@ class SalesOrder constructor(id: AggregateRootId, isNew: Boolean) :
     StateExposed<SalesOrderState>
 {
     init {
-        if(isNew){
+        if (isNew) {
             applyChange(SalesOrderEvent.Created)
         }
     }
@@ -41,7 +41,7 @@ class SalesOrder constructor(id: AggregateRootId, isNew: Boolean) :
 
     // event handling
     override fun apply(event: SalesOrderEvent) {
-        when(event) {
+        when (event) {
             is SalesOrderEvent.Created -> Unit
             is SalesOrderEvent.CustomerSet -> stateManager.apply(event)
             is SalesOrderEvent.Deleted -> stateManager.apply(event)
