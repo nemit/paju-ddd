@@ -27,7 +27,7 @@ dependencies {
     compile 'org.jdbi:jdbi3:3.0.0-beta2'
     compile 'org.jdbi:jdbi3-kotlin:3.0.0-beta2'
     compile 'org.jdbi:jdbi3-kotlin-sqlobject:3.0.0-beta2'
-    compile 'ru.yandex.qatools.embed:postgresql-embedded:2.5'
+    compile libs.embeddedPostgresql
 }
 
 

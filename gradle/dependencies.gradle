@@ -8,6 +8,11 @@ ext {
             postgresql              : '42.1.4',
             flyway                  : '4.2.0',
             slf4jApi                : '1.7.25',
+            kotlinLogging           : '1.4.6',
+            logbackClassic          : '1.2.3',
+            jacksonModuleKotlin     : '2.9.0',
+            embeddedPostgresql      : '2.5',
+
             // test libs
             junitJupiter            : '5.0.1',
             mockitoKotlin           : '1.5.0',
@@ -21,8 +26,8 @@ ext {
     libs = [
             // libs
             kotlinGradlePlugin      : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
-            kotlinStdLib            : "org.jetbrains.kotlin:kotlin-stdlib-jre8:$versions.kotlin",
-            kotlinStdLib2           : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
+            kotlinStdLibJre8        : "org.jetbrains.kotlin:kotlin-stdlib-jre8:$versions.kotlin",
+            kotlinStdLib            : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
             kotlinReflect           : "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
             sparkCore               : "com.sparkjava:spark-core:$versions.spark",
             sparkKotlin             : "com.sparkjava:spark-kotlin:$versions.sparkKotlin",
@@ -30,6 +35,10 @@ ext {
             postgresql              : "org.postgresql:postgresql:$versions.postgresql",
             flywayCore              : "org.flywaydb:flyway-core:$versions.flyway",
             slf4jApi                : "org.slf4j:slf4j-api:$versions.slf4jApi",
+            kotlinLogging           : "io.github.microutils:kotlin-logging:$versions.kotlinLogging",
+            logbackClassic          : "ch.qos.logback:logback-classic:$versions.logbackClassic",
+            jacksonModuleKotlin     : "com.fasterxml.jackson.module:jackson-module-kotlin:$versions.jacksonModuleKotlin",
+            embeddedPostgresql      : "ru.yandex.qatools.embed:postgresql-embedded:$versions.embeddedPostgresql",
 
             // test libs
             junitJupiterApi         : "org.junit.jupiter:junit-jupiter-api:$versions.junitJupiter",

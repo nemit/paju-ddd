@@ -40,10 +40,10 @@ subprojects {
     }
 
     dependencies {
+        compile libs.kotlinStdLibJre8
         compile libs.kotlinStdLib
-        compile libs.kotlinStdLib2
         compile libs.kotlinReflect
-        compile 'io.github.microutils:kotlin-logging:1.4.6'
+        compile libs.kotlinLogging
         testCompile libs.junitJupiterApi
         testCompile libs.mockitoKotlin
     }
