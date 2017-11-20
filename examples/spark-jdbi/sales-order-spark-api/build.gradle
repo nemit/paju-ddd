@@ -4,8 +4,6 @@ dependencies {
     compile project(':examples:spark-jdbi:sales-order-jdbi-statestore')
 
     compile 'com.sparkjava:spark-core:2.7.0'
-    //compile 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.0"
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    compile libs.jacksonModuleKotlin
 }
 
