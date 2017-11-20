@@ -1,7 +1,10 @@
 package io.paju.salesorder
 
+import io.paju.ddd.EntityId
 import io.paju.ddd.infrastructure.localstore.LocalEventStore
 import io.paju.salesorder.command.SalesOrderCommandHandler
+import io.paju.salesorder.domain.PaymentMethod
+import io.paju.salesorder.domain.Product
 import io.paju.salesorder.infrastructure.SalesOrderRepository
 import io.paju.salesorder.infrastructure.SalesOrderStoreJdbc
 import io.paju.salesorder.service.DummyPaymentService
@@ -29,7 +32,13 @@ fun main(args : Array<String>){
     val store = SalesOrderStoreJdbc(embeddedPostgres.url)
     val eventWriter = LocalEventStore().apply { addPublisher(webSocket) }
     val repository = SalesOrderRepository(eventWriter, store, store, store)
-    val commandHandler = SalesOrderCommandHandler(repository, DummyPaymentService)
+    val commandHandler = SalesOrderCommandHandler(repository, DummyPaymentServiceImpl)
     webSocket.commandHandler = commandHandler
     SalesOrderRestApi(repository, webSocket, commandHandler)
+}
+
+object DummyPaymentServiceImpl : DummyPaymentService {
+    @Suppress("unused_parameter")
+    override fun handleProductPayment(product: Product, customerId: EntityId, paymentMethod: PaymentMethod) {
+    }
 }

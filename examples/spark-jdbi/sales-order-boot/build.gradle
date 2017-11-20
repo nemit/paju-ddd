@@ -1,0 +1,8 @@
+dependencies {
+    compile project(':ddd-core')
+    compile project(':examples:spark-jdbi:sales-order-domain')
+    compile project(':examples:spark-jdbi:sales-order-jdbi-statestore')
+    compile project(':examples:spark-jdbi:sales-order-spark-api')
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+}
+
