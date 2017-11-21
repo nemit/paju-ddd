@@ -2,40 +2,43 @@ package io.paju.salesorder.infrastructure.ports
 
 import io.paju.ddd.EntityId
 import io.paju.ddd.infrastructure.localstore.LocalEventStore
-import io.paju.salesorder.EmbeddedPostgresServer
 import io.paju.salesorder.command.SalesOrderCommandHandler
 import io.paju.salesorder.domain.PaymentMethod
 import io.paju.salesorder.domain.Product
 import io.paju.salesorder.domain.SalesOrderTestData
+import io.paju.salesorder.domain.SalesOrderTestData.product1
+import io.paju.salesorder.domain.SalesOrderTestData.product2
 import io.paju.salesorder.infrastructure.SalesOrderRepository
 import io.paju.salesorder.infrastructure.SalesOrderStoreJdbc
 import io.paju.salesorder.service.DummyPaymentService
+import org.flywaydb.core.Flyway
 import org.slf4j.LoggerFactory
-
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
+import ru.yandex.qatools.embed.postgresql.EmbeddedPostgres
 
 @SpringBootApplication
 class SpringRestPort {
 
+    private val jdbcUrl = "jdbc:postgresql://localhost:5432/pajulahti?user=postgres&password=password"
     private val logger = LoggerFactory.getLogger(SpringRestPort::class.java)
 
     @Bean
     fun init(repository: SalesOrderRepository) =
         CommandLineRunner {
-            val so = SalesOrderTestData.makeSalesOrder()
+            val flyway = Flyway()
+            flyway.setDataSource(jdbcUrl, EmbeddedPostgres.DEFAULT_USER, EmbeddedPostgres.DEFAULT_PASSWORD)
+            flyway.migrate()
+            val so = SalesOrderTestData.makeSalesOrder(product1, product2)
             repository.save(so, 1)
-            logger.info("Created sales order with ${so.id}")
+            logger.info("Sales Order created with id:${so.id}")
         }
-
 
     @Bean
     fun salesOrderRepository(): SalesOrderRepository {
-        val embeddedPostgres = EmbeddedPostgresServer.instance
-        logger.info("Postgres started to ${embeddedPostgres.url}")
-        val store = SalesOrderStoreJdbc(embeddedPostgres.url)
+        val store = SalesOrderStoreJdbc(jdbcUrl)
         val eventWriter = LocalEventStore()
         val repository = SalesOrderRepository(eventWriter, store, store, store)
         return repository
