@@ -1,7 +1,8 @@
+
 ext {
     versions = [
             // libs
-            kotlin                  : '1.1.51',
+            kotlin                  : '1.1.60',
             sparkKotlin             : '1.0.0-alpha',
             spark                   : '2.6.0',
             sparkTemplateVelocity   : '2.5.5',
@@ -12,13 +13,14 @@ ext {
             logbackClassic          : '1.2.3',
             jacksonModuleKotlin     : '2.9.0',
             embeddedPostgresql      : '2.5',
+            springBoot              : '1.5.8.RELEASE',
 
             // test libs
             junitJupiter            : '5.0.1',
             mockitoKotlin           : '1.5.0',
 
             // plugins
-            dependencyManagementPlugin : '1.0.0.RC2',
+            dependencyManagementPlugin : '1.0.3.RELEASE',
             ktlint                  : '0.11.0',
             ktlintPlugin            : '2.2.1'
     ]
@@ -51,6 +53,8 @@ ext {
             dependencyManagementPlugin : "io.spring.gradle:dependency-management-plugin:$versions.dependencyManagementPlugin",
             flywayPlugin            : "gradle.plugin.com.boxfuse.client:flyway-release:$versions.flyway",
             ktlintPlugin            : "gradle.plugin.org.jlleitschuh.gradle:ktlint-gradle:$versions.ktlintPlugin",
-            ktlint                  : "com.github.shyiko:ktlint:$versions.ktlint"
+            ktlint                  : "com.github.shyiko:ktlint:$versions.ktlint",
+            springBootGradlePlugin  : "org.springframework.boot:spring-boot-gradle-plugin:$versions.springBoot",
+            kotlinAllOpen           : "org.jetbrains.kotlin:kotlin-allopen:$versions.kotlin"
     ]
 }
