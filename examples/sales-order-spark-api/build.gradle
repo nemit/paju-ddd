@@ -1,0 +1,9 @@
+dependencies {
+    compile project(':ddd-core')
+    compile project(':examples:sales-order-domain')
+    compile project(':examples:sales-order-jdbi-statestore')
+
+    compile 'com.sparkjava:spark-core:2.7.0'
+    compile libs.jacksonModuleKotlin
+}
+

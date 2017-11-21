@@ -1,0 +1,8 @@
+dependencies {
+    compile project(':ddd-core')
+    compile project(':examples:sales-order-domain')
+    compile project(':examples:sales-order-jdbi-statestore')
+    compile project(':examples:sales-order-spark-api')
+    compile libs.logbackClassic
+}
+
