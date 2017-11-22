@@ -1,7 +1,5 @@
 package io.paju.salesorder.infrastructure.ports.resources
 
-import io.paju.salesorder.domain.DeliveryStatus
-import io.paju.salesorder.domain.PaymentStatus
 import io.paju.salesorder.domain.SalesOrder
 import io.paju.salesorder.infrastructure.ports.controllers.SalesOrderController
 import org.springframework.hateoas.EntityLinks
@@ -13,11 +11,11 @@ class SalesOrderResourceAssembler(val entityLinks: EntityLinks) : EmbeddableReso
     override fun toResource(entity: SalesOrder): SalesOrderResource {
         val r = createResourceWithId(entity.state.customerId.toString(), entity)
 
-        if (entity.products(PaymentStatus.OPEN).isNotEmpty()) {
+        if (!entity.isEveryProductPaid()) {
             r.add(entityLinks.linkForSingleResource(r::class.java, entity.id.toString()).slash("payment").withRel("payment"))
         }
 
-        if (entity.products(DeliveryStatus.NOT_DELIVERED).isNotEmpty()) {
+        if (!entity.isEveryProductDelivered()) {
             r.add(entityLinks.linkForSingleResource(r::class.java, entity.id.toString()).slash("delivery").withRel("delivery"))
         }
 
