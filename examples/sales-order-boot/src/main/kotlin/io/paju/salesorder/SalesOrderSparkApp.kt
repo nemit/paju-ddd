@@ -15,6 +15,8 @@ private val logger = KotlinLogging.logger {}
 @Suppress("unused_parameter")
 fun main(args : Array<String>) {
 
+    val jdbcUrl = "jdbc:postgresql://localhost:5432/pajulahti?user=postgres&password=password"
+
     // 1) WS ws://localhost:4567/sales-order-ws
     // 2) GET http://localhost:4567/hello
     // 3) POST http://localhost:4567/sales-order/command OR ws://localhost:4567/sales-order-ws
@@ -24,12 +26,12 @@ fun main(args : Array<String>) {
     // 4) GET http://localhost:4567/sales-order/e94ce3ee-1631-47f7-a1e1-3a3f4f3fa4a5
 
     // init postgres
-    val embeddedPostgres = EmbeddedPostgresServer.instance
-    logger.info { "Postgres started to ${embeddedPostgres.url}" }
+    //val embeddedPostgres = EmbeddedPostgresServer.instance
+    //logger.info { "Postgres started to ${embeddedPostgres.url}" }
 
     // init aggregate and spark api
     val webSocket = SalesOrderWebSocket()
-    val store = SalesOrderStoreJdbc(embeddedPostgres.url)
+    val store = SalesOrderStoreJdbc(jdbcUrl)
     val eventWriter = LocalEventStore().apply { addPublisher(webSocket) }
     val repository = SalesOrderRepository(eventWriter, store, store, store)
     val commandHandler = SalesOrderCommandHandler(repository, DummyPaymentServiceImpl)
