@@ -114,8 +114,13 @@ class SalesOrder constructor(id: AggregateRootId, isNew: Boolean) :
     }
 
     fun deliverProduct(product: Product) {
-        val event = SalesOrderEvent.ProductDelivered(product)
+        deliverProduct(product.id)
+    }
 
+    fun deliverProduct(productId: EntityId) {
+        val productState = state.products.find( { it.product.id.equals(productId) && it.deliveryStatus == DeliveryStatus.NOT_DELIVERED })
+        productState ?: throw InvalidStateException(id, version, "Failed to delive product, product with id ${productId.id} not found")
+        val event = SalesOrderEvent.ProductDelivered(productState.product)
         // update state
         applyChange(event)
     }
@@ -135,11 +140,15 @@ class SalesOrder constructor(id: AggregateRootId, isNew: Boolean) :
     }
 
     fun payDeliveredProduct(paymentService: DummyPaymentService, product: Product, method: PaymentMethod) {
-        val p = state.products.find { it.product.id == product.id }
+        payDeliveredProduct(paymentService, product.id, method)
+    }
+
+    fun payDeliveredProduct(paymentService: DummyPaymentService, productId: EntityId, method: PaymentMethod) {
+        val p = state.products.find { it.product.id == productId }
         p ?: throw InvalidStateException(id, version, "Failed to pay product, product not found")
 
-        paymentService.handleProductPayment(product, state.customerId, method)
-        applyChange(SalesOrderEvent.ProductPaid(product))
+        paymentService.handleProductPayment(p.product, state.customerId, method)
+        applyChange(SalesOrderEvent.ProductPaid(p.product))
     }
 
     fun deleteSalesOrder() {

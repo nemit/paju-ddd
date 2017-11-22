@@ -1,11 +1,12 @@
 package io.paju.salesorder
 
 import io.paju.ddd.AggregateRootId
+import io.paju.ddd.EntityId
 import io.paju.ddd.EntityId.Companion.NotInitialized
 import io.paju.salesorder.command.AddProductToSalesOrder
 import io.paju.salesorder.command.CreateSalesOrder
 import io.paju.salesorder.command.DeleteSalesOrder
-import io.paju.salesorder.command.PayDeliveredProducts
+import io.paju.salesorder.command.PayDeliveredProduct
 import io.paju.salesorder.domain.Currencies
 import io.paju.salesorder.domain.PaymentMethod
 import io.paju.salesorder.domain.Price
@@ -32,7 +33,7 @@ internal class SalesOrderRestApiTest {
 
     @Test
     fun jsonToPayDeliveredProducts() {
-        val command = PayDeliveredProducts(aggregateId, 1, Product(NotInitialized, Price(BigDecimal.ONE, Vat.vat0, Currencies.EURO), "qwerty", "qwerty"), PaymentMethod.INVOICE)
+        val command = PayDeliveredProduct(aggregateId, 1, EntityId(UUID.randomUUID().toString()), PaymentMethod.INVOICE)
         val serialized = Serializer.commandToJson(command)
         val deserialize = Serializer.jsonToCommand(serialized)
         assertEquals(command, deserialize)

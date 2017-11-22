@@ -19,8 +19,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 import ru.yandex.qatools.embed.postgresql.EmbeddedPostgres
 
+
+fun main(args: Array<String>) {
+    SpringApplication.run(SpringRestPort::class.java, *args)
+}
+
 @SpringBootApplication
-class SpringRestPort {
+class SpringRestPort() {
 
     private val jdbcUrl = "jdbc:postgresql://localhost:5432/pajulahti?user=postgres&password=password"
     private val logger = LoggerFactory.getLogger(SpringRestPort::class.java)
@@ -40,8 +45,7 @@ class SpringRestPort {
     fun salesOrderRepository(): SalesOrderRepository {
         val store = SalesOrderStoreJdbc(jdbcUrl)
         val eventWriter = LocalEventStore()
-        val repository = SalesOrderRepository(eventWriter, store, store, store)
-        return repository
+        return SalesOrderRepository(eventWriter, store, store, store)
     }
 
     @Bean
@@ -55,8 +59,4 @@ object DummyPaymentServiceImpl : DummyPaymentService {
     @Suppress("unused_parameter")
     override fun handleProductPayment(product: Product, customerId: EntityId, paymentMethod: PaymentMethod) {
     }
-}
-
-fun main(args: Array<String>) {
-    SpringApplication.run(SpringRestPort::class.java, *args)
 }

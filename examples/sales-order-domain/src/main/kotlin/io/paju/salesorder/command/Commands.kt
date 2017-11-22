@@ -22,7 +22,7 @@ import io.paju.salesorder.domain.Product
     Type(name = "RemoveProductFromSalesOrder", value = RemoveProductFromSalesOrder::class),
     Type(name = "DeliverProduct", value = DeliverProduct::class),
     Type(name = "InvoiceDeliveredProducts", value = InvoiceDeliveredProducts::class),
-    Type(name = "PayDeliveredProducts", value = PayDeliveredProducts::class)
+    Type(name = "PayDeliveredProduct", value = PayDeliveredProduct::class)
 )
 sealed class SalesOrderCommand : Command
 
@@ -38,7 +38,8 @@ data class DeleteSalesOrder(override val id: AggregateRootId, override val origi
 data class ConfirmSalesOrder(override val id: AggregateRootId, override val originalVersion: Int) : SalesOrderCommand()
 data class AddProductToSalesOrder(override val id: AggregateRootId, override val originalVersion: Int, val product: Product) : SalesOrderCommand()
 data class RemoveProductFromSalesOrder(override val id: AggregateRootId, override val originalVersion: Int, val product: Product) : SalesOrderCommand()
-data class DeliverProduct(override val id: AggregateRootId, override val originalVersion: Int, val product: Product) : SalesOrderCommand()
+data class DeliverProduct(override val id: AggregateRootId, override val originalVersion: Int, val productId: EntityId) : SalesOrderCommand()
 data class InvoiceDeliveredProducts(override val id: AggregateRootId, override val originalVersion: Int, val product: Product, val method: PaymentMethod) : SalesOrderCommand()
-data class PayDeliveredProducts(override val id: AggregateRootId, override val originalVersion: Int, val product: Product, val method: PaymentMethod) : SalesOrderCommand()
+data class PayDeliveredProduct(override val id: AggregateRootId, override val originalVersion: Int, val productId: EntityId, val method: PaymentMethod) : SalesOrderCommand()
+data class PayAllDeliveredProducts(override val id: AggregateRootId, override val originalVersion: Int, val method: PaymentMethod): SalesOrderCommand()
 
