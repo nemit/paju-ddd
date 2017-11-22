@@ -1,9 +1,8 @@
 package io.paju.salesorder.infrastructure.ports.resources
 
 import io.paju.salesorder.infrastructure.ports.controllers.CustomerController
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport
 
-class CustomerResourceAssember : ResourceAssemblerSupport<Customer, CustomerResource>(CustomerController::class.java, CustomerResource::class.java) {
+class CustomerResourceAssember : EmbeddableResourceAssemblerSupport<Customer, CustomerResource, CustomerController>(CustomerController::class.java, CustomerResource::class.java) {
 
     override fun toResource(entity: Customer): CustomerResource {
         return createResourceWithId(entity.id, entity)
