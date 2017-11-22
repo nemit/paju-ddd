@@ -5,7 +5,6 @@ import io.paju.salesorder.domain.PaymentStatus
 import io.paju.salesorder.domain.SalesOrder
 import io.paju.salesorder.infrastructure.ports.controllers.SalesOrderController
 import org.springframework.hateoas.EntityLinks
-import org.springframework.hateoas.Link
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.core.EmbeddedWrapper
 
@@ -13,12 +12,6 @@ class SalesOrderResourceAssembler(val entityLinks: EntityLinks) : EmbeddableReso
 
     override fun toResource(entity: SalesOrder): SalesOrderResource {
         val r = createResourceWithId(entity.state.customerId.toString(), entity)
-        // this links to other resouce, Customer
-        // inside single Spring app we can use Entity links, but as this
-        // represents other remote service it's not used.
-        // TODO resolve how should Sales order discover link for Customer?
-        //      - link maybe stored when customer added to Sales Order
-        r.add(Link("http://localhost:8080/customers/${r.customerId}", "customer"))
 
         if (entity.products(PaymentStatus.OPEN).isNotEmpty()) {
             r.add(entityLinks.linkForSingleResource(r::class.java, entity.id.toString()).slash("payment").withRel("payment"))
