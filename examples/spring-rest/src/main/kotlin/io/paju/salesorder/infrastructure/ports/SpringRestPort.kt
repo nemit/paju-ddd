@@ -19,7 +19,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 import ru.yandex.qatools.embed.postgresql.EmbeddedPostgres
 
-
 fun main(args: Array<String>) {
     SpringApplication.run(SpringRestPort::class.java, *args)
 }
