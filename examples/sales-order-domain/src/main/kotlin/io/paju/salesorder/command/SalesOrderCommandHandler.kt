@@ -3,6 +3,7 @@ package io.paju.salesorder.command
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.CommandHandler
 import io.paju.ddd.infrastructure.Repository
+import io.paju.salesorder.domain.DeliveryStatus
 import io.paju.salesorder.domain.SalesOrder
 import io.paju.salesorder.domain.event.SalesOrderEvent
 import io.paju.salesorder.service.DummyPaymentService
@@ -51,10 +52,15 @@ class SalesOrderCommandHandler(
                 aggregate().apply { removeProduct(command.product) }
 
             is DeliverProduct ->
-                aggregate().apply { deliverProduct(command.product) }
+                aggregate().apply { deliverProduct(command.productId) }
 
-            is PayDeliveredProducts ->
-                aggregate().apply { payDeliveredProduct(paymentService, command.product, command.method) }
+            is PayDeliveredProduct ->
+                aggregate().apply { payDeliveredProduct(paymentService, command.productId, command.method) }
+
+            is PayAllDeliveredProducts ->
+                aggregate().apply {
+                    products(DeliveryStatus.DELIVERED).forEach {  }
+                }
 
             is InvoiceDeliveredProducts ->
                 aggregate().apply { invoiceDeliveredProducts(paymentService) }
