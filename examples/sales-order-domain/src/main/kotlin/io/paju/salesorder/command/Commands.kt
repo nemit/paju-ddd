@@ -41,5 +41,5 @@ data class RemoveProductFromSalesOrder(override val id: AggregateRootId, overrid
 data class DeliverProduct(override val id: AggregateRootId, override val originalVersion: Int, val productId: EntityId) : SalesOrderCommand()
 data class InvoiceDeliveredProducts(override val id: AggregateRootId, override val originalVersion: Int, val product: Product, val method: PaymentMethod) : SalesOrderCommand()
 data class PayDeliveredProduct(override val id: AggregateRootId, override val originalVersion: Int, val productId: EntityId, val method: PaymentMethod) : SalesOrderCommand()
-data class PayAllDeliveredProducts(override val id: AggregateRootId, override val originalVersion: Int, val method: PaymentMethod): SalesOrderCommand()
+data class PayAllDeliveredProducts(override val id: AggregateRootId, override val originalVersion: Int, val method: PaymentMethod) : SalesOrderCommand()
 

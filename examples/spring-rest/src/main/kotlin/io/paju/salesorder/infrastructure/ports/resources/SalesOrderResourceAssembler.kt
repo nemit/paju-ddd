@@ -27,7 +27,7 @@ class SalesOrderResourceAssembler(val entityLinks: EntityLinks) : EmbeddableReso
         if (entity.products(DeliveryStatus.NOT_DELIVERED).isNotEmpty()) {
             r.add(entityLinks.linkForSingleResource(r::class.java, entity.id.toString()).slash("delivery").withRel("delivery"))
         }
-        
+
         return r
     }
 

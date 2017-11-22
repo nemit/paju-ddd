@@ -59,7 +59,7 @@ class SalesOrderCommandHandler(
 
             is PayAllDeliveredProducts ->
                 aggregate().apply {
-                    products(DeliveryStatus.DELIVERED).forEach {  }
+                    products(DeliveryStatus.DELIVERED).forEach { }
                 }
 
             is InvoiceDeliveredProducts ->

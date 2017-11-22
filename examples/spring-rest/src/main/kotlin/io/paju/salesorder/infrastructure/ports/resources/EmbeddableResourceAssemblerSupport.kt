@@ -6,7 +6,7 @@ import org.springframework.hateoas.core.EmbeddedWrappers
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport
 import kotlin.streams.toList
 
-abstract class EmbeddableResourceAssemblerSupport<T, D: ResourceSupport, C>(controllerClass: Class<C>, resourceType: Class<D>): ResourceAssemblerSupport<T, D>(controllerClass, resourceType) {
+abstract class EmbeddableResourceAssemblerSupport<T, D: ResourceSupport, C>(controllerClass: Class<C>, resourceType: Class<D>) : ResourceAssemblerSupport<T, D>(controllerClass, resourceType) {
 
     fun toEmbeddable(entities: Iterable<T>): List<EmbeddedWrapper> {
         val wrapper = EmbeddedWrappers(true) // Prefer collection
@@ -21,7 +21,4 @@ abstract class EmbeddableResourceAssemblerSupport<T, D: ResourceSupport, C>(cont
     }
 
 }
-
-
-
 
