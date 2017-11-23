@@ -159,8 +159,8 @@ class SalesOrder constructor(id: AggregateRootId, isNew: Boolean) :
         applyChange(SalesOrderEvent.Confirmed)
     }
 
-    fun isEveryProductPaid() = products(PaymentStatus.OPEN).isNotEmpty()
+    fun isEveryProductPaid() = products(PaymentStatus.OPEN).isEmpty()
 
-    fun isEveryProductDelivered()= products(DeliveryStatus.NOT_DELIVERED).isNotEmpty()
+    fun isEveryProductDelivered()= products(DeliveryStatus.NOT_DELIVERED).isEmpty()
 
 }
