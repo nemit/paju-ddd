@@ -9,7 +9,7 @@ import org.springframework.hateoas.core.EmbeddedWrapper
 class SalesOrderResourceAssembler(val entityLinks: EntityLinks) : EmbeddableResourceAssemblerSupport<SalesOrder, SalesOrderResource, SalesOrderController>(SalesOrderController::class.java, SalesOrderResource::class.java) {
 
     override fun toResource(entity: SalesOrder): SalesOrderResource {
-        val r = createResourceWithId(entity.state.customerId.toString(), entity)
+        val r = createResourceWithId(entity.id.toString(), entity)
 
         if (!entity.isEveryProductPaid()) {
             r.add(entityLinks.linkForSingleResource(r::class.java, entity.id.toString()).slash("payment").withRel("payment"))
