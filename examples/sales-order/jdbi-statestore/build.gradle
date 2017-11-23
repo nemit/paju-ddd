@@ -20,7 +20,7 @@ apply plugin: "org.flywaydb.flyway"
 
 dependencies {
     compile project(':ddd-core')
-    compile project(':examples:sales-order-domain')
+    compile project(':examples:sales-order:domain')
 
     compile libs.postgresql
     compile libs.flywayCore

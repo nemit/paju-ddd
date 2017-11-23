@@ -21,8 +21,8 @@ apply plugin: "kotlin-spring"
 
 dependencies {
     compile project(':ddd-core')
-    compile project(':examples:sales-order-domain')
-    compile project(':examples:sales-order-jdbi-statestore')
+    compile project(':examples:sales-order:domain')
+    compile project(':examples:sales-order:jdbi-statestore')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-hateoas')
     compile('org.springframework.data:spring-data-rest-hal-browser')
