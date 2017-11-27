@@ -1,12 +1,19 @@
+
 ext {
     versions = [
             // libs
-            kotlin                  : '1.1.51',
+            kotlin                  : '1.1.60',
             sparkKotlin             : '1.0.0-alpha',
             spark                   : '2.6.0',
             sparkTemplateVelocity   : '2.5.5',
             postgresql              : '42.1.4',
             flyway                  : '4.2.0',
+            slf4jApi                : '1.7.25',
+            kotlinLogging           : '1.4.6',
+            logbackClassic          : '1.2.3',
+            jacksonModuleKotlin     : '2.9.0',
+            embeddedPostgresql      : '2.5',
+            springBoot              : '1.5.8.RELEASE',
 
             // test libs
             junitJupiter            : '5.0.1',
@@ -14,7 +21,7 @@ ext {
             mockitoKotlin           : '1.5.0',
 
             // plugins
-            dependencyManagementPlugin : '1.0.0.RC2',
+            dependencyManagementPlugin : '1.0.3.RELEASE',
             ktlint                  : '0.11.0',
             ktlintPlugin            : '2.2.1'
     ]
@@ -22,12 +29,19 @@ ext {
     libs = [
             // libs
             kotlinGradlePlugin      : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
-            kotlinStdLib            : "org.jetbrains.kotlin:kotlin-stdlib-jre8:$versions.kotlin",
+            kotlinStdLibJre8        : "org.jetbrains.kotlin:kotlin-stdlib-jre8:$versions.kotlin",
+            kotlinStdLib            : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
+            kotlinReflect           : "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
             sparkCore               : "com.sparkjava:spark-core:$versions.spark",
             sparkKotlin             : "com.sparkjava:spark-kotlin:$versions.sparkKotlin",
             sparkTemplateVelocity   : "com.sparkjava:spark-template-velocity:$versions.sparkTemplateVelocity",
             postgresql              : "org.postgresql:postgresql:$versions.postgresql",
             flywayCore              : "org.flywaydb:flyway-core:$versions.flyway",
+            slf4jApi                : "org.slf4j:slf4j-api:$versions.slf4jApi",
+            kotlinLogging           : "io.github.microutils:kotlin-logging:$versions.kotlinLogging",
+            logbackClassic          : "ch.qos.logback:logback-classic:$versions.logbackClassic",
+            jacksonModuleKotlin     : "com.fasterxml.jackson.module:jackson-module-kotlin:$versions.jacksonModuleKotlin",
+            embeddedPostgresql      : "ru.yandex.qatools.embed:postgresql-embedded:$versions.embeddedPostgresql",
 
             // test libs
             junitJupiterApi         : "org.junit.jupiter:junit-jupiter-api:$versions.junitJupiter",
@@ -42,6 +56,8 @@ ext {
             flywayPlugin            : "gradle.plugin.com.boxfuse.client:flyway-release:$versions.flyway",
             ktlintPlugin            : "gradle.plugin.org.jlleitschuh.gradle:ktlint-gradle:$versions.ktlintPlugin",
             ktlint                  : "com.github.shyiko:ktlint:$versions.ktlint",
+            springBootGradlePlugin  : "org.springframework.boot:spring-boot-gradle-plugin:$versions.springBoot",
+            kotlinAllOpen           : "org.jetbrains.kotlin:kotlin-allopen:$versions.kotlin",
             junitGradlePlugin       : "org.junit.platform:junit-platform-gradle-plugin:$versions.junitGradlePlugin"
     ]
 }

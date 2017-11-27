@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':ddd-core')
+    compile libs.jacksonModuleKotlin
+}

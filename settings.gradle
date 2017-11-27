@@ -1,6 +1,8 @@
-rootProject.name = 'pajulahti-domain-demo'
+rootProject.name = 'paju-ddd-base'
 
-include 'shared'
-include 'domain'
-include 'application'
-include 'infrastructure'
+include 'ddd-core'
+include 'examples:sales-order:domain'
+include 'examples:sales-order:jdbi-statestore'
+include 'examples:sales-order:spark-api'
+include 'examples:sales-order:boot'
+include 'examples:sales-order:spring-api'

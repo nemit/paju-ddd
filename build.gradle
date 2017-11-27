@@ -65,7 +65,10 @@ subprojects {
     }
 
     dependencies {
+        compile libs.kotlinStdLibJre8
         compile libs.kotlinStdLib
+        compile libs.kotlinReflect
+        compile libs.kotlinLogging
         testCompile libs.junitJupiterApi
         testCompile libs.mockitoKotlin
     }
