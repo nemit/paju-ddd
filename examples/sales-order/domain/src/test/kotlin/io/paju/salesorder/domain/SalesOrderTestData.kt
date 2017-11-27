@@ -15,5 +15,6 @@ object SalesOrderTestData {
     val customerId = EntityId.fromObject("1")
     val product1 = Product(EntityId.fromObject(UUID.randomUUID()), Price(BigDecimal.valueOf(10.0), Vat.vat24), "Test product1", "Test product description")
     val product2 = Product(EntityId.fromObject(UUID.randomUUID()), Price(BigDecimal.valueOf(12.0), Vat.vat24), "Test product2", "Test product description")
+    val product3 = Product(EntityId.fromObject(UUID.randomUUID()), Price(BigDecimal.valueOf(14.0), Vat.vat24), "Test product3", "Test product description")
 }
 
