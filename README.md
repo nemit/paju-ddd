@@ -1,4 +1,4 @@
-# Domain-Driven Design API for Kotlin
+# Domain-Driven Design API for Kotlin [![CircleCI](https://circleci.com/gh/nemit/paju-ddd.svg?style=shield)](https://circleci.com/gh/nemit/paju-ddd)
 
 This project explores Domain-Driven Design pattern with Kotlin. 
 
