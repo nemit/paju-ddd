@@ -1,5 +1,19 @@
-# pajulahti-domain-demo
-Demo io.paju.templateservice.repository for proposed architecture and domain io.paju.templateservice.domain prototyping
+# Domain-Driven Design API for Kotlin
+
+This project explores Domain-Driven Design pattern with Kotlin. 
+
+API features
+
+- Domain-Driven Design base classes
+- CQRS
+- Event-driven state changes
+
+## Project Structure
+
+Module | Description
+------ | -----------
+`ddd-core` | Core API for Domain-Driven Design
+`examples/sales-order` | Sales order example with Spark and Spring MVC ports 
 
 
 # Build
