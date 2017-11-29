@@ -16,7 +16,7 @@ Module | Description
 ------ | -----------
 jdbi-statestore | PostgreSQL repository for the Sales Order domain model. Implemented using jbdi3 library. Contains docker for the database which must be running for the                   ports to function properly. 
 boot and spark-api | Port exposing simple REST-API and websocket. In this example boot contains runtime for the spark-api. You can run the port with main function in [SalesOrderSparkApp.kt](boot/src/main/kotlin/io/paju/salesorder/SalesOrderSparkApp.kt)
-(spring-api | Port exposing HAL based REST-API to the domain model. Implemented with Spring MVC and Spring HATEOS. You can run the port with main function in [SpringRestPort.kt](spring-api/src/main/kotlin/io.paju.salesorder.infrastructure.ports/SpringRestPort.kt)
+spring-api | Port exposing HAL based REST-API to the domain model. Implemented with Spring MVC and Spring HATEOS. You can run the port with main function in [SpringRestPort.kt](spring-api/src/main/kotlin/io/paju/salesorder/infrastructure/ports/SpringRestPort.kt)
 
 ## Application layer
 
