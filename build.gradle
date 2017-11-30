@@ -17,6 +17,15 @@ buildscript {
 
 apply from: "gradle/ktlint.gradle"
 apply plugin: "org.jlleitschuh.gradle.ktlint"
+apply from: "$rootDir/gradle/jacocoreport.gradle"
+
+afterEvaluate {
+    def junitPlatformTestTask = tasks.getByName('junitPlatformTest')
+
+    jacoco {
+        applyTo junitPlatformTestTask
+    }
+}
 
 ktlint {
     verbose = true
@@ -30,8 +39,17 @@ allprojects {
 
     apply plugin: 'org.junit.platform.gradle.plugin'
     apply from: "$rootDir/gradle/integrationtests.gradle"
+    apply plugin: "jacoco"
 
-    junitPlatform {
+    dependencies {
+        testRuntime libs.junitJupiterEngine
+    }
+
+    repositories {
+        maven {url "https://jcenter.bintray.com"}
+    }
+
+    junitPlatform { task ->
         filters {
             tags {
                 if(gradle.startParameter.taskRequests.flatten().find({ it.args.find {it == "integrationTests"}}) != null) {
@@ -44,20 +62,11 @@ allprojects {
         }
     }
 
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        testRuntime libs.junitJupiterEngine
-    }
 }
 
 subprojects {
 
     apply plugin: 'kotlin'
-
-
     task allDeps(type: DependencyReportTask) {}
 
     repositories {
@@ -94,4 +103,3 @@ subprojects {
             }
     }
 }
-
