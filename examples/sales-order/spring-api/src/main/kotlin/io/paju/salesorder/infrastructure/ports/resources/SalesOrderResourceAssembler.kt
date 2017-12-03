@@ -31,9 +31,9 @@ class SalesOrderResourceAssembler(val entityLinks: EntityLinks) : EmbeddableReso
         // b) fetch with HTTP if resource is remote
         // alternative to embedding is to add customer simply as link with custom rel, for example "customer"
         // Here as example we simply create ad-hoc customer "entity"
-        val customer = Customer("Kimmo", "Eklund", entity.state.customerId.toString())
+        val customer = Customer("Kimmo", "Eklund", entity.state().customerId.toString())
         val embeddables = mutableListOf<EmbeddedWrapper>()
         embeddables.add(customerAssembler.toEmbeddable(customer))
-        return SalesOrderResource(Resources<EmbeddedWrapper>(embeddables), entity.state.customerId.toString(), entity.state.confirmed, entity.state.deleted, entity.state.products)
+        return SalesOrderResource(Resources<EmbeddedWrapper>(embeddables), entity.state().customerId.toString(), entity.state().confirmed, entity.state().deleted, entity.state().products)
     }
 }
