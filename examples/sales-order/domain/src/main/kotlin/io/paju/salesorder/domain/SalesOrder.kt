@@ -20,6 +20,8 @@ class SalesOrder constructor(id: AggregateRootId) :
 {
     private val stateManager = SalesOrderStateManager({ getState() })
 
+    internal fun getEventController() = eventController
+
     override fun initialState() = SalesOrderState(
         1, EntityId.NotInitialized, false, false, mutableListOf()
     )

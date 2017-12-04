@@ -21,6 +21,8 @@ class CounterAggregate(id: AggregateRootId) :
 
     override fun instanceCreated(): CounterEvent = CounterEvent.InstanceCreated
 
+    internal fun getEventController() = eventController
+
     override fun apply(event: CounterEvent, toState: CounterState): CounterState {
         return when (event) {
             is CounterEvent.InstanceCreated -> initialState()
