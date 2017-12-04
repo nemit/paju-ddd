@@ -40,7 +40,7 @@ sealed class CounterEvent : StateChangeEvent() {
 }
 
 fun makeAggregate(): CounterAggregate {
-    val aggregate = AggregateBuilder
+    val aggregate = AggregateRootBuilder
         .build { CounterAggregate(AggregateRootId.fromObject(UUID.randomUUID())) }
         .newInstance()
     aggregate.apply {

@@ -1,6 +1,6 @@
 package io.paju.salesorder.command
 
-import io.paju.ddd.AggregateBuilder
+import io.paju.ddd.AggregateRootBuilder
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.CommandHandler
 import io.paju.ddd.infrastructure.Repository
@@ -31,7 +31,7 @@ class SalesOrderCommandHandler(
                     } else {
                         command.id
                     }
-                AggregateBuilder
+                AggregateRootBuilder
                     .build { SalesOrder(aggregateId) }
                     .newInstanceWithCreateEvent(SalesOrderEvent.Created)
             }

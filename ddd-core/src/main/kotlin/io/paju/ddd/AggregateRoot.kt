@@ -66,11 +66,5 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
     }
 }
 
-object AggregateBuilder {
-    fun <A: AggregateRoot<S, E>, S: State, E : StateChangeEvent>build(constructor: () -> A): AggregateRoot.Builder<A, S, E> {
-        return AggregateRoot.Builder(constructor)
-    }
-}
-
 
 

@@ -1,6 +1,6 @@
 package io.paju.salesorder.infrastructure
 
-import io.paju.ddd.AggregateBuilder
+import io.paju.ddd.AggregateRootBuilder
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.EntityId
 import io.paju.ddd.infrastructure.EventStoreWriter
@@ -41,7 +41,7 @@ class SalesOrderRepository(
 
     override fun getById(id: AggregateRootId): SalesOrder {
         val salesOrderState = stateReader.readStateOrFail(id)
-        return AggregateBuilder
+        return AggregateRootBuilder
             .build{ SalesOrder(id) }
             .fromState(salesOrderState)
     }
