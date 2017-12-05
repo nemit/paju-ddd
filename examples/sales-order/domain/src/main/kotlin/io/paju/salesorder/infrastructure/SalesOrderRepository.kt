@@ -42,7 +42,7 @@ class SalesOrderRepository(
     override fun getById(id: AggregateRootId): SalesOrder {
         val salesOrderState = stateReader.readStateOrFail(id)
         return AggregateRootBuilder
-            .build{ SalesOrder(id) }
+            .build { SalesOrder(id) }
             .fromState(salesOrderState)
     }
 

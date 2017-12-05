@@ -7,7 +7,7 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
     private var state: S
     private val changes: MutableList<E> // all new uncommitted events
 
-    constructor(id: AggregateRootId){
+    constructor(id: AggregateRootId) {
         this.id = id
         this.state = initialState()
         this.changes = mutableListOf<E>()
@@ -52,7 +52,7 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
 
         fun fromEvents(events: Iterable<E>): A =
             aggregate.apply {
-                events.forEach{ applyChange(it, false)}
+                events.forEach { applyChange(it, false) }
             }
 
         fun fromState(state: S): A =
@@ -61,6 +61,4 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
             }
     }
 }
-
-
 

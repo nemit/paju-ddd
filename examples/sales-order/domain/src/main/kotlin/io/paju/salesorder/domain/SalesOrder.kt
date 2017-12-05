@@ -148,6 +148,6 @@ class SalesOrder constructor(id: AggregateRootId) :
 
     fun isEveryProductPaid() = products(PaymentStatus.OPEN).isEmpty()
 
-    fun isEveryProductDelivered()= products(DeliveryStatus.NOT_DELIVERED).isEmpty()
+    fun isEveryProductDelivered() = products(DeliveryStatus.NOT_DELIVERED).isEmpty()
 
 }
