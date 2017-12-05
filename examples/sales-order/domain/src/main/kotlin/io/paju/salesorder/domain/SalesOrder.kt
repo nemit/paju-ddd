@@ -25,10 +25,11 @@ class SalesOrder constructor(id: AggregateRootId) :
     )
 
     override fun state(): SalesOrderState = getState()
+    override fun instanceCreated(): SalesOrderEvent = SalesOrderEvent.Created
 
     override fun apply(event: SalesOrderEvent, toState: SalesOrderState): SalesOrderState {
         return when (event) {
-            is SalesOrderEvent.Created -> state()
+            is SalesOrderEvent.Created -> initialState()
             is SalesOrderEvent.CustomerSet -> stateManager.apply(event)
             is SalesOrderEvent.Deleted -> stateManager.apply(event)
             is SalesOrderEvent.Confirmed -> stateManager.apply(event)

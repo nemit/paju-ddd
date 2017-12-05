@@ -33,7 +33,7 @@ class SalesOrderCommandHandler(
                     }
                 AggregateRootBuilder
                     .build { SalesOrder(aggregateId) }
-                    .newInstanceWithCreateEvent(SalesOrderEvent.Created)
+                    .newInstance()
             }
 
             is DeliverProducts ->

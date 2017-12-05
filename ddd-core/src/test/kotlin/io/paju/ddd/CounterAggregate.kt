@@ -19,8 +19,11 @@ class CounterAggregate(id: AggregateRootId) :
 
     override fun initialState(): CounterState = CounterState()
 
+    override fun instanceCreated(): CounterEvent = CounterEvent.InstanceCreated
+
     override fun apply(event: CounterEvent, toState: CounterState): CounterState {
         return when (event) {
+            is CounterEvent.InstanceCreated -> initialState()
             is CounterEvent.Added -> toState.copy( counter =  toState.counter + 1 )
             is CounterEvent.Subtracted -> toState.copy( counter =  toState.counter - 1 )
         }
@@ -35,6 +38,7 @@ data class CounterState(
 }
 
 sealed class CounterEvent : StateChangeEvent() {
+    object InstanceCreated : CounterEvent()
     object Added : CounterEvent()
     object Subtracted : CounterEvent()
 }

@@ -13,6 +13,7 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
         this.changes = mutableListOf<E>()
     }
 
+    protected abstract fun instanceCreated(): E // the first event in event stream / list
     protected abstract fun initialState(): S
     protected abstract fun apply(event: E, toState: S): S
 
@@ -40,29 +41,24 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
     }
 
     class Builder<out A: AggregateRoot<S, E>, S: State, E : StateChangeEvent>
-    internal constructor (private val constructor: () -> A)
+    internal constructor (constructor: () -> A)
     {
-        fun newInstance(): A {
-            return constructor()
-        }
+        private val aggregate = constructor()
 
-        fun newInstanceWithCreateEvent(createEvent: E): A {
-            return constructor().apply {
-                applyChange(createEvent, true)
+        fun newInstance(): A =
+            aggregate.apply {
+                applyChange(aggregate.instanceCreated(), true)
             }
-        }
 
-        fun fromEvents(events: Iterable<E>): A {
-            return constructor().apply {
+        fun fromEvents(events: Iterable<E>): A =
+            aggregate.apply {
                 events.forEach{ applyChange(it, false)}
             }
-        }
 
-        fun fromState(state: S): A {
-            return constructor().apply {
+        fun fromState(state: S): A =
+            aggregate.apply {
                 this.state = state
             }
-        }
     }
 }
 
