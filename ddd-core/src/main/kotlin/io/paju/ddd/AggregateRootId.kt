@@ -3,10 +3,10 @@ package io.paju.ddd
 import java.io.Serializable
 import java.util.UUID
 
-class AggregateRootId constructor(val id: String) : Serializable {
+class AggregateRootId constructor(val id: UUID) : Serializable {
 
     override fun toString(): String {
-        return id
+        return id.toString()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -23,17 +23,5 @@ class AggregateRootId constructor(val id: String) : Serializable {
     override fun hashCode(): Int {
         return id.hashCode()
     }
-
-    companion object {
-        fun fromObject(id: Any): AggregateRootId {
-            return when (id) {
-                is String -> AggregateRootId(id)
-                is UUID -> AggregateRootId(id.toString())
-                else -> throw IllegalArgumentException("The id should be of either String or UUID type")
-            }
-        }
-        val NotInitialized = AggregateRootId("0")
-    }
-
 }
 

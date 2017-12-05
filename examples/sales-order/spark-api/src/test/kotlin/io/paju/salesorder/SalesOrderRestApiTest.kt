@@ -20,7 +20,7 @@ import java.util.UUID
 
 internal class SalesOrderRestApiTest {
 
-    val aggregateId = AggregateRootId.fromObject(UUID.fromString("e94ce3ee-1631-47f7-a1e1-3a3f4f3fa4a5"))
+    val aggregateId = AggregateRootId(UUID.fromString("e94ce3ee-1631-47f7-a1e1-3a3f4f3fa4a5"))
     val enityId = NotInitialized
 
     @Test

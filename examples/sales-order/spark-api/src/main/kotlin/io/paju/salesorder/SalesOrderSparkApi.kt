@@ -63,7 +63,7 @@ class SalesOrderRestApi(
         get("/sales-order/:id") { req, _ ->
             val id = req.params(":id")
             logger.info { "Get sales order $id" }
-            val aggregate = repository.getById(AggregateRootId.fromObject(UUID.fromString(id)))
+            val aggregate = repository.getById(AggregateRootId(UUID.fromString(id)))
             Serializer.stateToJson(aggregate.state())
         }
 
