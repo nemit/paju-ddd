@@ -60,3 +60,11 @@ Make Intellij IDEA's built-in formatter produce 100% ktlint-compatible code with
 ```bash
 $ ./gradlew ktlintToIdea
 ```
+
+### Publish project artifact to Bintray
+
+```bash
+export BINTRAY_USER=[user]; export BINTRAY_API_KEY=[apikey]; ./gradlew bintrayUpload  
+```
+
+Artifacts are published to <https://dl.bintray.com/nemit/oss-libs/paju-ddd/>
