@@ -23,7 +23,8 @@ ext {
             // plugins
             dependencyManagementPlugin : '1.0.3.RELEASE',
             ktlint                  : '0.11.0',
-            ktlintPlugin            : '2.2.1'
+            ktlintPlugin            : '2.2.1',
+            bintrayPlugin           : '1.7.3'
     ]
 
     libs = [
@@ -58,6 +59,7 @@ ext {
             ktlint                  : "com.github.shyiko:ktlint:$versions.ktlint",
             springBootGradlePlugin  : "org.springframework.boot:spring-boot-gradle-plugin:$versions.springBoot",
             kotlinAllOpen           : "org.jetbrains.kotlin:kotlin-allopen:$versions.kotlin",
-            junitGradlePlugin       : "org.junit.platform:junit-platform-gradle-plugin:$versions.junitGradlePlugin"
+            junitGradlePlugin       : "org.junit.platform:junit-platform-gradle-plugin:$versions.junitGradlePlugin",
+            bintrayPlugin           : "com.jfrog.bintray.gradle:gradle-bintray-plugin:$versions.bintrayPlugin"
     ]
 }
