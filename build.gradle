@@ -12,6 +12,7 @@ buildscript {
         classpath pluginLibs.ktlintPlugin
         ktlint pluginLibs.ktlint
         classpath pluginLibs.junitGradlePlugin
+        classpath pluginLibs.bintrayPlugin
     }
 }
 
@@ -25,11 +26,11 @@ ktlint {
 }
 
 allprojects {
-    group 'nemit.fi'
-    version '1.0-SNAPSHOT'
+    group 'paju-ddd'
+    version '1.0'
 
     apply plugin: 'org.junit.platform.gradle.plugin'
-    apply from: "$rootDir/gradle/integrationtests.gradle"
+    apply from: rootProject.file('gradle/integrationtests.gradle')
 
     junitPlatform {
         filters {
@@ -56,7 +57,6 @@ allprojects {
 subprojects {
 
     apply plugin: 'kotlin'
-
 
     task allDeps(type: DependencyReportTask) {}
 
