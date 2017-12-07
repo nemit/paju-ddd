@@ -9,17 +9,17 @@ import io.paju.salesorder.domain.event.SalesOrderEvent
 import io.paju.salesorder.infrastructure.SalesOrderRepository
 import mu.KotlinLogging
 import org.eclipse.jetty.websocket.api.Session
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage
+import org.eclipse.jetty.websocket.api.annotations.WebSocket
 import spark.Spark.awaitInitialization
 import spark.Spark.get
 import spark.Spark.post
 import spark.Spark.webSocket
 import java.io.IOException
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect
-import java.util.concurrent.ConcurrentLinkedQueue
-import org.eclipse.jetty.websocket.api.annotations.WebSocket
 import java.util.UUID
+import java.util.concurrent.ConcurrentLinkedQueue
 
 private val logger = KotlinLogging.logger {}
 
@@ -64,7 +64,7 @@ class SalesOrderRestApi(
             val id = req.params(":id")
             logger.info { "Get sales order $id" }
             val aggregate = repository.getById(AggregateRootId.fromObject(UUID.fromString(id)))
-            Serializer.stateToJson(aggregate.state)
+            Serializer.stateToJson(aggregate.state())
         }
 
         awaitInitialization()

@@ -1,5 +1,6 @@
 package io.paju.salesorder.command
 
+import io.paju.ddd.AggregateRootBuilder
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.CommandHandler
 import io.paju.ddd.infrastructure.Repository
@@ -21,7 +22,6 @@ class SalesOrderCommandHandler(
         logger.info { "Handle command ${command::class.simpleName} ${command.id}" }
 
         fun aggregate() = repository.getById(command.id)
-        fun createNewAggregate(id: AggregateRootId) = SalesOrder(id, true)
 
         val aggregate: SalesOrder = when (command) {
             is CreateSalesOrder -> {
@@ -31,9 +31,9 @@ class SalesOrderCommandHandler(
                     } else {
                         command.id
                     }
-                createNewAggregate(aggregateId).apply {
-                    setCustomer(command.customerId)
-                }
+                AggregateRootBuilder
+                    .build { SalesOrder(aggregateId) }
+                    .newInstance()
             }
 
             is DeliverProducts ->

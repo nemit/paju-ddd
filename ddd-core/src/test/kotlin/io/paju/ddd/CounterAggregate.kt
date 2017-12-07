@@ -3,14 +3,9 @@ package io.paju.ddd
 import java.util.UUID
 
 class CounterAggregate(id: AggregateRootId) :
-    AggregateRoot<CounterEvent>(id),
-    StateExposed<CounterState>,
-    EventReconstructable<CounterEvent>,
-    StateReconstructable<CounterState>
+    AggregateRoot<CounterState, CounterEvent>(id),
+    StateExposed<CounterState>
 {
-
-    private var state = CounterState()
-
     // public api
     fun add() {
         applyChange(CounterEvent.Added)
@@ -20,23 +15,18 @@ class CounterAggregate(id: AggregateRootId) :
         applyChange(CounterEvent.Subtracted)
     }
 
-    override fun state(): CounterState {
-        return state
-    }
+    override fun state(): CounterState = getState()
 
-    override fun apply(event: CounterEvent) {
-        when (event) {
-            is CounterEvent.Added -> state.counter++
-            is CounterEvent.Subtracted -> state.counter--
-        }.let {} // let is required for exhaustive when
-    }
+    override fun initialState(): CounterState = CounterState()
 
-    override fun reconstruct(state: CounterState) {
-        this.state = state
-    }
+    override fun instanceCreated(): CounterEvent = CounterEvent.InstanceCreated
 
-    override fun reconstruct(events: Iterable<CounterEvent>) {
-        events.forEach { applyChange(it, false) }
+    override fun apply(event: CounterEvent, toState: CounterState): CounterState {
+        return when (event) {
+            is CounterEvent.InstanceCreated -> initialState()
+            is CounterEvent.Added -> toState.copy( counter = toState.counter + 1 )
+            is CounterEvent.Subtracted -> toState.copy( counter = toState.counter - 1 )
+        }
     }
 }
 
@@ -48,12 +38,15 @@ data class CounterState(
 }
 
 sealed class CounterEvent : StateChangeEvent() {
+    object InstanceCreated : CounterEvent()
     object Added : CounterEvent()
     object Subtracted : CounterEvent()
 }
 
 fun makeAggregate(): CounterAggregate {
-    val aggregate = CounterAggregate(AggregateRootId.fromObject(UUID.randomUUID()))
+    val aggregate = AggregateRootBuilder
+        .build { CounterAggregate(AggregateRootId.fromObject(UUID.randomUUID())) }
+        .newInstance()
     aggregate.apply {
         add()
         add()
