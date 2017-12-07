@@ -31,7 +31,6 @@ internal class SalesOrderStoreJdbcTest {
         flyway.migrate()
     }
 
-
     val store = SalesOrderStoreJdbc(jdbcUrl)
     val eventWriter = LocalEventStore()
     val repo = SalesOrderRepository(eventWriter, store, store, store)
