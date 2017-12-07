@@ -4,6 +4,7 @@ import io.paju.ddd.EntityId
 import io.paju.ddd.infrastructure.localstore.LocalEventStore
 import io.paju.salesorder.domain.DeliveryStatus
 import io.paju.salesorder.domain.SalesOrderTestData.makeSalesOrder
+import io.paju.salesorder.domain.SalesOrderTestData.makeSalesOrderWithoutCustomer
 import io.paju.salesorder.domain.SalesOrderTestData.product1
 import io.paju.salesorder.domain.SalesOrderTestData.product2
 import io.paju.salesorder.infrastructure.SalesOrderRepository
@@ -14,11 +15,13 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Tag("integration")
 internal class SalesOrderStoreJdbcTest {
 
     private val jdbcUrl = "jdbc:postgresql://localhost:5432/pajuddd?user=postgres&password=password"
@@ -37,7 +40,7 @@ internal class SalesOrderStoreJdbcTest {
 
     @Test
     fun addNewSalesOrderWithoutCustomerId() {
-        val salesOrder = makeSalesOrder(product1, product2)
+        val salesOrder = makeSalesOrderWithoutCustomer(product1, product2)
         salesOrder.deliverProduct(product1)
         repo.save(salesOrder, 1)
 
