@@ -9,7 +9,7 @@ import java.util.UUID
 object SalesOrderTestData {
     fun makeSalesOrder(vararg products: Product) =
         AggregateRootBuilder
-            .build { SalesOrder(AggregateRootId.fromObject(UUID.randomUUID())) }
+            .build { SalesOrder(AggregateRootId(UUID.randomUUID())) }
             .newInstance()
             .apply {
                 setCustomer(customerId)
