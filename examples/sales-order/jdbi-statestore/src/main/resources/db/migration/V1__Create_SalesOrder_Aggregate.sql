@@ -1,13 +1,13 @@
 CREATE TABLE sales_order (
-  id VARCHAR(255) PRIMARY KEY,
-  customer_id VARCHAR(255),
+  id UUID PRIMARY KEY,
+  customer_id UUID,
   confirmed BOOLEAN,
   deleted BOOLEAN
 );
 
 CREATE TABLE product (
-  sales_order_id VARCHAR(255) REFERENCES sales_order ON DELETE CASCADE,
-  id VARCHAR(255),
+  sales_order_id UUID REFERENCES sales_order ON DELETE CASCADE,
+  id UUID,
   name TEXT,
   description TEXT,
   price FLOAT,

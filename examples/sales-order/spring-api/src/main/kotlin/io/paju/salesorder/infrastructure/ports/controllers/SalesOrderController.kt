@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @ExposesResourceFor(SalesOrderResource::class)
@@ -31,7 +32,7 @@ class SalesOrderController(val repository: SalesOrderRepository, val commandHand
     private val logger = LoggerFactory.getLogger(SpringRestPort::class.java)
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable("id") id: String): ResponseEntity<SalesOrderResource> {
+    fun findById(@PathVariable("id") id: UUID): ResponseEntity<SalesOrderResource> {
         logger.debug("id is: $id")
         val salesOrder = repository.getById(AggregateRootId(id))
         logger.debug("salesorder is: $salesOrder")
@@ -40,15 +41,15 @@ class SalesOrderController(val repository: SalesOrderRepository, val commandHand
     }
 
     @PutMapping("/{id}/payment")
-    fun payAllDeliveredProducts(@PathVariable("id") id: String, @RequestBody payment: ProductPayment): ResponseEntity<Void> {
-        val cmd = PayDeliveredProduct(AggregateRootId(id), 1, EntityId(payment.productId), payment.paymentMethod)
+    fun payAllDeliveredProducts(@PathVariable("id") id: UUID, @RequestBody payment: ProductPayment): ResponseEntity<Void> {
+        val cmd = PayDeliveredProduct(AggregateRootId(id), 1, EntityId(payment.productId.toUUID()), payment.paymentMethod)
         commandHandler.handle(cmd)
         return ResponseEntity<Void>(HttpStatus.OK)
     }
 
     @PutMapping("/{id}/delivery")
-    fun deliverProduct(@PathVariable("id") id: String, @RequestBody delivery: ProductDelivery): ResponseEntity<Void> {
-        val cmd = DeliverProduct(AggregateRootId(id), 1, EntityId(delivery.productId))
+    fun deliverProduct(@PathVariable("id") id: UUID, @RequestBody delivery: ProductDelivery): ResponseEntity<Void> {
+        val cmd = DeliverProduct(AggregateRootId(id), 1, EntityId(delivery.productId.toUUID()))
         commandHandler.handle(cmd)
         return ResponseEntity<Void>(HttpStatus.OK)
     }

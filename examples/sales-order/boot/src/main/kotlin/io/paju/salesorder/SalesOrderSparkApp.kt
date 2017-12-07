@@ -15,7 +15,7 @@ private val logger = KotlinLogging.logger {}
 @Suppress("unused_parameter")
 fun main(args : Array<String>) {
 
-    val jdbcUrl = "jdbc:postgresql://localhost:5432/pajulahti?user=postgres&password=password"
+    val jdbcUrl = "jdbc:postgresql://localhost:5432/paju-ddd?user=postgres&password=password"
 
     // 1) WS ws://localhost:4567/sales-order-ws
     // 2) GET http://localhost:4567/hello

@@ -5,7 +5,7 @@ import io.paju.ddd.State
 
 data class SalesOrderState (
     val version: Int,
-    val customerId: EntityId,
+    val customerId: EntityId?,
     val confirmed: Boolean,
     val deleted: Boolean,
     val products: List<ProductState>
