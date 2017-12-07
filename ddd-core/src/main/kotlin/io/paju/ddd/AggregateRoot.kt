@@ -6,13 +6,13 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
     var version: Int = 0
     private var state: S
     private val changes: MutableList<E> // all new uncommitted events
-    protected val eventController: EventController
+    protected val eventMediator: EventMediator
 
     constructor(id: AggregateRootId) {
         this.id = id
         this.state = initialState()
         this.changes = mutableListOf<E>()
-        this.eventController = EventController()
+        this.eventMediator = EventMediator()
     }
 
     protected abstract fun instanceCreated(): E // the first event in event stream / list
@@ -34,7 +34,7 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
         }
     }
 
-    inner class EventController {
+    inner class EventMediator {
 
         fun aggregateRootId() = id
 

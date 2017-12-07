@@ -24,7 +24,7 @@ class SalesOrderRepository(
 ) : Repository<SalesOrderEvent, SalesOrder> {
 
     override fun save(aggregate: SalesOrder, version: Int) {
-        val uncommitted = aggregate.getEventController().uncommittedChanges()
+        val uncommitted = aggregate.getEventMediator().uncommittedChanges()
 
         // save state from events
         stateWriter.saveState(aggregate.id(), uncommitted, version)
@@ -36,7 +36,7 @@ class SalesOrderRepository(
         eventWriter.saveEvents("salesorder", aggregate.id(), uncommitted, version)
 
         // mark changes saved
-        aggregate.getEventController().markChangesAsCommitted()
+        aggregate.getEventMediator().markChangesAsCommitted()
     }
 
     override fun getById(id: AggregateRootId): SalesOrder {

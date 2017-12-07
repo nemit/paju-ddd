@@ -9,15 +9,15 @@ internal class AggregateRootTest {
     fun uncommittedChanges() {
         val aggregate = makeAggregate()
         assertEquals(1, aggregate.state().counter)
-        assertEquals(4, aggregate.getEventController().uncommittedChanges().size)
+        assertEquals(4, aggregate.getEventMediator().uncommittedChanges().size)
     }
 
     @Test
     fun markChangesAsCommitted() {
         val aggregate = makeAggregate()
-        aggregate.getEventController().markChangesAsCommitted()
+        aggregate.getEventMediator().markChangesAsCommitted()
         assertEquals(1, aggregate.state().counter)
-        assertEquals(0, aggregate.getEventController().uncommittedChanges().size)
+        assertEquals(0, aggregate.getEventMediator().uncommittedChanges().size)
     }
 
     @Test
@@ -25,9 +25,9 @@ internal class AggregateRootTest {
         val aggregate = makeAggregate()
         val reconstructed = AggregateRootBuilder
             .build { CounterAggregate(aggregate.id) }
-            .fromEvents(aggregate.getEventController().uncommittedChanges())
+            .fromEvents(aggregate.getEventMediator().uncommittedChanges())
         assertEquals(1, reconstructed.state().counter)
-        assertEquals(0, reconstructed.getEventController().uncommittedChanges().size)
+        assertEquals(0, reconstructed.getEventMediator().uncommittedChanges().size)
     }
 
 }
