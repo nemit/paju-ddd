@@ -4,7 +4,7 @@ services:
 
   postgresql:
     build: postgresql
-    container_name: postgresql-paju-examples
+    container_name: postgresql-ddd-paju
     ports:
       - "0.0.0.0:5432:5432"
     volumes:

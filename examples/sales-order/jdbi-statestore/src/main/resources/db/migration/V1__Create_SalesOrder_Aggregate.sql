@@ -1,6 +1,6 @@
 CREATE TABLE sales_order (
   id UUID PRIMARY KEY,
-  customer_id VARCHAR(255),
+  customer_id UUID,
   confirmed BOOLEAN,
   deleted BOOLEAN
 );

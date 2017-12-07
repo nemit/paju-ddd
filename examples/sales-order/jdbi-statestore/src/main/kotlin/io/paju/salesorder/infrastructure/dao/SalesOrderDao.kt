@@ -59,10 +59,10 @@ class SalesOrderDao(private val jdbi: Jdbi) {
         }
     }
 
-    private fun buildBindMap(id: AggregateRootId, data: SalesOrderState): Map<String, Any> {
+    private fun buildBindMap(id: AggregateRootId, data: SalesOrderState): Map<String, Any?> {
         return mapOf(
             "id" to id.toUUID(),
-            "customer_id" to data.customerId.toString(),
+            "customer_id" to data.customerId?.toUUID(),
             "confirmed" to data.confirmed,
             "deleted" to data.deleted
         )

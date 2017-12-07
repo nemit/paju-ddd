@@ -16,6 +16,7 @@ import org.jdbi.v3.core.statement.StatementContext
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.Optional
+import java.util.UUID
 
 class ProductDao(private val jdbi: Jdbi) {
 
@@ -45,8 +46,8 @@ class ProductDao(private val jdbi: Jdbi) {
         return jdbi.withHandle<Optional<ProductState>, Exception> { handle ->
             handle
                 .select(selectByIdSql)
-                .bind("sales_order_id", salesOrderId.toString())
-                .bind("id", id.toString())
+                .bind("sales_order_id", salesOrderId.toUUID())
+                .bind("id", id.toUUID())
                 .map(ProductStateMapper())
                 .findFirst()
         }
@@ -63,7 +64,7 @@ class ProductDao(private val jdbi: Jdbi) {
         return jdbi.withHandle<List<ProductState>, Exception> { handle ->
             handle
                 .select(selectBySalesOrderIdSql)
-                .bind("sales_order_id", salesOrderId.toString())
+                .bind("sales_order_id", salesOrderId.toUUID())
                 .map(ProductStateMapper())
                 .list()
         }
@@ -94,16 +95,16 @@ class ProductDao(private val jdbi: Jdbi) {
         jdbi.useHandle<Exception> { handle ->
             handle
                 .createUpdate(deleteSql)
-                .bind("sales_order_id", salesOrderId.toString())
-                .bind("id", id.toString())
+                .bind("sales_order_id", salesOrderId.toUUID())
+                .bind("id", id.toUUID())
                 .execute()
         }
     }
 
     private fun buildBindMap(salesOrderId: AggregateRootId, data: ProductState): Map<String, Any> {
         return mapOf(
-            "sales_order_id" to salesOrderId.toString(),
-            "id" to data.product.id.toString(),
+            "sales_order_id" to salesOrderId.toUUID(),
+            "id" to data.product.id.toUUID(),
             "name" to data.product.name,
             "description" to data.product.description,
             "price" to data.product.price.price,
@@ -122,7 +123,7 @@ class ProductStateMapper : RowMapper<ProductState> {
     override fun map(r: ResultSet, ctx: StatementContext): ProductState {
         return ProductState(
             Product(
-                id = EntityId.fromObject(r.getString("id")),
+                id = EntityId(r.getObject("id") as UUID),
                 price = Price (
                     price = r.getBigDecimal("price"),
                     vat = Vat.valueOf(r.getString("price_vat")),

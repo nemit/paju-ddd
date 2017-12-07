@@ -5,11 +5,11 @@ import io.paju.ddd.infrastructure.localstore.LocalEventStore
 import io.paju.salesorder.command.SalesOrderCommandHandler
 import io.paju.salesorder.domain.PaymentMethod
 import io.paju.salesorder.domain.Product
+import io.paju.salesorder.domain.SalesOrderTestData
+import io.paju.salesorder.domain.SalesOrderTestData.product1
+import io.paju.salesorder.domain.SalesOrderTestData.product2
 import io.paju.salesorder.infrastructure.SalesOrderRepository
 import io.paju.salesorder.infrastructure.SalesOrderStoreJdbc
-import io.paju.salesorder.infrastructure.ports.SalesOrderTestData
-import io.paju.salesorder.infrastructure.ports.SalesOrderTestData.product1
-import io.paju.salesorder.infrastructure.ports.SalesOrderTestData.product2
 import io.paju.salesorder.service.DummyPaymentService
 import org.flywaydb.core.Flyway
 import org.slf4j.LoggerFactory
@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
 @SpringBootApplication
 class SpringRestPort() {
 
-    private val jdbcUrl = "jdbc:postgresql://localhost:5432/pajulahti?user=postgres&password=password"
+    private val jdbcUrl = "jdbc:postgresql://localhost:5432/paju-ddd?user=postgres&password=password"
     private val logger = LoggerFactory.getLogger(SpringRestPort::class.java)
 
     @Bean

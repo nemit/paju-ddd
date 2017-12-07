@@ -42,14 +42,14 @@ class SalesOrderController(val repository: SalesOrderRepository, val commandHand
 
     @PutMapping("/{id}/payment")
     fun payAllDeliveredProducts(@PathVariable("id") id: UUID, @RequestBody payment: ProductPayment): ResponseEntity<Void> {
-        val cmd = PayDeliveredProduct(AggregateRootId(id), 1, EntityId(payment.productId), payment.paymentMethod)
+        val cmd = PayDeliveredProduct(AggregateRootId(id), 1, EntityId(payment.productId.toUUID()), payment.paymentMethod)
         commandHandler.handle(cmd)
         return ResponseEntity<Void>(HttpStatus.OK)
     }
 
     @PutMapping("/{id}/delivery")
     fun deliverProduct(@PathVariable("id") id: UUID, @RequestBody delivery: ProductDelivery): ResponseEntity<Void> {
-        val cmd = DeliverProduct(AggregateRootId(id), 1, EntityId(delivery.productId))
+        val cmd = DeliverProduct(AggregateRootId(id), 1, EntityId(delivery.productId.toUUID()))
         commandHandler.handle(cmd)
         return ResponseEntity<Void>(HttpStatus.OK)
     }
