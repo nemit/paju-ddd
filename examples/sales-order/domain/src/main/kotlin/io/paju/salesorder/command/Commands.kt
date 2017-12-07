@@ -8,6 +8,7 @@ import io.paju.ddd.Command
 import io.paju.ddd.EntityId
 import io.paju.salesorder.domain.PaymentMethod
 import io.paju.salesorder.domain.Product
+import java.util.UUID
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -28,7 +29,7 @@ sealed class SalesOrderCommand : Command
 
 // Sales order Commands
 data class CreateSalesOrder(
-    override val id: AggregateRootId = AggregateRootId.NotInitialized,
+    override val id: AggregateRootId = AggregateRootId(UUID.randomUUID()),
     val customerId: EntityId) : SalesOrderCommand()
 {
     override val originalVersion: Int = -1

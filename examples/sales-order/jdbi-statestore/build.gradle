@@ -21,6 +21,7 @@ apply plugin: "org.flywaydb.flyway"
 dependencies {
     compile project(':ddd-core')
     compile project(':examples:sales-order:domain')
+    testCompile project(':examples:sales-order:domain').sourceSets.test.output
 
     compile libs.postgresql
     compile libs.flywayCore
@@ -28,6 +29,7 @@ dependencies {
     compile 'org.jdbi:jdbi3-kotlin:3.0.0-beta2'
     compile 'org.jdbi:jdbi3-kotlin-sqlobject:3.0.0-beta2'
     compile libs.embeddedPostgresql
+
 }
 
 
@@ -47,7 +49,7 @@ configurations.all {
 }
 
 flyway {
-    url = 'jdbc:postgresql://localhost:5432/pajulahti'
+    url = 'jdbc:postgresql://localhost:5432/paju-ddd'
     user = 'postgres'
     password = 'password'
 }

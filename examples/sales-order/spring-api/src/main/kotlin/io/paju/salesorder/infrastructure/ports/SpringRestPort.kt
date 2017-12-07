@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
 @SpringBootApplication
 class SpringRestPort() {
 
-    private val jdbcUrl = "jdbc:postgresql://localhost:5432/pajulahti?user=postgres&password=password"
+    private val jdbcUrl = "jdbc:postgresql://localhost:5432/paju-ddd?user=postgres&password=password"
     private val logger = LoggerFactory.getLogger(SpringRestPort::class.java)
 
     @Bean

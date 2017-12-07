@@ -1,7 +1,6 @@
 package io.paju.salesorder.command
 
 import io.paju.ddd.AggregateRootBuilder
-import io.paju.ddd.AggregateRootId
 import io.paju.ddd.CommandHandler
 import io.paju.ddd.infrastructure.Repository
 import io.paju.salesorder.domain.DeliveryStatus
@@ -9,7 +8,6 @@ import io.paju.salesorder.domain.SalesOrder
 import io.paju.salesorder.domain.event.SalesOrderEvent
 import io.paju.salesorder.service.DummyPaymentService
 import mu.KotlinLogging
-import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
@@ -25,14 +23,9 @@ class SalesOrderCommandHandler(
 
         val aggregate: SalesOrder = when (command) {
             is CreateSalesOrder -> {
-                val aggregateId: AggregateRootId =
-                    if (command.id == AggregateRootId.NotInitialized) {
-                        AggregateRootId.fromObject(UUID.randomUUID())
-                    } else {
-                        command.id
-                    }
+
                 AggregateRootBuilder
-                    .build { SalesOrder(aggregateId) }
+                    .build { SalesOrder(command.id) }
                     .newInstance()
             }
 
