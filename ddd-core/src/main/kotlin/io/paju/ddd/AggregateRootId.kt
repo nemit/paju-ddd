@@ -9,6 +9,10 @@ class AggregateRootId constructor(val id: UUID) : Serializable {
         return id.toString()
     }
 
+    fun toUUID(): UUID {
+        return id
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

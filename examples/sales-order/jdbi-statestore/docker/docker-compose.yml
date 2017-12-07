@@ -4,12 +4,12 @@ services:
 
   postgresql:
     build: postgresql
-    container_name: postgresql-pajulahti
+    container_name: postgresql-paju-examples
     ports:
       - "0.0.0.0:5432:5432"
     volumes:
-      - postgresql_pajulahti_vol:/var/lib/postgresql/data
+      - postgresql_paju_vol:/var/lib/postgresql/data
 
 volumes:
-  postgresql_pajulahti_vol:
+  postgresql_paju_vol:
 

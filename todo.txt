@@ -1,0 +1,5 @@
+- nullable customerID in SalesOrder
+- UUID problem with embedded-postgresql
+- missing integration tests
+    - Database
+    - REST API

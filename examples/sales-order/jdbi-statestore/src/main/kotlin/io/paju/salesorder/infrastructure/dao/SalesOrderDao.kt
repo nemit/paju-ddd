@@ -9,6 +9,7 @@ import org.jdbi.v3.core.statement.StatementContext
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.Optional
+import java.util.UUID
 
 class SalesOrderDao(private val jdbi: Jdbi) {
 
@@ -22,7 +23,7 @@ class SalesOrderDao(private val jdbi: Jdbi) {
         jdbi.useHandle<Exception> { handle ->
             handle
                 .createUpdate(insertSql)
-                .bind("id", id.toString())
+                .bind("id", id.toUUID())
                 .execute()
         }
     }
@@ -37,7 +38,7 @@ class SalesOrderDao(private val jdbi: Jdbi) {
         return jdbi.withHandle<Optional<SalesOrderState>, Exception> { handle ->
             handle
                 .select(selectByIdSql)
-                .bind("id", id.toString())
+                .bind("id", id.toUUID())
                 .map(SalesOrderMapper)
                 .findFirst()
         }
@@ -60,7 +61,7 @@ class SalesOrderDao(private val jdbi: Jdbi) {
 
     private fun buildBindMap(id: AggregateRootId, data: SalesOrderState): Map<String, Any> {
         return mapOf(
-            "id" to id.toString(),
+            "id" to id.toUUID(),
             "customer_id" to data.customerId.toString(),
             "confirmed" to data.confirmed,
             "deleted" to data.deleted
@@ -74,9 +75,9 @@ class SalesOrderDao(private val jdbi: Jdbi) {
                 1, // TODO: implement version handling
                 customerId =
                     if (r.getString("customer_id") != null) {
-                        EntityId.fromObject(r.getString("customer_id"))
+                      EntityId(r.getObject("customer_id") as UUID)
                     } else {
-                        EntityId.NotInitialized
+                        null
                     },
                 confirmed = r.getBoolean("confirmed"),
                 deleted = r.getBoolean("deleted"),
