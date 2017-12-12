@@ -2,7 +2,7 @@
 ext {
     versions = [
             // libs
-            kotlin                  : '1.1.60',
+            kotlin                  : '1.2.0',
             sparkKotlin             : '1.0.0-alpha',
             spark                   : '2.6.0',
             sparkTemplateVelocity   : '2.5.5',
@@ -14,6 +14,7 @@ ext {
             jacksonModuleKotlin     : '2.9.0',
             embeddedPostgresql      : '2.5',
             springBoot              : '1.5.8.RELEASE',
+            kotlinResult            : '1.0.2',
 
             // test libs
             junitJupiter            : '5.0.1',
@@ -43,6 +44,7 @@ ext {
             logbackClassic          : "ch.qos.logback:logback-classic:$versions.logbackClassic",
             jacksonModuleKotlin     : "com.fasterxml.jackson.module:jackson-module-kotlin:$versions.jacksonModuleKotlin",
             embeddedPostgresql      : "ru.yandex.qatools.embed:postgresql-embedded:$versions.embeddedPostgresql",
+            kotlinResult            : "com.github.michaelbull:kotlin-result:$versions.kotlinResult",
 
             // test libs
             junitJupiterApi         : "org.junit.jupiter:junit-jupiter-api:$versions.junitJupiter",

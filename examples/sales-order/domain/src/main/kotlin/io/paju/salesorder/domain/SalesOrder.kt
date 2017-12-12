@@ -1,5 +1,7 @@
 package io.paju.salesorder.domain
 
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.and
 import io.paju.ddd.AggregateRoot
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.EntityId
@@ -98,56 +100,69 @@ class SalesOrder constructor(id: AggregateRootId) :
         applyChange(event)
     }
 
-    fun deliverProducts() {
-        products().forEach { deliverProduct(it) }
+    fun deliverProducts(): Result<SalesOrderState, Throwable> {
+        val results = products().map { deliverProduct(it) }
+        return results.fold(results.first(), {prev, current -> prev.and(current)} )
     }
 
-    fun deliverProduct(product: Product) {
-        deliverProduct(product.id)
+    fun deliverProduct(product: Product): Result<SalesOrderState, Throwable> {
+        return deliverProduct(product.id)
     }
 
-    fun deliverProduct(productId: EntityId) {
-        val productState = getState().products.find( { it.product.id.equals(productId) && it.deliveryStatus == DeliveryStatus.NOT_DELIVERED })
+    fun deliverProduct(productId: EntityId): Result<SalesOrderState, Throwable> = Result.of({
+        val productState = getState().products.find({ it.product.id.equals(productId) && it.deliveryStatus == DeliveryStatus.NOT_DELIVERED })
         productState ?: throw InvalidStateException(id, version, "Failed to delive product, product with id ${productId.id} not found")
         val event = SalesOrderEvent.ProductDelivered(productState.product)
         // update state
         applyChange(event)
-    }
+        getState()
+    })
 
-    fun invoiceDeliveredProducts(paymentService: DummyPaymentService) {
+    fun invoiceDeliveredProducts(paymentService: DummyPaymentService): Result<SalesOrderState, Throwable> {
         val customerId = getState().customerId
-        if (customerId != null) {
-            val delivered = getState().products
-                .filter { it.deliveryStatus == DeliveryStatus.DELIVERED }
-                .map { it.product }
+        return Result.of({
+            when (customerId) {
+                null -> throw InvalidStateException(id, version,
+                    "Customer id is null. Sales Order cannot invoice without customer id")
+                else -> {
+                    val delivered = getState().products
+                        .filter { it.deliveryStatus == DeliveryStatus.DELIVERED }
+                        .map { it.product }
 
-            for (product in delivered) {
-                // call external service
-                paymentService.handleProductPayment(product, customerId, PaymentMethod.INVOICE)
+                    for (product in delivered) {
+                        // call external service
+                        paymentService.handleProductPayment(product, customerId, PaymentMethod.INVOICE)
 
-                // update state
-                applyChange(SalesOrderEvent.ProductInvoiced(product))
+                        // update state
+                        applyChange(SalesOrderEvent.ProductInvoiced(product))
+                    }
+                    getState()
+                }
             }
-        } else {
-            throw InvalidStateException(id, version, "Customer id is null. Sales Order cannot invoice without customer id")
-        }
+        })
     }
 
     fun payDeliveredProduct(paymentService: DummyPaymentService, product: Product, method: PaymentMethod) {
         payDeliveredProduct(paymentService, product.id, method)
     }
 
-    fun payDeliveredProduct(paymentService: DummyPaymentService, productId: EntityId, method: PaymentMethod) {
+    fun payDeliveredProduct(paymentService: DummyPaymentService,
+        productId: EntityId,
+        method: PaymentMethod): Result<SalesOrderState, Throwable> {
         val customerId = getState().customerId
-        if (customerId != null) {
-            val p = getState().products.find { it.product.id == productId }
-            p ?: throw InvalidStateException(id, version, "Failed to pay product, product not found")
-
-            paymentService.handleProductPayment(p.product, customerId, method)
-            applyChange(SalesOrderEvent.ProductPaid(p.product))
-        } else {
-            throw InvalidStateException(id, version, "Customer id is null. Payment not possible without customer id")
-        }
+        return Result.of({
+            when(customerId) {
+                null -> throw InvalidStateException(id, version,
+                    "Customer id is null. Payment not possible without customer id")
+                else -> {
+                    val p = getState().products.find { it.product.id == productId }
+                    p ?: throw InvalidStateException(id, version, "Failed to pay product, product not found")
+                    paymentService.handleProductPayment(p.product, customerId, method)
+                    applyChange(SalesOrderEvent.ProductPaid(p.product))
+                    getState()
+                }
+            }
+        })
     }
 
     fun deleteSalesOrder() {

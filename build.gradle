@@ -62,6 +62,7 @@ subprojects {
 
     repositories {
          maven {url "https://jcenter.bintray.com"}
+         maven {url "https://jitpack.io"}
     }
 
     dependencies {
@@ -69,6 +70,7 @@ subprojects {
         compile libs.kotlinStdLib
         compile libs.kotlinReflect
         compile libs.kotlinLogging
+        compile libs.kotlinResult
         testCompile libs.junitJupiterApi
         testCompile libs.mockitoKotlin
     }
