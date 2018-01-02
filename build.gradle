@@ -27,7 +27,7 @@ ktlint {
 
 allprojects {
     group 'paju-ddd'
-    version '1.0'
+    version '1.0.1'
 
     apply plugin: 'org.junit.platform.gradle.plugin'
     apply from: rootProject.file('gradle/integrationtests.gradle')
