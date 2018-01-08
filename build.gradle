@@ -54,9 +54,19 @@ allprojects {
 
 subprojects {
 
+    apply plugin: 'maven'
     apply plugin: 'kotlin'
 
     task allDeps(type: DependencyReportTask) {}
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives sourcesJar
+    }
 
     repositories {
          maven {url "https://jcenter.bintray.com"}
