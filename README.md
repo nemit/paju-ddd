@@ -61,10 +61,35 @@ Make Intellij IDEA's built-in formatter produce 100% ktlint-compatible code with
 $ ./gradlew ktlintToIdea
 ```
 
-# Publish project artifact to Bintray
+# Publish project artifact
 
-```bash
-export BINTRAY_USER=[user]; export BINTRAY_API_KEY=[apikey]; ./gradlew bintrayUpload  
+Project artifacts is build with Jitpack automatically: 
+
+- Create a GitHub Release
+- That's it!
+
+More information: https://jitpack.io/
+
+### Add ddd-core dependency to project   
+ 
+
+**Step 1.** Add the JitPack repository to your build file
+
+```
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}  
 ```
 
-Artifacts are published to <https://dl.bintray.com/nemit/oss-libs/paju-ddd/>
+**Step 2.** Add the dependency
+
+```
+dependencies {
+    compile 'com.github.nemit:paju-ddd:ddd-core:[GitHub Release]'
+}
+```
+
+More information: https://jitpack.io/#nemit/paju-ddd
