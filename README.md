@@ -68,6 +68,8 @@ Project artifacts is build with Jitpack automatically:
 - Create a GitHub Release
 - That's it!
 
+Snapshots are supported from commit hash and branch https://jitpack.io/docs/#building-with-jitpack
+
 More information: https://jitpack.io/
 
 ### Add `ddd-core` dependency to project   
