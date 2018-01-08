@@ -6,6 +6,8 @@ class CounterAggregate(id: AggregateRootId) :
     AggregateRoot<CounterState, CounterEvent>(id),
     StateExposed<CounterState>
 {
+    override var aggregateState = CounterState()
+
     // public api
     fun add() {
         applyChange(CounterEvent.Added)
@@ -17,15 +19,13 @@ class CounterAggregate(id: AggregateRootId) :
 
     override fun state(): CounterState = getState()
 
-    override fun initialState(): CounterState = CounterState()
-
     override fun instanceCreated(): CounterEvent = CounterEvent.InstanceCreated
 
     internal fun getEventMediator() = eventMediator
 
     override fun apply(event: CounterEvent, toState: CounterState): CounterState {
         return when (event) {
-            is CounterEvent.InstanceCreated -> initialState()
+            is CounterEvent.InstanceCreated -> aggregateState
             is CounterEvent.Added -> toState.copy( counter = toState.counter + 1 )
             is CounterEvent.Subtracted -> toState.copy( counter = toState.counter - 1 )
         }
