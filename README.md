@@ -90,7 +90,7 @@ allprojects {
 
 ```
 dependencies {
-    compile 'com.github.nemit:paju-ddd:ddd-core:[GitHub Release]'
+    compile 'com.github.nemit.paju-ddd:ddd-core:[GitHub Release]'
 }
 ```
 
