@@ -1,26 +1,17 @@
 package io.paju.ddd
 
-abstract class AggregateRoot<S: State, E : StateChangeEvent>
+abstract class AggregateRoot<S: State, E : StateChangeEvent>(val id: AggregateRootId)
 {
-    val id: AggregateRootId
     var version: Int = 0
-    private var state: S
-    private val changes: MutableList<E> // all new uncommitted events
-    protected val eventMediator: EventMediator
-
-    constructor(id: AggregateRootId) {
-        this.id = id
-        this.state = initialState()
-        this.changes = mutableListOf<E>()
-        this.eventMediator = EventMediator()
-    }
+    abstract protected var aggregateState: S
+    private val changes: MutableList<E> = mutableListOf()// all new uncommitted events
+    protected val eventMediator: EventMediator = EventMediator()
 
     protected abstract fun instanceCreated(): E // the first event in event stream / list
-    protected abstract fun initialState(): S
     protected abstract fun apply(event: E, toState: S): S
 
     // get aggregate state
-    protected fun getState(): S = state
+    protected fun getState(): S = aggregateState
 
     // aggregate state modification events
     protected fun applyChange(event: E) {
@@ -28,7 +19,7 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
     }
 
     private fun applyChange(event: E, isNew: Boolean) {
-        state = apply(event, state)
+        aggregateState = apply(event, aggregateState)
         if (isNew) {
             changes.add(event)
         }
@@ -64,7 +55,7 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
 
         fun fromState(state: S): A =
             aggregate.apply {
-                this.state = state
+                this.aggregateState = state
             }
     }
 }

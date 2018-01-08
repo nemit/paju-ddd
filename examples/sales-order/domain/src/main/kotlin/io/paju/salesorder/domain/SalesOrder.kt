@@ -19,19 +19,17 @@ class SalesOrder constructor(id: AggregateRootId) :
     StateExposed<SalesOrderState>
 {
     private val stateManager = SalesOrderStateManager({ getState() })
-
-    internal fun getEventMediator() = eventMediator
-
-    override fun initialState() = SalesOrderState(
+    override var aggregateState =  SalesOrderState(
         1, null, false, false, mutableListOf()
     )
 
+    internal fun getEventMediator() = eventMediator
     override fun state(): SalesOrderState = getState()
     override fun instanceCreated(): SalesOrderEvent = SalesOrderEvent.Created
 
     override fun apply(event: SalesOrderEvent, toState: SalesOrderState): SalesOrderState {
         return when (event) {
-            is SalesOrderEvent.Created -> initialState()
+            is SalesOrderEvent.Created -> aggregateState
             is SalesOrderEvent.CustomerSet -> stateManager.apply(event)
             is SalesOrderEvent.Deleted -> stateManager.apply(event)
             is SalesOrderEvent.Confirmed -> stateManager.apply(event)
