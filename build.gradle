@@ -12,7 +12,7 @@ buildscript {
         classpath pluginLibs.ktlintPlugin
         ktlint pluginLibs.ktlint
         classpath pluginLibs.junitGradlePlugin
-        classpath pluginLibs.bintrayPlugin
+        // classpath pluginLibs.bintrayPlugin
     }
 }
 
@@ -57,6 +57,7 @@ allprojects {
 subprojects {
 
     apply plugin: 'kotlin'
+    apply plugin: 'maven'
 
     task allDeps(type: DependencyReportTask) {}
 
@@ -79,6 +80,15 @@ subprojects {
 
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives sourcesJar
     }
 
     configurations
