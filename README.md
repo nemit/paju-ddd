@@ -70,7 +70,7 @@ Project artifacts is build with Jitpack automatically:
 
 More information: https://jitpack.io/
 
-### Add ddd-core dependency to project   
+### Add `ddd-core` dependency to project   
  
 
 **Step 1.** Add the JitPack repository to your build file
