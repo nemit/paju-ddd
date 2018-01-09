@@ -12,7 +12,6 @@ buildscript {
         classpath pluginLibs.ktlintPlugin
         ktlint pluginLibs.ktlint
         classpath pluginLibs.junitGradlePlugin
-        classpath pluginLibs.bintrayPlugin
     }
 }
 
@@ -27,7 +26,6 @@ ktlint {
 
 allprojects {
     group 'paju-ddd'
-    version '1.1.0'
 
     apply plugin: 'org.junit.platform.gradle.plugin'
     apply from: rootProject.file('gradle/integrationtests.gradle')
@@ -56,9 +54,19 @@ allprojects {
 
 subprojects {
 
+    apply plugin: 'maven'
     apply plugin: 'kotlin'
 
     task allDeps(type: DependencyReportTask) {}
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives sourcesJar
+    }
 
     repositories {
          maven {url "https://jcenter.bintray.com"}
