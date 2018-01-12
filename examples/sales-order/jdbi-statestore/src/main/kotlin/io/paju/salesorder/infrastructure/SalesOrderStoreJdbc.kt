@@ -47,10 +47,4 @@ class SalesOrderStoreJdbc(private val salesOrderDao: SalesOrderDao, private val 
     override fun update(id: AggregateRootId, salesOrder: SalesOrderState) {
         salesOrderDao.update(id, salesOrder)
     }
-
-    @Suppress("unused_parameter")
-    override fun saveSnapshot(id: AggregateRootId, salesOrder: SalesOrderState) {
-        // not implemented
-    }
-
 }

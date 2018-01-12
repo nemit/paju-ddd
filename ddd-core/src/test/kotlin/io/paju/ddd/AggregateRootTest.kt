@@ -9,7 +9,7 @@ internal class AggregateRootTest {
     fun uncommittedChanges() {
         val aggregate = makeAggregate()
         assertEquals(1, aggregate.state().counter)
-        assertEquals(4, aggregate.getEventMediator().uncommittedChanges().size)
+        assertEquals(3, aggregate.getEventMediator().uncommittedChanges().size)
     }
 
     @Test

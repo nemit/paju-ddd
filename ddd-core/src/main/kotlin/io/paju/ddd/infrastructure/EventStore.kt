@@ -4,6 +4,7 @@ import io.paju.ddd.AggregateRootId
 import io.paju.ddd.StateChangeEvent
 
 interface EventStoreWriter {
+    fun newInstance(id: AggregateRootId) {}
     fun saveEvents(topicName: String, id: AggregateRootId, events: Iterable<StateChangeEvent>, expectedVersion: Int)
 }
 

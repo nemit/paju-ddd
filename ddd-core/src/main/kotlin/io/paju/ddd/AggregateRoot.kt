@@ -1,17 +1,25 @@
 package io.paju.ddd
 
-abstract class AggregateRoot<S: State, E : StateChangeEvent>(val id: AggregateRootId)
+enum class ConstructionType{
+    NEW, EVENT_RECONSTRUCTED, STATE_RECONSTRUCTED
+}
+
+abstract class AggregateRoot<S: State, E : StateChangeEvent>
+(val id: AggregateRootId, val initialState: S)
 {
     var version: Int = 0
-    abstract protected var aggregateState: S
+        private set
+    private var state: S = initialState
     private val changes: MutableList<E> = mutableListOf()// all new uncommitted events
     protected val eventMediator: EventMediator = EventMediator()
 
-    protected abstract fun instanceCreated(): E // the first event in event stream / list
+    var constructionType: ConstructionType = ConstructionType.NEW
+        private set
+
     protected abstract fun apply(event: E, toState: S): S
 
     // get aggregate state
-    protected fun getState(): S = aggregateState
+    protected fun getState(): S = state
 
     // aggregate state modification events
     protected fun applyChange(event: E) {
@@ -19,7 +27,7 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>(val id: AggregateRo
     }
 
     private fun applyChange(event: E, isNew: Boolean) {
-        aggregateState = apply(event, aggregateState)
+        state = apply(event, state)
         if (isNew) {
             changes.add(event)
         }
@@ -45,17 +53,19 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>(val id: AggregateRo
 
         fun newInstance(): A =
             aggregate.apply {
-                applyChange(aggregate.instanceCreated(), true)
+                constructionType = ConstructionType.NEW
             }
 
         fun fromEvents(events: Iterable<E>): A =
             aggregate.apply {
+                constructionType = ConstructionType.EVENT_RECONSTRUCTED
                 events.forEach { applyChange(it, false) }
             }
 
         fun fromState(state: S): A =
             aggregate.apply {
-                this.aggregateState = state
+                constructionType = ConstructionType.STATE_RECONSTRUCTED
+                this.state = state
             }
     }
 }

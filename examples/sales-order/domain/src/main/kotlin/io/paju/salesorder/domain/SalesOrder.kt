@@ -15,21 +15,16 @@ import io.paju.salesorder.service.DummyPaymentService
  * PaymentStatus is tracked per product
  */
 class SalesOrder constructor(id: AggregateRootId) :
-    AggregateRoot<SalesOrderState, SalesOrderEvent>(id),
+    AggregateRoot<SalesOrderState, SalesOrderEvent>(id, SalesOrderState.InitialState),
     StateExposed<SalesOrderState>
 {
     private val stateManager = SalesOrderStateManager({ getState() })
-    override var aggregateState =  SalesOrderState(
-        1, null, false, false, mutableListOf()
-    )
 
     internal fun getEventMediator() = eventMediator
     override fun state(): SalesOrderState = getState()
-    override fun instanceCreated(): SalesOrderEvent = SalesOrderEvent.Created
 
     override fun apply(event: SalesOrderEvent, toState: SalesOrderState): SalesOrderState {
         return when (event) {
-            is SalesOrderEvent.Created -> aggregateState
             is SalesOrderEvent.CustomerSet -> stateManager.apply(event)
             is SalesOrderEvent.Deleted -> stateManager.apply(event)
             is SalesOrderEvent.Confirmed -> stateManager.apply(event)

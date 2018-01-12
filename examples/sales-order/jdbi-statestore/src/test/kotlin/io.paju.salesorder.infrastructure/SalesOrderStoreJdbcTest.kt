@@ -36,7 +36,7 @@ internal class SalesOrderStoreJdbcTest {
 
     val store = SalesOrderStoreJdbc(jdbcUrl)
     val eventWriter = LocalEventStore()
-    val repo = SalesOrderRepository(eventWriter, store, store, store)
+    val repo = SalesOrderRepository(eventWriter, store, store)
 
     @Test
     fun addNewSalesOrderWithoutCustomerId() {
