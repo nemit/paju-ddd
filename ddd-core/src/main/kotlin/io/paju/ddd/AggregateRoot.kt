@@ -4,22 +4,23 @@ enum class ConstructionType{
     NEW, EVENT_RECONSTRUCTED, STATE_RECONSTRUCTED
 }
 
-abstract class AggregateRoot<S: State, E : StateChangeEvent>
-(val id: AggregateRootId, val initialState: S)
+abstract class AggregateRoot<S: State, E: StateChangeEvent>
+(val id: AggregateRootId, initEvent: E)
 {
-    var version: Int = 0
+    protected var state: S = apply(initEvent)
         private set
-    private var state: S = initialState
     private val changes: MutableList<E> = mutableListOf()// all new uncommitted events
     protected val eventMediator: EventMediator = EventMediator()
-
+    var version: Int = 0
+        private set
     var constructionType: ConstructionType = ConstructionType.NEW
         private set
 
-    protected abstract fun apply(event: E, toState: S): S
-
-    // get aggregate state
-    protected fun getState(): S = state
+    /**
+     * NOTE: beware that when instance initialization calls apply(initialEvent)
+     * for the first time the `state` is null.
+     */
+    protected abstract fun apply(event: E): S
 
     // aggregate state modification events
     protected fun applyChange(event: E) {
@@ -27,7 +28,7 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>
     }
 
     private fun applyChange(event: E, isNew: Boolean) {
-        state = apply(event, state)
+        state = apply(event)
         if (isNew) {
             changes.add(event)
         }

@@ -2,7 +2,6 @@ package io.paju.salesorder.infrastructure
 
 import io.paju.ddd.AggregateRootBuilder
 import io.paju.ddd.AggregateRootId
-import io.paju.ddd.ConstructionType
 import io.paju.ddd.EntityId
 import io.paju.ddd.infrastructure.EventStoreWriter
 import io.paju.ddd.infrastructure.Repository
@@ -26,9 +25,6 @@ class SalesOrderRepository(
         val uncommitted = aggregate.getEventMediator().uncommittedChanges()
 
         // save state from events
-        if (aggregate.constructionType == ConstructionType.NEW){
-            stateWriter.newInstance(aggregate.id())
-        }
         stateWriter.saveState(aggregate.id(), uncommitted, version)
 
         // save events
@@ -67,6 +63,8 @@ abstract class SalesOrderStore :
 
     private fun saveState(id: AggregateRootId, e: SalesOrderEvent) {
         when (e) {
+            is SalesOrderEvent.Init -> create(id)
+
             is SalesOrderEvent.CustomerSet ->
                 update(id, getSalesOrderWithoutRelations(id).copy(customerId = e.customerId) )
 

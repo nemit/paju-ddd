@@ -12,10 +12,4 @@ data class SalesOrderState (
 
 ) : State {
     override fun version(): Int = version
-
-    companion object {
-        val InitialState = SalesOrderState(
-            1, null, false, false, mutableListOf()
-        )
-    }
 }

@@ -14,6 +14,7 @@ import io.paju.salesorder.domain.Product
     property = "type")
 sealed class SalesOrderEvent : StateChangeEvent() {
 
+    object Init: SalesOrderEvent()
     data class CustomerSet(val customerId: EntityId) : SalesOrderEvent()
     object Deleted : SalesOrderEvent()
     object Confirmed : SalesOrderEvent()

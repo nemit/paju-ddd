@@ -3,7 +3,7 @@ package io.paju.ddd
 import java.util.UUID
 
 class CounterAggregate(id: AggregateRootId) :
-    AggregateRoot<CounterState, CounterEvent>(id, CounterState(0, 0)),
+    AggregateRoot<CounterState, CounterEvent>(id, CounterEvent.Init),
     StateExposed<CounterState>
 {
     // public api
@@ -15,14 +15,15 @@ class CounterAggregate(id: AggregateRootId) :
         applyChange(CounterEvent.Subtracted)
     }
 
-    override fun state(): CounterState = getState()
+    override fun state(): CounterState = state
 
     internal fun getEventMediator() = eventMediator
 
-    override fun apply(event: CounterEvent, toState: CounterState): CounterState {
+    override fun apply(event: CounterEvent): CounterState {
         return when (event) {
-            is CounterEvent.Added -> toState.copy( counter = toState.counter + 1 )
-            is CounterEvent.Subtracted -> toState.copy( counter = toState.counter - 1 )
+            is CounterEvent.Init -> CounterState(1, 0)
+            is CounterEvent.Added -> state.copy( counter = state.counter + 1 )
+            is CounterEvent.Subtracted -> state.copy( counter = state.counter - 1 )
         }
     }
 }
@@ -35,6 +36,7 @@ data class CounterState(
 }
 
 sealed class CounterEvent : StateChangeEvent() {
+    object Init : CounterEvent()
     object Added : CounterEvent()
     object Subtracted : CounterEvent()
 }

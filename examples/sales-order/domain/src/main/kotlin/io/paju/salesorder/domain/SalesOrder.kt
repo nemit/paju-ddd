@@ -15,16 +15,17 @@ import io.paju.salesorder.service.DummyPaymentService
  * PaymentStatus is tracked per product
  */
 class SalesOrder constructor(id: AggregateRootId) :
-    AggregateRoot<SalesOrderState, SalesOrderEvent>(id, SalesOrderState.InitialState),
+    AggregateRoot<SalesOrderState, SalesOrderEvent>(id, SalesOrderEvent.Init),
     StateExposed<SalesOrderState>
 {
-    private val stateManager = SalesOrderStateManager({ getState() })
+    private val stateManager = SalesOrderStateManager({ state })
 
     internal fun getEventMediator() = eventMediator
-    override fun state(): SalesOrderState = getState()
+    override fun state(): SalesOrderState = state
 
-    override fun apply(event: SalesOrderEvent, toState: SalesOrderState): SalesOrderState {
+    override fun apply(event: SalesOrderEvent): SalesOrderState {
         return when (event) {
+            is SalesOrderEvent.Init -> SalesOrderState(1, null, false, false, mutableListOf())
             is SalesOrderEvent.CustomerSet -> stateManager.apply(event)
             is SalesOrderEvent.Deleted -> stateManager.apply(event)
             is SalesOrderEvent.Confirmed -> stateManager.apply(event)
@@ -43,28 +44,28 @@ class SalesOrder constructor(id: AggregateRootId) :
     }
 
     fun products(): List<Product> =
-        getState().products
+        state.products
             .map { it.product }
 
     fun products(deliveryStatus: DeliveryStatus): List<Product> =
-        getState().products
+        state.products
             .filter { it.deliveryStatus == deliveryStatus }
             .map { it.product }
 
     fun products(paymentStatus: PaymentStatus): List<Product> =
-        getState().products
+        state.products
             .filter { it.paymentStatus == paymentStatus }
             .map { it.product }
 
     fun salesOrderStatus(): Status {
-        val delivered = getState().products.filter { it.deliveryStatus == DeliveryStatus.DELIVERED }.size
-        val total = getState().products.size
+        val delivered = state.products.filter { it.deliveryStatus == DeliveryStatus.DELIVERED }.size
+        val total = state.products.size
 
         return when {
-            getState().deleted -> Status.DELETED
+            state.deleted -> Status.DELETED
             delivered > 0 && total == delivered -> Status.DELIVERED
             delivered > 0 -> Status.PARTIALLY_DELIVERED
-            getState().confirmed -> Status.CONFIRMED
+            state.confirmed -> Status.CONFIRMED
             else -> Status.QUOTE
         }
     }
@@ -100,7 +101,7 @@ class SalesOrder constructor(id: AggregateRootId) :
     }
 
     fun deliverProduct(productId: EntityId) {
-        val productState = getState().products.find( { it.product.id.equals(productId) && it.deliveryStatus == DeliveryStatus.NOT_DELIVERED })
+        val productState = state.products.find( { it.product.id.equals(productId) && it.deliveryStatus == DeliveryStatus.NOT_DELIVERED })
         productState ?: throw InvalidStateException(id, version, "Failed to delive product, product with id ${productId.id} not found")
         val event = SalesOrderEvent.ProductDelivered(productState.product)
         // update state
@@ -108,9 +109,9 @@ class SalesOrder constructor(id: AggregateRootId) :
     }
 
     fun invoiceDeliveredProducts(paymentService: DummyPaymentService) {
-        val customerId = getState().customerId
+        val customerId = state.customerId
         if (customerId != null) {
-            val delivered = getState().products
+            val delivered = state.products
                 .filter { it.deliveryStatus == DeliveryStatus.DELIVERED }
                 .map { it.product }
 
@@ -131,9 +132,9 @@ class SalesOrder constructor(id: AggregateRootId) :
     }
 
     fun payDeliveredProduct(paymentService: DummyPaymentService, productId: EntityId, method: PaymentMethod) {
-        val customerId = getState().customerId
+        val customerId = state.customerId
         if (customerId != null) {
-            val p = getState().products.find { it.product.id == productId }
+            val p = state.products.find { it.product.id == productId }
             p ?: throw InvalidStateException(id, version, "Failed to pay product, product not found")
 
             paymentService.handleProductPayment(p.product, customerId, method)
