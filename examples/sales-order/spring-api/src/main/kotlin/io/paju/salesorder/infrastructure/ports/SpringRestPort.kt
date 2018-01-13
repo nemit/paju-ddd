@@ -1,5 +1,6 @@
 package io.paju.salesorder.infrastructure.ports
 
+import com.github.michaelbull.result.mapBoth
 import io.paju.ddd.EntityId
 import io.paju.ddd.infrastructure.localstore.LocalEventStore
 import io.paju.salesorder.command.SalesOrderCommandHandler
@@ -36,8 +37,8 @@ class SpringRestPort() {
             flyway.setDataSource(jdbcUrl, EmbeddedPostgres.DEFAULT_USER, EmbeddedPostgres.DEFAULT_PASSWORD)
             flyway.migrate()
             val so = SalesOrderTestData.makeSalesOrder(product1, product2)
-            so.deliverProduct(product2)
-            repository.save(so, 1)
+            val result = so.deliverProduct(product2)
+            result.mapBoth({repository.save(so, 1)}, {throw it})
             logger.info("Sales Order created with id:${so.id}")
         }
 
