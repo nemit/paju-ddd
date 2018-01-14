@@ -5,9 +5,12 @@ enum class ConstructionType{
 }
 
 abstract class AggregateRoot<S: State, E: StateChangeEvent>
-(val id: AggregateRootId, initEvent: E)
+(val id: AggregateRootId)
 {
-    protected var state: S = apply(initEvent)
+    /**
+     * Aggregate state. State is initialized after first apply.
+     */
+    protected lateinit var state: S
         private set
     private val changes: MutableList<E> = mutableListOf()// all new uncommitted events
     protected val eventMediator: EventMediator = EventMediator()
@@ -17,8 +20,10 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
         private set
 
     /**
-     * NOTE: beware that when instance initialization calls apply(initialEvent)
-     * for the first time the `state` is null.
+     * Apply state change event.
+     *
+     * NOTE: Aggregate is initialized after first apply. Beware that when instance initialization
+     * calls apply(initialEvent) for the first time the `state` is null.
      */
     protected abstract fun apply(event: E): S
 
@@ -57,6 +62,12 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
                 constructionType = ConstructionType.NEW
             }
 
+        fun newInstance(initialEvent: E): A =
+            aggregate.apply {
+                constructionType = ConstructionType.NEW
+                applyChange(initialEvent, true)
+            }
+
         fun fromEvents(events: Iterable<E>): A =
             aggregate.apply {
                 constructionType = ConstructionType.EVENT_RECONSTRUCTED
@@ -68,6 +79,7 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
                 constructionType = ConstructionType.STATE_RECONSTRUCTED
                 this.state = state
             }
+
     }
 }
 

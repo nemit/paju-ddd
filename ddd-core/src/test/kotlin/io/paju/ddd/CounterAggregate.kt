@@ -3,7 +3,7 @@ package io.paju.ddd
 import java.util.UUID
 
 class CounterAggregate(id: AggregateRootId) :
-    AggregateRoot<CounterState, CounterEvent>(id, CounterEvent.Init),
+    AggregateRoot<CounterState, CounterEvent>(id),
     StateExposed<CounterState>
 {
     // public api
@@ -21,7 +21,7 @@ class CounterAggregate(id: AggregateRootId) :
 
     override fun apply(event: CounterEvent): CounterState {
         return when (event) {
-            is CounterEvent.Init -> CounterState(1, 0)
+            is CounterEvent.Init -> CounterState(1, event.initialValue)
             is CounterEvent.Added -> state.copy( counter = state.counter + 1 )
             is CounterEvent.Subtracted -> state.copy( counter = state.counter - 1 )
         }
@@ -36,7 +36,7 @@ data class CounterState(
 }
 
 sealed class CounterEvent : StateChangeEvent() {
-    object Init : CounterEvent()
+    data class Init(val initialValue: Int) : CounterEvent()
     object Added : CounterEvent()
     object Subtracted : CounterEvent()
 }
@@ -44,7 +44,7 @@ sealed class CounterEvent : StateChangeEvent() {
 fun makeAggregate(): CounterAggregate {
     val aggregate = AggregateRootBuilder
         .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
-        .newInstance()
+        .newInstance( CounterEvent.Init(0) )
     aggregate.apply {
         add()
         add()

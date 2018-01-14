@@ -3,6 +3,7 @@ package io.paju.salesorder.domain
 import io.paju.ddd.AggregateRootBuilder
 import io.paju.ddd.AggregateRootId
 import io.paju.ddd.EntityId
+import io.paju.salesorder.domain.event.SalesOrderEvent
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -10,7 +11,7 @@ object SalesOrderTestData {
     fun makeSalesOrder(vararg products: Product) =
         AggregateRootBuilder
             .build { SalesOrder(AggregateRootId(UUID.randomUUID())) }
-            .newInstance()
+            .newInstance( SalesOrderEvent.Init )
             .apply {
                 setCustomer(customerId)
                 products.forEach { addProduct(it) }

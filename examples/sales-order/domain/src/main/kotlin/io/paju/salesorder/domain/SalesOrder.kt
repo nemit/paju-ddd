@@ -15,7 +15,7 @@ import io.paju.salesorder.service.DummyPaymentService
  * PaymentStatus is tracked per product
  */
 class SalesOrder constructor(id: AggregateRootId) :
-    AggregateRoot<SalesOrderState, SalesOrderEvent>(id, SalesOrderEvent.Init),
+    AggregateRoot<SalesOrderState, SalesOrderEvent>(id),
     StateExposed<SalesOrderState>
 {
     private val stateManager = SalesOrderStateManager({ state })
