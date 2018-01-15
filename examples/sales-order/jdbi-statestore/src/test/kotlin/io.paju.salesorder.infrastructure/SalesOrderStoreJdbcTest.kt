@@ -54,7 +54,7 @@ internal class SalesOrderStoreJdbcTest {
     @Test
     fun addAndModify() {
         val salesOrder = makeSalesOrder(product1, product2)
-        val customerId = EntityId(UUID.randomUUID())
+        val customerId = EntityId.random()
         salesOrder.deliverProduct(product1)
         salesOrder.setCustomer(customerId)
         repo.save(salesOrder, 1)

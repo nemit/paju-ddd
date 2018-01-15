@@ -23,7 +23,7 @@ internal class SalesOrderRestApiTest {
 
     @Test
     fun jsonToCreateSalesOrder() {
-        val command = CreateSalesOrder(aggregateId, EntityId(UUID.randomUUID()))
+        val command = CreateSalesOrder(aggregateId, EntityId.random())
         val serialized = Serializer.commandToJson(command)
         val deserialize = Serializer.jsonToCommand(serialized)
         assertEquals(command, deserialize)
@@ -31,7 +31,7 @@ internal class SalesOrderRestApiTest {
 
     @Test
     fun jsonToPayDeliveredProducts() {
-        val command = PayDeliveredProduct(aggregateId, 1, EntityId(UUID.randomUUID()), PaymentMethod.INVOICE)
+        val command = PayDeliveredProduct(aggregateId, 1, EntityId.random(), PaymentMethod.INVOICE)
         val serialized = Serializer.commandToJson(command)
         val deserialize = Serializer.jsonToCommand(serialized)
         assertEquals(command, deserialize)
@@ -39,7 +39,7 @@ internal class SalesOrderRestApiTest {
 
     @Test
     fun jsonToAddProductToSalesOrder() {
-        val command = AddProductToSalesOrder(aggregateId, 1, Product(EntityId(UUID.randomUUID()), Price(BigDecimal.ONE, Vat.vat0, Currencies.EURO), "qwerty", "qwerty"))
+        val command = AddProductToSalesOrder(aggregateId, 1, Product(EntityId.random(), Price(BigDecimal.ONE, Vat.vat0, Currencies.EURO), "qwerty", "qwerty"))
         val serialized = Serializer.commandToJson(command)
         val deserialize = Serializer.jsonToCommand(serialized)
         assertEquals(command, deserialize)
@@ -50,7 +50,7 @@ internal class SalesOrderRestApiTest {
     fun printJsonCommandToConsole() {
         val create = CreateSalesOrder(aggregateId, EntityId(UUID.randomUUID()))
         val deleted = DeleteSalesOrder(aggregateId, 1)
-        val addProduct = AddProductToSalesOrder(aggregateId, 1, Product(EntityId(UUID.randomUUID()), Price(BigDecimal.ONE, Vat.vat0, Currencies.EURO), "qwerty", "qwerty"))
+        val addProduct = AddProductToSalesOrder(aggregateId, 1, Product(EntityId.random(), Price(BigDecimal.ONE, Vat.vat0, Currencies.EURO), "qwerty", "qwerty"))
         println(Serializer.commandToJson(create))
         println(Serializer.commandToJson(deleted))
         println(Serializer.commandToJson(addProduct))
