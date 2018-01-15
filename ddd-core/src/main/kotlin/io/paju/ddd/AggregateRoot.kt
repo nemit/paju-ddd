@@ -1,5 +1,7 @@
 package io.paju.ddd
 
+import io.paju.ddd.exception.DddRuntimeException
+
 enum class ConstructionType{
     NEW, EVENT_RECONSTRUCTED, STATE_RECONSTRUCTED
 }
@@ -83,3 +85,8 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
     }
 }
 
+fun <C: Command>AggregateRoot<*,*>.checkId(command: C) {
+    if(this.id != command.id){
+        throw DddRuntimeException("Invalid command id: ${this.id} != $id")
+    }
+}

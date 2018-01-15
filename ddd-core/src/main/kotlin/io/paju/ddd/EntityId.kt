@@ -27,4 +27,8 @@ class EntityId constructor(val id: UUID) : Serializable {
     override fun hashCode(): Int {
         return id.hashCode()
     }
+
+    companion object {
+        fun random() = EntityId(UUID.randomUUID())
+    }
 }
