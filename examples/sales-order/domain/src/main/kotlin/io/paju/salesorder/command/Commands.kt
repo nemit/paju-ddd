@@ -29,7 +29,7 @@ sealed class SalesOrderCommand : Command
 
 // Sales order Commands
 data class CreateSalesOrder(
-    override val id: AggregateRootId = AggregateRootId(UUID.randomUUID()),
+    override val id: AggregateRootId = AggregateRootId.random(),
     val customerId: EntityId) : SalesOrderCommand()
 {
     override val originalVersion: Int = -1

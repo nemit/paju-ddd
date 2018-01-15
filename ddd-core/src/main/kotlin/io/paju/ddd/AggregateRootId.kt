@@ -27,5 +27,8 @@ class AggregateRootId constructor(val id: UUID) : Serializable {
     override fun hashCode(): Int {
         return id.hashCode()
     }
-}
 
+    companion object {
+        fun random() = AggregateRootId(UUID.randomUUID())
+    }
+}
