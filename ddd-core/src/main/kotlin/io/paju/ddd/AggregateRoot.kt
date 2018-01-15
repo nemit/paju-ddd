@@ -21,6 +21,8 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
     var constructionType: ConstructionType = ConstructionType.NEW
         private set
 
+    fun stateIsInitialized(): Boolean = this::state.isInitialized
+
     /**
      * Apply state change event.
      *

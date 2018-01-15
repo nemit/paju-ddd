@@ -1,6 +1,8 @@
 package io.paju.ddd
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
@@ -20,6 +22,22 @@ internal class AggregateRootTest {
             .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
             .newInstance( CounterEvent.Init( initialValue = 20) )
         assertEquals(20, aggregate.state().counter)
+    }
+
+    @Test
+    fun stateShouldBeInitialized() {
+        val aggregate = AggregateRootBuilder
+            .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
+            .newInstance(CounterEvent.Init(initialValue = 0))
+        assertTrue(aggregate.stateIsInitialized())
+    }
+
+    @Test
+    fun stateShouldNotBeInitialized() {
+        val aggregate = AggregateRootBuilder
+            .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
+            .newInstance( )
+        assertFalse( aggregate.stateIsInitialized() )
     }
 
     @Test
