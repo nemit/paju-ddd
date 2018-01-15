@@ -1,5 +1,7 @@
 package io.paju.ddd
 
+import io.paju.ddd.exception.DddRuntimeException
+
 abstract class AggregateRoot<S: State, E : StateChangeEvent>(val id: AggregateRootId)
 {
     var version: Int = 0
@@ -60,3 +62,8 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>(val id: AggregateRo
     }
 }
 
+fun <C: Command>AggregateRoot<*,*>.checkId(command: C) {
+    if(this.id != command.id){
+        throw DddRuntimeException("Invalid command id: ${this.id} != $id")
+    }
+}
