@@ -6,6 +6,10 @@ class CounterAggregate(id: AggregateRootId) :
     AggregateRoot<CounterState, CounterEvent>(id),
     StateExposed<CounterState>
 {
+    constructor(id: AggregateRootId, initialValue: Int): this(id) {
+        applyChange(CounterEvent.Init(initialValue))
+    }
+
     // public api
     fun add() {
         applyChange(CounterEvent.Added)

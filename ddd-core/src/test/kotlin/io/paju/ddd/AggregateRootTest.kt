@@ -2,8 +2,25 @@ package io.paju.ddd
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 internal class AggregateRootTest {
+
+    @Test
+    fun constructorInitializer() {
+        val aggregate = AggregateRootBuilder
+            .build { CounterAggregate(AggregateRootId(UUID.randomUUID()), initialValue = 10) }
+            .newInstance( )
+        assertEquals(10, aggregate.state().counter)
+    }
+
+    @Test
+    fun builderInitializer() {
+        val aggregate = AggregateRootBuilder
+            .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
+            .newInstance( CounterEvent.Init( initialValue = 20) )
+        assertEquals(20, aggregate.state().counter)
+    }
 
     @Test
     fun uncommittedChanges() {
