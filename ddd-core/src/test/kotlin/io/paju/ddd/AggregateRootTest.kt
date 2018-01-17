@@ -25,19 +25,19 @@ internal class AggregateRootTest {
     }
 
     @Test
-    fun stateShouldBeInitialized() {
+    fun shouldBeInitialized() {
         val aggregate = AggregateRootBuilder
             .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
             .newInstance(CounterEvent.Init(initialValue = 0))
-        assertTrue(aggregate.stateIsInitialized())
+        assertTrue(aggregate.isInitialized())
     }
 
     @Test
-    fun stateShouldNotBeInitialized() {
+    fun shouldNotBeInitialized() {
         val aggregate = AggregateRootBuilder
             .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
             .newInstance( )
-        assertFalse( aggregate.stateIsInitialized() )
+        assertFalse( aggregate.isInitialized() )
     }
 
     @Test
