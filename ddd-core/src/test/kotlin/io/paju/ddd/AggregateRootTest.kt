@@ -20,7 +20,7 @@ internal class AggregateRootTest {
     fun builderInitializer() {
         val aggregate = AggregateRootBuilder
             .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
-            .newInstance( CounterEvent.Init( initialValue = 20) )
+            .newInstance( CounterEvent.Init(initialValue = 20) )
         assertEquals(20, aggregate.state().counter)
     }
 

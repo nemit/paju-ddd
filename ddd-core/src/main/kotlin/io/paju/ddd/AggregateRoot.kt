@@ -18,7 +18,7 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
     protected val eventMediator: EventMediator = EventMediator()
     var version: Int = 0
         private set
-    var constructionType: ConstructionType = ConstructionType.NEW
+    protected var constructionType: ConstructionType = ConstructionType.NEW
         private set
     fun isInitialized(): Boolean = this::state.isInitialized
 
@@ -32,14 +32,8 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
 
     // aggregate state modification events
     protected fun applyChange(event: E) {
-        applyChange(event, true)
-    }
-
-    private fun applyChange(event: E, isNew: Boolean) {
         state = apply(event)
-        if (isNew) {
-            changes.add(event)
-        }
+        changes.add(event)
     }
 
     inner class EventMediator {
@@ -68,13 +62,15 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
         fun newInstance(initialEvent: E): A =
             aggregate.apply {
                 constructionType = ConstructionType.NEW
-                applyChange(initialEvent, true)
+                applyChange(initialEvent)
             }
 
         fun fromEvents(events: Iterable<E>): A =
             aggregate.apply {
                 constructionType = ConstructionType.EVENT_RECONSTRUCTED
-                events.forEach { applyChange(it, false) }
+                events.forEach {
+                    state = apply(it)
+                }
             }
 
         fun fromState(state: S): A =
