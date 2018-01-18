@@ -2,7 +2,7 @@ package io.paju.ddd
 
 import io.paju.ddd.exception.DddRuntimeException
 
-enum class ConstructionType{
+internal enum class ConstructionType{
     NEW, EVENT_RECONSTRUCTED, STATE_RECONSTRUCTED
 }
 
@@ -18,7 +18,7 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
     protected val eventMediator: EventMediator = EventMediator()
     var version: Int = 0
         private set
-    protected var constructionType: ConstructionType = ConstructionType.NEW
+    internal  var constructionType: ConstructionType = ConstructionType.NEW
         private set
     fun isInitialized(): Boolean = this::state.isInitialized
 
