@@ -45,7 +45,7 @@ class SpringRestPort() {
     fun salesOrderRepository(): SalesOrderRepository {
         val store = SalesOrderStoreJdbc(jdbcUrl)
         val eventWriter = LocalEventStore()
-        return SalesOrderRepository(eventWriter, store, store, store)
+        return SalesOrderRepository(eventWriter, store, store)
     }
 
     @Bean

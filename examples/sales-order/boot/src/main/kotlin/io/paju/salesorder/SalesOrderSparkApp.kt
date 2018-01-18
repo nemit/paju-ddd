@@ -33,7 +33,7 @@ fun main(args : Array<String>) {
     val webSocket = SalesOrderWebSocket()
     val store = SalesOrderStoreJdbc(jdbcUrl)
     val eventWriter = LocalEventStore().apply { addPublisher(webSocket) }
-    val repository = SalesOrderRepository(eventWriter, store, store, store)
+    val repository = SalesOrderRepository(eventWriter, store, store)
     val commandHandler = SalesOrderCommandHandler(repository, DummyPaymentServiceImpl)
     webSocket.commandHandler = commandHandler
     SalesOrderRestApi(repository, webSocket, commandHandler)

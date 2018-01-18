@@ -2,7 +2,7 @@
 ext {
     versions = [
             // libs
-            kotlin                  : '1.1.60',
+            kotlin                  : '1.2.10',
             sparkKotlin             : '1.0.0-alpha',
             spark                   : '2.6.0',
             sparkTemplateVelocity   : '2.5.5',

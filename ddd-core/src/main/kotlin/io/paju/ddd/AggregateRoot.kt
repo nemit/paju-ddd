@@ -2,29 +2,38 @@ package io.paju.ddd
 
 import io.paju.ddd.exception.DddRuntimeException
 
-abstract class AggregateRoot<S: State, E : StateChangeEvent>(val id: AggregateRootId)
+internal enum class ConstructionType{
+    NEW, EVENT_RECONSTRUCTED, STATE_RECONSTRUCTED
+}
+
+abstract class AggregateRoot<S: State, E: StateChangeEvent>
+(val id: AggregateRootId)
 {
-    var version: Int = 0
-    abstract protected var aggregateState: S
+    /**
+     * Aggregate state. State is initialized after first apply.
+     */
+    protected lateinit var state: S
+        private set
     private val changes: MutableList<E> = mutableListOf()// all new uncommitted events
     protected val eventMediator: EventMediator = EventMediator()
+    var version: Int = 0
+        private set
+    internal  var constructionType: ConstructionType = ConstructionType.NEW
+        private set
+    fun isInitialized(): Boolean = this::state.isInitialized
 
-    protected abstract fun instanceCreated(): E // the first event in event stream / list
-    protected abstract fun apply(event: E, toState: S): S
-
-    // get aggregate state
-    protected fun getState(): S = aggregateState
+    /**
+     * Apply state change event.
+     *
+     * NOTE: Aggregate is initialized after first apply. Beware that when instance initialization
+     * calls apply(initialEvent) for the first time the `state` is null.
+     */
+    protected abstract fun apply(event: E): S
 
     // aggregate state modification events
     protected fun applyChange(event: E) {
-        applyChange(event, true)
-    }
-
-    private fun applyChange(event: E, isNew: Boolean) {
-        aggregateState = apply(event, aggregateState)
-        if (isNew) {
-            changes.add(event)
-        }
+        state = apply(event)
+        changes.add(event)
     }
 
     inner class EventMediator {
@@ -47,18 +56,29 @@ abstract class AggregateRoot<S: State, E : StateChangeEvent>(val id: AggregateRo
 
         fun newInstance(): A =
             aggregate.apply {
-                applyChange(aggregate.instanceCreated(), true)
+                constructionType = ConstructionType.NEW
+            }
+
+        fun newInstance(initialEvent: E): A =
+            aggregate.apply {
+                constructionType = ConstructionType.NEW
+                applyChange(initialEvent)
             }
 
         fun fromEvents(events: Iterable<E>): A =
             aggregate.apply {
-                events.forEach { applyChange(it, false) }
+                constructionType = ConstructionType.EVENT_RECONSTRUCTED
+                events.forEach {
+                    state = apply(it)
+                }
             }
 
         fun fromState(state: S): A =
             aggregate.apply {
-                this.aggregateState = state
+                constructionType = ConstructionType.STATE_RECONSTRUCTED
+                this.state = state
             }
+
     }
 }
 

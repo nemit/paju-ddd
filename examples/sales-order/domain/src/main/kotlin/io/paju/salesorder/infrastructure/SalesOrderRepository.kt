@@ -7,7 +7,6 @@ import io.paju.ddd.infrastructure.EventStoreWriter
 import io.paju.ddd.infrastructure.Repository
 import io.paju.ddd.infrastructure.StateStoreTypedEventWriter
 import io.paju.ddd.infrastructure.StateStoreTypedReader
-import io.paju.ddd.infrastructure.StateStoreTypedStateWriter
 import io.paju.salesorder.domain.DeliveryStatus
 import io.paju.salesorder.domain.PaymentStatus
 import io.paju.salesorder.domain.Product
@@ -19,7 +18,6 @@ import io.paju.salesorder.domain.state.SalesOrderState
 class SalesOrderRepository(
     private val eventWriter: EventStoreWriter,
     private val stateWriter: StateStoreTypedEventWriter<SalesOrderEvent>,
-    private val stateSnapshotWriter: StateStoreTypedStateWriter<SalesOrderState>,
     private val stateReader: StateStoreTypedReader<SalesOrderState>
 ) : Repository<SalesOrderEvent, SalesOrder> {
 
@@ -28,9 +26,6 @@ class SalesOrderRepository(
 
         // save state from events
         stateWriter.saveState(aggregate.id(), uncommitted, version)
-
-        // save state snapshot
-        stateSnapshotWriter.saveState(aggregate.id(), aggregate.state(), version)
 
         // save events
         eventWriter.saveEvents("salesorder", aggregate.id(), uncommitted, version)
@@ -50,7 +45,6 @@ class SalesOrderRepository(
 
 abstract class SalesOrderStore :
     StateStoreTypedEventWriter<SalesOrderEvent>,
-    StateStoreTypedStateWriter<SalesOrderState>,
     StateStoreTypedReader<SalesOrderState>
 {
 
@@ -62,7 +56,6 @@ abstract class SalesOrderStore :
     abstract fun update(id: AggregateRootId, product: ProductState)
     abstract fun create(id: AggregateRootId)
     abstract fun update(id: AggregateRootId, salesOrder: SalesOrderState)
-    abstract fun saveSnapshot(id: AggregateRootId, salesOrder: SalesOrderState)
 
     override fun saveState(id: AggregateRootId, events: Iterable<SalesOrderEvent>, expectedVersion: Int) {
         events.forEach { it -> saveState(id, it) }
@@ -70,8 +63,7 @@ abstract class SalesOrderStore :
 
     private fun saveState(id: AggregateRootId, e: SalesOrderEvent) {
         when (e) {
-            is SalesOrderEvent.Created ->
-                create(id)
+            is SalesOrderEvent.Init -> create(id)
 
             is SalesOrderEvent.CustomerSet ->
                 update(id, getSalesOrderWithoutRelations(id).copy(customerId = e.customerId) )
@@ -105,7 +97,4 @@ abstract class SalesOrderStore :
         return salesOrder.copy(products = products)
     }
 
-    override fun saveState(id: AggregateRootId, state: SalesOrderState, expectedVersion: Int) {
-        saveSnapshot(id, state)
-    }
 }

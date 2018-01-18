@@ -4,7 +4,9 @@ class CounterAggregate(id: AggregateRootId) :
     AggregateRoot<CounterState, CounterEvent>(id),
     StateExposed<CounterState>
 {
-    override var aggregateState = CounterState()
+    constructor(id: AggregateRootId, initialValue: Int): this(id) {
+        applyChange(CounterEvent.Init(initialValue))
+    }
 
     // public api
     fun add() {
@@ -15,17 +17,15 @@ class CounterAggregate(id: AggregateRootId) :
         applyChange(CounterEvent.Subtracted)
     }
 
-    override fun state(): CounterState = getState()
-
-    override fun instanceCreated(): CounterEvent = CounterEvent.InstanceCreated
+    override fun state(): CounterState = state
 
     internal fun getEventMediator() = eventMediator
 
-    override fun apply(event: CounterEvent, toState: CounterState): CounterState {
+    override fun apply(event: CounterEvent): CounterState {
         return when (event) {
-            is CounterEvent.InstanceCreated -> aggregateState
-            is CounterEvent.Added -> toState.copy( counter = toState.counter + 1 )
-            is CounterEvent.Subtracted -> toState.copy( counter = toState.counter - 1 )
+            is CounterEvent.Init -> CounterState(1, event.initialValue)
+            is CounterEvent.Added -> state.copy( counter = state.counter + 1 )
+            is CounterEvent.Subtracted -> state.copy( counter = state.counter - 1 )
         }
     }
 }
@@ -38,7 +38,7 @@ data class CounterState(
 }
 
 sealed class CounterEvent : StateChangeEvent() {
-    object InstanceCreated : CounterEvent()
+    data class Init(val initialValue: Int) : CounterEvent()
     object Added : CounterEvent()
     object Subtracted : CounterEvent()
 }
@@ -46,7 +46,7 @@ sealed class CounterEvent : StateChangeEvent() {
 fun makeAggregate(): CounterAggregate {
     val aggregate = AggregateRootBuilder
         .build { CounterAggregate(AggregateRootId.random()) }
-        .newInstance()
+        .newInstance( CounterEvent.Init(0) )
     aggregate.apply {
         add()
         add()
