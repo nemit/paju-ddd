@@ -13,3 +13,15 @@ inline fun <reified T: State>expectState(instance: State): T {
         throw DddRuntimeException("Invalid instance type")
     }
 }
+
+fun AggregateRoot<*, *>.expectInitializedState() {
+    if(!isInitialized()) {
+        throw DddRuntimeException("Invalid instance type")
+    }
+}
+
+fun AggregateRoot<*, *>.expectUninitializedState() {
+    if(isInitialized()) {
+        throw DddRuntimeException("Invalid instance type")
+    }
+}

@@ -1,7 +1,9 @@
 package io.paju.ddd
 
+import io.paju.ddd.exception.DddRuntimeException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -30,6 +32,7 @@ internal class AggregateRootTest {
             .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
             .newInstance(CounterEvent.Init(initialValue = 0))
         assertTrue(aggregate.isInitialized())
+        assertThrows(DddRuntimeException::class.java) { aggregate.expectUninitializedState() }
     }
 
     @Test
@@ -38,6 +41,7 @@ internal class AggregateRootTest {
             .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
             .newInstance( )
         assertFalse( aggregate.isInitialized() )
+        assertThrows(DddRuntimeException::class.java) { aggregate.expectInitializedState() }
     }
 
     @Test
