@@ -1,3 +1,3 @@
 package io.paju.ddd.exception
 
-class DddRuntimeException(message: String) : RuntimeException(message)
+open class DddRuntimeException(message: String) : RuntimeException(message)

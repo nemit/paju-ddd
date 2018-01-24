@@ -1,6 +1,7 @@
 package io.paju.ddd
 
 import io.paju.ddd.exception.DddRuntimeException
+import io.paju.ddd.exception.InvalidStateException
 
 internal enum class ConstructionType{
     NEW, EVENT_RECONSTRUCTED, STATE_RECONSTRUCTED
@@ -49,6 +50,31 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
         }
     }
 
+    protected fun expectInitializedState() {
+        if(!isInitialized()) {
+            throw InvalidStateException("Instance not in expected state. " +
+                "Instance state was uninitialized, expected initialized", this)
+        }
+    }
+
+    protected fun expectUninitializedState() {
+        if(isInitialized()) {
+            throw InvalidStateException("Instance not in expected state. " +
+                "Instance state was initialized, expected uninitialized", this)
+        }
+    }
+
+    protected inline fun <reified T: State>expectState(): T {
+        val instance = state
+        if(instance is T){
+            return instance
+        }else{
+            throw InvalidStateException("Instance not in expected state. " +
+                "Instance state was ${instance::class.simpleName}, expected ${T::class.simpleName}", this)
+        }
+
+    }
+
     class Builder<out A: AggregateRoot<S, E>, S: State, E : StateChangeEvent>
     internal constructor (constructor: () -> A)
     {
@@ -80,6 +106,7 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
             }
 
     }
+
 }
 
 fun <C: Command>AggregateRoot<*,*>.checkId(command: C) {
