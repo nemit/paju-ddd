@@ -91,7 +91,7 @@ internal class AggregateRootTest {
         val aggregate = AggregateRootBuilder
             .build { StateTesterAggregate(AggregateRootId(UUID.randomUUID())) }
             .newInstance( StateTesterEvent.SetStateThis )
-        assertThrows(InvalidStateException::class.java) { aggregate.runExpectCustomThatState() }
+        assertThrows(InvalidStateException::class.java) { aggregate.runExpectLambdaThatState() }
     }
 
 }
