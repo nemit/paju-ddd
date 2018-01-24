@@ -102,7 +102,7 @@ class SalesOrder constructor(id: AggregateRootId) :
 
     fun deliverProduct(productId: EntityId) {
         val productState = state.products.find( { it.product.id.equals(productId) && it.deliveryStatus == DeliveryStatus.NOT_DELIVERED })
-        productState ?: throw InvalidStateException(id, version, "Failed to delive product, product with id ${productId.id} not found")
+        productState ?: throw InvalidStateException("Failed to delive product, product with id ${productId.id} not found", this)
         val event = SalesOrderEvent.ProductDelivered(productState.product)
         // update state
         applyChange(event)
@@ -123,7 +123,7 @@ class SalesOrder constructor(id: AggregateRootId) :
                 applyChange(SalesOrderEvent.ProductInvoiced(product))
             }
         } else {
-            throw InvalidStateException(id, version, "Customer id is null. Sales Order cannot invoice without customer id")
+            throw InvalidStateException("Customer id is null. Sales Order cannot invoice without customer id", this)
         }
     }
 
@@ -135,12 +135,12 @@ class SalesOrder constructor(id: AggregateRootId) :
         val customerId = state.customerId
         if (customerId != null) {
             val p = state.products.find { it.product.id == productId }
-            p ?: throw InvalidStateException(id, version, "Failed to pay product, product not found")
+            p ?: throw InvalidStateException("Failed to pay product, product not found", this)
 
             paymentService.handleProductPayment(p.product, customerId, method)
             applyChange(SalesOrderEvent.ProductPaid(p.product))
         } else {
-            throw InvalidStateException(id, version, "Customer id is null. Payment not possible without customer id")
+            throw InvalidStateException("Customer id is null. Payment not possible without customer id", this)
         }
     }
 
