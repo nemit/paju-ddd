@@ -14,6 +14,9 @@ class StateTesterAggregate(id: AggregateRootId) :
     fun runExpectUninitializedState() = expectUninitializedState()
     fun runExpectThisState() = expectState<StateTesterState.StateThis>()
     fun runExpectThatState() = expectState<StateTesterState.StateThat>()
+    fun runExpectCustomThatState() = expectState<StateTesterState.StateThat>{
+        it is StateTesterState.StateThat
+    }
 }
 
 sealed class StateTesterState : State {

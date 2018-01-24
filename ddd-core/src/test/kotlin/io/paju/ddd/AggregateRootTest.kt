@@ -86,4 +86,12 @@ internal class AggregateRootTest {
         assertThrows(InvalidStateException::class.java) { aggregate.runExpectUninitializedState() }
     }
 
+    @Test
+    fun expectStateLambda() {
+        val aggregate = AggregateRootBuilder
+            .build { StateTesterAggregate(AggregateRootId(UUID.randomUUID())) }
+            .newInstance( StateTesterEvent.SetStateThis )
+        assertThrows(InvalidStateException::class.java) { aggregate.runExpectCustomThatState() }
+    }
+
 }

@@ -72,7 +72,15 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
             throw InvalidStateException("Instance not in expected state. " +
                 "Instance state was ${instance::class.simpleName}, expected ${T::class.simpleName}", this)
         }
+    }
 
+    protected inline fun <reified T: State>expectState(check: (T) -> Boolean): T {
+        val instance = state
+        if(instance is T && check(instance)){
+            return instance
+        }else{
+            throw InvalidStateException("Instance not in expected state. Instance state was invalid by check")
+        }
     }
 
     class Builder<out A: AggregateRoot<S, E>, S: State, E : StateChangeEvent>
