@@ -1,8 +1,0 @@
-apply plugin: 'java'
-
-task ktlintToIdea(type: JavaExec) {
-    classpath = project.buildscript.configurations.ktlint
-    description = "Makes Intellij IDEA's built-in formatter produce 100% ktlint-compatible code"
-    main = "com.github.shyiko.ktlint.idea.Main"
-    args 'apply', '-y'
-}
