@@ -1,19 +1,18 @@
 package io.paju.ddd
 
 import io.paju.ddd.exception.InvalidStateException
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertThrows
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
 import java.util.UUID
 
-internal class AggregateRootTest {
+class AggregateRootTest {
 
     @Test
     fun constructorInitializer() {
         val aggregate = AggregateRootBuilder
-            .build { CounterAggregate(AggregateRootId(UUID.randomUUID()), initialValue = 10) }
+            .build { CounterAggregate(UUID.randomUUID(), initialValue = 10) }
             .newInstance( )
         assertEquals(10, aggregate.state().counter)
     }
@@ -21,7 +20,7 @@ internal class AggregateRootTest {
     @Test
     fun builderInitializer() {
         val aggregate = AggregateRootBuilder
-            .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
+            .build { CounterAggregate(UUID.randomUUID()) }
             .newInstance( CounterEvent.Init(initialValue = 20) )
         assertEquals(20, aggregate.state().counter)
     }
@@ -29,7 +28,7 @@ internal class AggregateRootTest {
     @Test
     fun shouldBeInitialized() {
         val aggregate = AggregateRootBuilder
-            .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
+            .build { CounterAggregate(UUID.randomUUID()) }
             .newInstance(CounterEvent.Init(initialValue = 0))
         assertTrue(aggregate.isInitialized())
     }
@@ -37,7 +36,7 @@ internal class AggregateRootTest {
     @Test
     fun shouldNotBeInitialized() {
         val aggregate = AggregateRootBuilder
-            .build { CounterAggregate(AggregateRootId(UUID.randomUUID())) }
+            .build { CounterAggregate(UUID.randomUUID()) }
             .newInstance( )
         assertFalse( aggregate.isInitialized() )
     }
@@ -67,31 +66,30 @@ internal class AggregateRootTest {
         assertEquals(0, reconstructed.getEventMediator().uncommittedChanges().size)
     }
 
-    @Test
+    @Test(expected = InvalidStateException::class)
     fun expectUninitializedState() {
         val aggregate = AggregateRootBuilder
-            .build { StateTesterAggregate(AggregateRootId(UUID.randomUUID())) }
+            .build { StateTesterAggregate(UUID.randomUUID()) }
             .newInstance()
         aggregate.runExpectUninitializedState()
-        assertThrows(InvalidStateException::class.java) { aggregate.runExpectInitializedState() }
+        aggregate.runExpectInitializedState()
     }
 
-    @Test
+    @Test(expected = InvalidStateException::class)
     fun expectInitializedState() {
         val aggregate = AggregateRootBuilder
-            .build { StateTesterAggregate(AggregateRootId(UUID.randomUUID())) }
+            .build { StateTesterAggregate(UUID.randomUUID()) }
             .newInstance( StateTesterEvent.SetStateThis )
-        aggregate.runExpectThisState()
-        assertThrows(InvalidStateException::class.java) { aggregate.runExpectThatState() }
-        assertThrows(InvalidStateException::class.java) { aggregate.runExpectUninitializedState() }
+        aggregate.runExpectStateThis()
+        aggregate.runExpectStateThat()
     }
 
-    @Test
+    @Test(expected = InvalidStateException::class)
     fun expectStateLambda() {
         val aggregate = AggregateRootBuilder
-            .build { StateTesterAggregate(AggregateRootId(UUID.randomUUID())) }
+            .build { StateTesterAggregate(UUID.randomUUID()) }
             .newInstance( StateTesterEvent.SetStateThis )
-        assertThrows(InvalidStateException::class.java) { aggregate.runExpectLambdaThatState() }
+        aggregate.runExpectLambdaThatState()
     }
 
 }

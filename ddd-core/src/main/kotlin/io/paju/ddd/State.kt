@@ -11,6 +11,6 @@ inline fun <reified T: State>expectState(instance: State): T {
         return instance
     }else{
         throw InvalidStateException("Instance not in expected state. " +
-            "Instance state was ${instance::class.simpleName}, expected ${T::class.simpleName}")
+            "Instance state was ${instance::class}, expected ${T::class}")
     }
 }

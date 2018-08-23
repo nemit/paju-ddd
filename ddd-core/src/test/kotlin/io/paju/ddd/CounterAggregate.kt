@@ -1,10 +1,12 @@
 package io.paju.ddd
 
-class CounterAggregate(id: AggregateRootId) :
+import java.util.UUID
+
+class CounterAggregate(id: UUID) :
     AggregateRoot<CounterState, CounterEvent>(id),
     StateExposed<CounterState>
 {
-    constructor(id: AggregateRootId, initialValue: Int): this(id) {
+    constructor(id: UUID, initialValue: Int): this(id) {
         applyChange(CounterEvent.Init(initialValue))
     }
 
@@ -45,7 +47,7 @@ sealed class CounterEvent : StateChangeEvent() {
 
 fun makeAggregate(): CounterAggregate {
     val aggregate = AggregateRootBuilder
-        .build { CounterAggregate(AggregateRootId.random()) }
+        .build { CounterAggregate(UUID.randomUUID()) }
         .newInstance( CounterEvent.Init(0) )
     aggregate.apply {
         add()

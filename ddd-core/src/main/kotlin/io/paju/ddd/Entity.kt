@@ -1,8 +1,10 @@
 package io.paju.ddd
 
+import java.util.UUID
+
 /**
  * Marker for entity
  */
 interface Entity {
-    val id: EntityId
+    val id: UUID
 }

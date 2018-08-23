@@ -1,14 +1,15 @@
 package io.paju.ddd
 
-import io.paju.ddd.exception.DddRuntimeException
+import io.paju.ddd.exception.DddException
 import io.paju.ddd.exception.InvalidStateException
+import java.util.UUID
 
 internal enum class ConstructionType{
     NEW, EVENT_RECONSTRUCTED, STATE_RECONSTRUCTED
 }
 
 abstract class AggregateRoot<S: State, E: StateChangeEvent>
-(val id: AggregateRootId)
+(val id: UUID)
 {
     /**
      * Aggregate state. State is initialized after first apply.
@@ -70,7 +71,7 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
             return instance
         }else{
             throw InvalidStateException("Instance not in expected state. " +
-                "Instance state was ${instance::class.simpleName}, expected ${T::class.simpleName}", this)
+                "Instance state was ${instance::class}, expected ${T::class}", this)
         }
     }
 
@@ -119,6 +120,6 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
 
 fun <C: Command>AggregateRoot<*,*>.checkId(command: C) {
     if(this.id != command.id){
-        throw DddRuntimeException("Invalid command id: ${this.id} != $id")
+        throw DddException("Invalid command id: ${this.id} != $id")
     }
 }
