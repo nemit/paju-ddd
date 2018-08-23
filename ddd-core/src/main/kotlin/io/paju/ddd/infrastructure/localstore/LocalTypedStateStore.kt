@@ -1,20 +1,20 @@
 package io.paju.ddd.infrastructure.localstore
 
-import io.paju.ddd.AggregateRootId
 import io.paju.ddd.State
 import io.paju.ddd.infrastructure.StateStoreTypedReader
 import io.paju.ddd.infrastructure.StateStoreTypedStateWriter
-import org.slf4j.LoggerFactory
+import io.paju.logger
 import java.util.ConcurrentModificationException
+import java.util.UUID
 import java.util.concurrent.locks.ReentrantLock
 
 class LocalTypedStateStore<S: State> : StateStoreTypedStateWriter<S>, StateStoreTypedReader<S> {
-    private val logger = LoggerFactory.getLogger(this::class.java)
-    private val storage: MutableMap<AggregateRootId, S> = mutableMapOf()
+    private val logger = logger()
+    private val storage: MutableMap<UUID, S> = mutableMapOf()
     private val lock = ReentrantLock()
 
     override fun saveState(
-        id: AggregateRootId,
+        id: UUID,
         state: S,
         expectedVersion: Int)
     {
@@ -33,5 +33,5 @@ class LocalTypedStateStore<S: State> : StateStoreTypedStateWriter<S>, StateStore
         }
     }
 
-    override fun readState(id: AggregateRootId): S? = storage[id]
+    override fun readState(id: UUID): S? = storage[id]
 }

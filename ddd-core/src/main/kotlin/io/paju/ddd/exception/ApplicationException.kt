@@ -1,5 +1,5 @@
 package io.paju.ddd.exception
 
-import io.paju.ddd.AggregateRootId
+import java.util.UUID
 
-abstract class ApplicationException(message: String, val id: AggregateRootId, val version: Int) : RuntimeException(message)
+abstract class ApplicationException(message: String, val id: UUID, val version: Int) : DddException(message)

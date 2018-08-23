@@ -1,6 +1,8 @@
 package io.paju.ddd
 
-class StateTesterAggregate(id: AggregateRootId) :
+import java.util.UUID
+
+class StateTesterAggregate(id: UUID) :
     AggregateRoot<StateTesterState, StateTesterEvent>(id)
 {
     override fun apply(event: StateTesterEvent): StateTesterState {
@@ -12,10 +14,10 @@ class StateTesterAggregate(id: AggregateRootId) :
 
     fun runExpectInitializedState() = expectInitializedState()
     fun runExpectUninitializedState() = expectUninitializedState()
-    fun runExpectThisState() = expectState<StateTesterState.StateThis>()
-    fun runExpectThatState() = expectState<StateTesterState.StateThat>()
+    fun runExpectStateThis() = expectState<StateTesterState.StateThis>()
+    fun runExpectStateThat() = expectState<StateTesterState.StateThat>()
     fun runExpectLambdaThatState() = expectState<StateTesterState.StateThat>{
-        it is StateTesterState.StateThat
+        false // this fails always
     }
 }
 

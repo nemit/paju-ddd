@@ -1,23 +1,24 @@
 package io.paju.ddd.infrastructure.localstore
 
-import io.paju.ddd.AggregateRootId
 import io.paju.ddd.StateChangeEvent
 import io.paju.ddd.StateChangeEventPublisher
 import io.paju.ddd.infrastructure.EventStoreReader
 import io.paju.ddd.infrastructure.EventStoreWriter
+import io.paju.logger
 import org.slf4j.LoggerFactory
+import java.util.UUID
 import java.util.concurrent.locks.ReentrantLock
 
 class LocalEventStore : EventStoreReader, EventStoreWriter {
 
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    private val logger = logger()
     private val storage: MutableMap<String, MutableList<StateChangeEvent>> = mutableMapOf()
     private val lock = ReentrantLock()
     private val publishers = mutableSetOf<StateChangeEventPublisher>()
 
     override fun saveEvents(
         topicName: String,
-        id: AggregateRootId,
+        id: UUID,
         events: Iterable<StateChangeEvent>,
         expectedVersion: Int)
     {
@@ -46,7 +47,7 @@ class LocalEventStore : EventStoreReader, EventStoreWriter {
         }
     }
 
-    override fun getEventsForAggregate(topicName: String, id: AggregateRootId): Iterable<StateChangeEvent> {
+    override fun getEventsForAggregate(topicName: String, id: UUID): Iterable<StateChangeEvent> {
         return storage.getOrElse(id.toString(), { listOf() })
     }
 
