@@ -1,59 +1,19 @@
 buildscript {
-    apply from: "gradle/dependencies.gradle"
+    ext.kotlin_version = '1.2.51'
     repositories {
         mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
     }
-    configurations.create("ktlint")
     dependencies {
-        classpath pluginLibs.kotlinGradlePlugin
-        classpath pluginLibs.ktlintPlugin
-        ktlint pluginLibs.ktlint
-        classpath pluginLibs.junitGradlePlugin
-    }
-}
-
-apply from: "gradle/ktlint.gradle"
-apply plugin: "org.jlleitschuh.gradle.ktlint"
-
-ktlint {
-    verbose = true
-    reporter = "checkstyle"
-    ignoreFailures = true
-}
-
-allprojects {
-    group 'paju-ddd'
-
-    apply plugin: 'org.junit.platform.gradle.plugin'
-    apply from: rootProject.file('gradle/integrationtests.gradle')
-
-    junitPlatform {
-        filters {
-            tags {
-                if(gradle.startParameter.taskRequests.flatten().find({ it.args.find {it == "integrationTests"}}) != null) {
-                    exclude '*'
-                    include 'integration'
-                } else {
-                    exclude 'integration'
-                }
-            }
-        }
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        testRuntime libs.junitJupiterEngine
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 subprojects {
 
+    apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'kotlin'
 
@@ -73,33 +33,10 @@ subprojects {
     }
 
     dependencies {
-        compile libs.kotlinStdLibJre8
-        compile libs.kotlinStdLib
-        compile libs.kotlinReflect
-        compile libs.kotlinLogging
-        testCompile libs.junitJupiterApi
-        testCompile libs.mockitoKotlin
-    }
-
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
-    configurations
-            .matching{ it.name != 'ktlint' }
-            .all {
-                resolutionStrategy {
-                failOnVersionConflict()
-                preferProjectModules()
-
-                libs.each { k, v -> force(v) }
-                force "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
-                force "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
-            }
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+        compile "org.slf4j:slf4j-api:1.7.25"
+        testCompile 'junit:junit:4.11'
+        testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     }
 }
 
