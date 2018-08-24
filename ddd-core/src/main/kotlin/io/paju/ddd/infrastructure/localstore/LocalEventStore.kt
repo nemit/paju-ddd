@@ -5,7 +5,6 @@ import io.paju.ddd.StateChangeEventPublisher
 import io.paju.ddd.infrastructure.EventStoreReader
 import io.paju.ddd.infrastructure.EventStoreWriter
 import io.paju.logger
-import org.slf4j.LoggerFactory
 import java.util.UUID
 import java.util.concurrent.locks.ReentrantLock
 
