@@ -3,8 +3,7 @@ package io.paju.ddd
 import java.util.UUID
 
 class CounterAggregate(id: UUID) :
-    AggregateRoot<CounterState, CounterEvent>(id),
-    StateExposed<CounterState>
+    ExposedAggregateRoot<CounterState, CounterEvent>(id)
 {
     constructor(id: UUID, initialValue: Int): this(id) {
         applyChange(CounterEvent.Init(initialValue))
@@ -18,8 +17,6 @@ class CounterAggregate(id: UUID) :
     fun subtract() {
         applyChange(CounterEvent.Subtracted)
     }
-
-    override fun state(): CounterState = state
 
     internal fun getEventMediator() = eventMediator
 

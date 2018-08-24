@@ -6,5 +6,5 @@ import java.util.UUID
 
 interface Repository<E: StateChangeEvent, T : AggregateRoot<*, E>> {
     fun save(aggregate: T, version: Int)
-    fun getById(id: UUID): T
+    fun getAggregate(id: UUID): T
 }
