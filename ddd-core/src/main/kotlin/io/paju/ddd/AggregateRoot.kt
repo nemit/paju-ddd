@@ -117,6 +117,13 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
                 this.state = state
             }
 
+        fun fromState(stateFun: (UUID) ->  S): A =
+            aggregate.apply {
+                constructionType = ConstructionType.STATE_RECONSTRUCTED
+                checkId(state)
+                this.state = stateFun(id)
+            }
+
     }
 
 }
