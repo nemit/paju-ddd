@@ -1,8 +1,10 @@
 package io.paju.ddd
 
 import io.paju.ddd.exception.InvalidStateException
+import java.util.UUID
 
 interface State {
+    val id: UUID
     fun version(): Int
 }
 

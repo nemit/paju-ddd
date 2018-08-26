@@ -14,8 +14,9 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
     /**
      * Aggregate state. State is initialized after first apply.
      */
-    protected lateinit var state: S
+    lateinit var state: S
         private set
+
     private val changes: MutableList<E> = mutableListOf()// all new uncommitted events
     protected val eventMediator: EventMediator = EventMediator()
     var version: Int = 0
@@ -35,6 +36,7 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
     // aggregate state modification events
     protected fun applyChange(event: E) {
         state = apply(event)
+        checkId(state)
         changes.add(event)
     }
 
@@ -111,6 +113,7 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
         fun fromState(state: S): A =
             aggregate.apply {
                 constructionType = ConstructionType.STATE_RECONSTRUCTED
+                checkId(state)
                 this.state = state
             }
 
@@ -121,5 +124,11 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
 fun <C: Command>AggregateRoot<*,*>.checkId(command: C) {
     if(this.id != command.id){
         throw DddException("Invalid command id: ${this.id} != $id")
+    }
+}
+
+fun <S: State>AggregateRoot<*,*>.checkId(state: S) {
+    if(this.id != state.id){
+        throw InvalidStateException("Aggregate id and state id must equal")
     }
 }
