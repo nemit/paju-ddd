@@ -11,46 +11,50 @@ class AggregateRootTest {
 
     @Test
     fun constructorInitializer() {
-        val aggregate = AggregateRootBuilder
-            .build { CounterAggregate(UUID.randomUUID(), initialValue = 10) }
-            .newInstance( )
+        val aggregate = CounterAggregate.new(10)
         assertEquals(10, aggregate.state.counter)
     }
 
     @Test
     fun builderInitializer() {
-        val aggregate = AggregateRootBuilder
-            .build { CounterAggregate(UUID.randomUUID()) }
-            .newInstance( CounterEvent.Init(initialValue = 20) )
+        val aggregate = CounterAggregate.new(20)
         assertEquals(20, aggregate.state.counter)
     }
 
     @Test
     fun shouldBeInitialized() {
-        val aggregate = AggregateRootBuilder
-            .build { CounterAggregate(UUID.randomUUID()) }
-            .newInstance(CounterEvent.Init(initialValue = 0))
+        val aggregate = CounterAggregate.new(0)
         assertTrue(aggregate.isInitialized())
     }
 
     @Test
     fun shouldNotBeInitialized() {
         val aggregate = AggregateRootBuilder
-            .build { CounterAggregate(UUID.randomUUID()) }
-            .newInstance( )
+            .build { CounterAggregate(it) }
+            .newInstance( UUID.randomUUID() )
         assertFalse( aggregate.isInitialized() )
     }
 
     @Test
     fun uncommittedChanges() {
-        val aggregate = makeAggregate()
+        val aggregate = CounterAggregate.new(0)
+            .apply {
+                add()
+                add()
+                subtract()
+            }
         assertEquals(1, aggregate.state.counter)
         assertEquals(4, aggregate.getEventMediator().uncommittedChanges().size)
     }
 
     @Test
     fun markChangesAsCommitted() {
-        val aggregate = makeAggregate()
+        val aggregate = CounterAggregate.new(0)
+            .apply {
+                add()
+                add()
+                subtract()
+            }
         aggregate.getEventMediator().markChangesAsCommitted()
         assertEquals(1, aggregate.state.counter)
         assertEquals(0, aggregate.getEventMediator().uncommittedChanges().size)
@@ -58,10 +62,15 @@ class AggregateRootTest {
 
     @Test
     fun reconstruct() {
-        val aggregate = makeAggregate()
+        val aggregate = CounterAggregate.new(0)
+            .apply {
+                add()
+                add()
+                subtract()
+            }
         val reconstructed = AggregateRootBuilder
-            .build { CounterAggregate(aggregate.id) }
-            .fromEvents(aggregate.getEventMediator().uncommittedChanges())
+            .build { CounterAggregate(it) }
+            .fromEvents(aggregate.id, aggregate.getEventMediator().uncommittedChanges())
         assertEquals(1, reconstructed.state.counter)
         assertEquals(0, reconstructed.getEventMediator().uncommittedChanges().size)
     }
@@ -69,8 +78,8 @@ class AggregateRootTest {
     @Test(expected = InvalidStateException::class)
     fun expectUninitializedState() {
         val aggregate = AggregateRootBuilder
-            .build { StateTesterAggregate(UUID.randomUUID()) }
-            .newInstance()
+            .build { StateTesterAggregate(it) }
+            .newInstance(UUID.randomUUID())
         aggregate.runExpectUninitializedState()
         aggregate.runExpectInitializedState()
     }
@@ -85,8 +94,8 @@ class AggregateRootTest {
     @Test(expected = InvalidStateException::class)
     fun failWithInvalidStateId() {
         val aggregate = AggregateRootBuilder
-            .build { FailingTesterAggregate(UUID.randomUUID()) }
-            .newInstance( StateTesterEvent.SetStateThis )
+            .build { FailingTesterAggregate(it) }
+            .newInstance( UUID.randomUUID(), StateTesterEvent.SetStateThis )
         aggregate.runApplyChange ( StateTesterEvent.SetStateThis ) // ok
         assertEquals(StateTesterState.StateThis(aggregate.id), aggregate.state)
         aggregate.runApplyChange ( StateTesterEvent.SetStateThat ) // should fail
@@ -95,8 +104,8 @@ class AggregateRootTest {
     @Test(expected = InvalidStateException::class)
     fun expectInitializedState() {
         val aggregate = AggregateRootBuilder
-            .build { StateTesterAggregate(UUID.randomUUID()) }
-            .newInstance( StateTesterEvent.SetStateThis )
+            .build { StateTesterAggregate(it) }
+            .newInstance( UUID.randomUUID(), StateTesterEvent.SetStateThis )
         aggregate.runExpectStateThis()
         aggregate.runExpectStateThat()
     }
@@ -104,8 +113,8 @@ class AggregateRootTest {
     @Test(expected = InvalidStateException::class)
     fun expectStateLambda() {
         val aggregate = AggregateRootBuilder
-            .build { StateTesterAggregate(UUID.randomUUID()) }
-            .newInstance( StateTesterEvent.SetStateThis )
+            .build { StateTesterAggregate(it) }
+            .newInstance( UUID.randomUUID(), StateTesterEvent.SetStateThis )
         aggregate.runExpectLambdaThatState()
     }
 
