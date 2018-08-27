@@ -87,23 +87,21 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
     }
 
     class Builder<out A: AggregateRoot<S, E>, S: State, E : StateChangeEvent>
-    internal constructor (constructor: () -> A)
+    internal constructor (private val constructor: (UUID) -> A)
     {
-        private val aggregate = constructor()
-
-        fun newInstance(): A =
-            aggregate.apply {
+        fun newInstance(id: UUID): A =
+            constructor(id).apply {
                 constructionType = ConstructionType.NEW
             }
 
-        fun newInstance(initialEvent: E): A =
-            aggregate.apply {
+        fun newInstance(id: UUID, initialEvent: E): A =
+            constructor(id).apply {
                 constructionType = ConstructionType.NEW
                 applyChange(initialEvent)
             }
 
-        fun fromEvents(events: Iterable<E>): A =
-            aggregate.apply {
+        fun fromEvents(id: UUID, events: Iterable<E>): A =
+            constructor(id).apply {
                 constructionType = ConstructionType.EVENT_RECONSTRUCTED
                 events.forEach {
                     state = apply(it)
@@ -111,14 +109,14 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>
             }
 
         fun fromState(state: S): A =
-            aggregate.apply {
+            constructor(state.id).apply {
                 constructionType = ConstructionType.STATE_RECONSTRUCTED
                 checkId(state)
                 this.state = state
             }
 
-        fun fromState(stateFun: (UUID) ->  S): A =
-            aggregate.apply {
+        fun fromState(id: UUID, stateFun: (UUID) ->  S): A =
+            constructor(id).apply {
                 constructionType = ConstructionType.STATE_RECONSTRUCTED
                 checkId(state)
                 this.state = stateFun(id)

@@ -27,6 +27,18 @@ class CounterAggregate(id: UUID) :
             is CounterEvent.Subtracted -> state.copy( counter = state.counter - 1 )
         }
     }
+
+    companion object {
+        fun new(initvalue: Int, id: UUID = UUID.randomUUID()): CounterAggregate =
+            AggregateRootBuilder
+                .build { CounterAggregate(it) }
+                .newInstance( id, CounterEvent.Init(initvalue) )
+
+        fun fromState(state: CounterState): CounterAggregate =
+            AggregateRootBuilder
+                .build { id -> CounterAggregate(id) }
+                .fromState( state )
+    }
 }
 
 data class CounterState(
@@ -41,16 +53,4 @@ sealed class CounterEvent : StateChangeEvent() {
     data class Init(val initialValue: Int) : CounterEvent()
     object Added : CounterEvent()
     object Subtracted : CounterEvent()
-}
-
-fun makeAggregate(): CounterAggregate {
-    val aggregate = AggregateRootBuilder
-        .build { CounterAggregate(UUID.randomUUID()) }
-        .newInstance( CounterEvent.Init(0) )
-    aggregate.apply {
-        add()
-        add()
-        subtract()
-    }
-    return aggregate
 }
