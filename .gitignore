@@ -1,6 +1,8 @@
 # Compiled class file
 *.class
 build/*
+ddd-core/build/
+build/
 
 # Log file
 *.log
