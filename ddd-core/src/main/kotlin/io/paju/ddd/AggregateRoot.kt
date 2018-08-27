@@ -174,7 +174,7 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>(
 
 fun <C: Command>AggregateRoot<*,*>.checkId(command: C) {
     if(this.id != command.id){
-        throw DddException("Invalid command id: ${this.id} != $id")
+        throw DddException("Invalid command id: ${this.id} != $command.id")
     }
 }
 
