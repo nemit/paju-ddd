@@ -5,10 +5,6 @@ import java.util.UUID
 class CounterAggregate(id: UUID) :
     AggregateRoot<CounterState, CounterEvent>(id)
 {
-    constructor(id: UUID, initialValue: Int): this(id) {
-        applyChange(CounterEvent.Init(initialValue))
-    }
-
     // public api
     fun add() {
         applyChange(CounterEvent.Added)
@@ -20,7 +16,7 @@ class CounterAggregate(id: UUID) :
 
     internal fun getEventMediator() = eventMediator
 
-    override fun apply(event: CounterEvent): CounterState {
+    override fun mutate(event: CounterEvent): CounterState {
         return when (event) {
             is CounterEvent.Init -> CounterState(id,1, event.initialValue)
             is CounterEvent.Added -> state.copy( counter = state.counter + 1 )
