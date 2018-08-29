@@ -101,7 +101,6 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>(
         }
     }
 
-
     fun isInitialized(): Boolean = manager.isInitialized()
 
     protected fun expectInitializedState() {
@@ -170,7 +169,6 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>(
                 checkId(state)
                 manager.state = stateFun(id)
             }
-
     }
 }
 

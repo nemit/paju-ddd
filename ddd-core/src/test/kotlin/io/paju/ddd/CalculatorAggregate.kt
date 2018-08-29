@@ -25,6 +25,8 @@ class CalculatorAggregate(
     Addition by AdditionCalculator(manager),
     Subtraction by SubtractionCalculator(manager)
 {
+    constructor(id: UUID): this(AggregateRoot.StateManager(id))
+
     internal fun getEventMediator() = eventMediator
 
     override fun mutate(event: CalculatorEvent): CalculatorState {
@@ -38,11 +40,9 @@ class CalculatorAggregate(
     companion object {
         fun new(id: UUID = UUID.randomUUID()): CalculatorAggregate =
             AggregateRootBuilder
-                .build { CalculatorAggregate(StateManager(it)) }
+                .build { CalculatorAggregate(it) }
                 .newInstance( id, CalculatorEvent.Init(0) )
-
     }
-
 }
 
 interface Addition {
@@ -70,7 +70,6 @@ interface Subtraction {
 class SubtractionCalculator(manager: AggregateRoot.StateManager<CalculatorState, CalculatorEvent>)
     : Subtraction, AggregateRoot.Mutator<CalculatorState, CalculatorEvent>(manager)
 {
-
     override fun minus(amount: Int) {
         applyChange(CalculatorEvent.Subtracted(amount))
         applyChange(CalculatorEvent.OperationCounted)
