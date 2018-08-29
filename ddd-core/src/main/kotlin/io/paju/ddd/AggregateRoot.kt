@@ -47,7 +47,7 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>(
 
         protected fun applyChange(event: E) = manager.applyChange(event)
 
-        internal abstract fun mutate(event: E): S
+        protected abstract fun mutate(event: E): S
     }
 
 
