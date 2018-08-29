@@ -31,8 +31,20 @@ class AggregateRootTest {
     fun shouldNotBeInitialized() {
         val aggregate = AggregateRootBuilder
             .build { CounterAggregate(it) }
-            .newInstance( UUID.randomUUID() )
+            .newInstance( UUID.randomUUID() ) // leaves state to initialized
         assertFalse( aggregate.isInitialized() )
+    }
+
+    @Test
+    fun mutatorChangeState() {
+        val aggregate = CalculatorAggregate.new().apply {
+            this.plus(4)
+            this.minus(1)
+        }
+        assertTrue( aggregate.isInitialized() )
+        assertEquals( 2, aggregate.state.operations )
+        assertEquals( 3, aggregate.state.total )
+        assertEquals( 1 + 2 + 2, aggregate.getEventMediator().uncommittedChanges().size )
     }
 
     @Test

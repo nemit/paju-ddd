@@ -5,7 +5,7 @@ import java.util.UUID
 open class StateTesterAggregate(id: UUID) :
     AggregateRoot<StateTesterState, StateTesterEvent>(id)
 {
-    override fun apply(event: StateTesterEvent): StateTesterState {
+    override fun mutate(event: StateTesterEvent): StateTesterState {
         return when (event) {
             is StateTesterEvent.SetStateThis -> StateTesterState.StateThis(id)
             is StateTesterEvent.SetStateThat -> StateTesterState.StateThat(id)
@@ -27,7 +27,7 @@ class FailingTesterAggregate(id: UUID) : StateTesterAggregate(id)
         applyChange(event)
     }
 
-    override fun apply(event: StateTesterEvent): StateTesterState {
+    override fun mutate(event: StateTesterEvent): StateTesterState {
         return when (event) {
             is StateTesterEvent.SetStateThis -> StateTesterState.StateThis(id) // correct
             is StateTesterEvent.SetStateThat -> StateTesterState.StateThat(UUID.randomUUID()) // failing
