@@ -123,6 +123,15 @@ class AggregateRootTest {
     }
 
     @Test(expected = InvalidStateException::class)
+    fun expectStateWhenStateIdUninitializedState() {
+        val aggregate = AggregateRootBuilder
+            .build { StateTesterAggregate(it) }
+            .newInstance( UUID.randomUUID() )
+        aggregate.runExpectStateThat()
+    }
+
+
+    @Test(expected = InvalidStateException::class)
     fun expectStateLambda() {
         val aggregate = AggregateRootBuilder
             .build { StateTesterAggregate(it) }
