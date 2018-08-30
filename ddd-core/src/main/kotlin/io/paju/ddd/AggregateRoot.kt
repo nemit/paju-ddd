@@ -118,6 +118,10 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>(
     }
 
     protected inline fun <reified T: State>expectState(): T {
+        if(!manager.isInitialized()) {
+            throw InvalidStateException("Instance not in expected state. " +
+                "Instance state was uninitialized, expected expected ${T::class}", this)
+        }
         val instance = state
         if(instance is T){
             return instance
@@ -128,6 +132,11 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>(
     }
 
     protected inline fun <reified T: State>expectState(check: (T) -> Boolean): T {
+        if(!manager.isInitialized()) {
+            throw InvalidStateException("Instance not in expected state. " +
+                "Instance state was uninitialized, expected expected ${T::class}", this)
+        }
+        expectInitializedState()
         val instance = state
         if(instance is T && check(instance)){
             return instance
