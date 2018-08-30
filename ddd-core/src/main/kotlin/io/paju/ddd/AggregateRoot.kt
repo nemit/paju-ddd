@@ -97,7 +97,7 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>(
             fun markChangesAsCommitted() {
                 changes.clear()
             }
-            fun uncommittedChanges() = changes
+            fun uncommittedChanges(): List<E> = ArrayList(changes)
         }
     }
 
