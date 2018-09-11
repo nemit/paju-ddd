@@ -47,6 +47,11 @@ abstract class AggregateRoot<S: State, E: StateChangeEvent>(
 
         protected fun applyChange(event: E) = manager.applyChange(event)
 
+        inline fun <reified T> handleMutate(event: E, function: (T) -> S): S {
+            return if (event is T) function(event)
+            else state
+        }
+
         protected abstract fun mutate(event: E): S
     }
 
