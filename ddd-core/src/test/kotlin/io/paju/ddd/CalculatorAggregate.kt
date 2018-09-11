@@ -56,9 +56,8 @@ class AdditionCalculator(manager: AggregateRoot.StateManager<CalculatorState, Ca
         applyChange(CalculatorEvent.OperationCounted)
     }
     override fun mutate(event: CalculatorEvent): CalculatorState {
-        return when (event) {
-            is CalculatorEvent.Added -> state.copy(total = state.total.plus(event.amount))
-            else -> state
+        return handleMutate<CalculatorEvent.Added>(event) {
+            state.copy(total = state.total.plus(it.amount))
         }
     }
 }
@@ -75,9 +74,8 @@ class SubtractionCalculator(manager: AggregateRoot.StateManager<CalculatorState,
         applyChange(CalculatorEvent.OperationCounted)
     }
     override fun mutate(event: CalculatorEvent): CalculatorState {
-        return when (event) {
-            is CalculatorEvent.Subtracted -> state.copy(total = state.total.minus(event.amount))
-            else -> state
+        return handleMutate<CalculatorEvent.Subtracted>(event) {
+            state.copy(total = state.total.minus(it.amount))
         }
     }
 }
